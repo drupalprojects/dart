@@ -17,11 +17,11 @@ function dart_uninstall() {
   drupal_uninstall_schema('dart');
 
   // Remove variables
-  variable_delete('dart_js');
-  variable_delete('dart_kvs');
-  variable_delete('dart_prefix');
-  variable_delete('dart_sitezone');
-  variable_delete('dart_vals');
+  variable_del('dart_js');
+  variable_del('dart_kvs');
+  variable_del('dart_prefix');
+  variable_del('dart_sitezone');
+  variable_del('dart_vals');
 }
 
 /**

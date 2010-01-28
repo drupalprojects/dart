@@ -184,50 +184,53 @@ function dart_tag_delete($dtid){
  * Implimentation of hook_preprocess_page.
  */
 function dart_preprocess_page(&$variables){
-  $js = '';
-
-  // Set the DART Prefix variable.
-  $js .= 'var dartPrefix = ' . drupal_to_js(variable_get('dart_prefix','')) . ';' . "\n";
-
-  // Initialize special vars (ex. tile & ord) as per the DART configuration form.
-  foreach (variable_get('dart_vals',array('tile' => 'tile','ord' => 'ord')) as $key => $val){
-    if (empty($val)){ continue; }
-    switch($key){
-      case 'ord':
-        $js .= "var ord = 1000000000 + Math.floor(Math.random()*900000000);"."\n";
-        break;
-      case 'tile':
-        $js .= "var tile = 0;"."\n";
-        break;
+  $default_sitezone = variable_get('dart_sitezone', '');
+  if($sitezone){
+    $js = '';
+  
+    // Set the DART Prefix variable.
+    $js .= 'var dartPrefix = ' . drupal_to_js(variable_get('dart_prefix','')) . ';' . "\n";
+  
+    // Initialize special vars (ex. tile & ord) as per the DART configuration form.
+    foreach (variable_get('dart_vals',array('tile' => 'tile','ord' => 'ord')) as $key => $val){
+      if (empty($val)){ continue; }
+      switch($key){
+        case 'ord':
+          $js .= "var ord = 1000000000 + Math.floor(Math.random()*900000000);"."\n";
+          break;
+        case 'tile':
+          $js .= "var tile = 0;"."\n";
+          break;
+      }
     }
+  
+    // Include the user-defined js injection if they entered one.
+    $js .= variable_get('dart_js', '') . "\n";
+  
+    // Initialize dartVars js variable.
+    // - Invoking hook_dart_get_js_vars: modules that impliment this hook should 
+    //   return an array structured exactly like the array that dart_get_dart_vars returns.
+    $dart_vars = array_merge(module_invoke_all('dart_get_vars'), dart_get_dart_vars());
+  
+    $js .= 'var dartVars = ' . drupal_to_js($dart_vars) . ';' . "\n";
+  
+    // Set the default site/zone for this page request in the format site/zone. 
+    // This will either be the default site/zone (specified in the DART config page)
+    // or the site/zone as changed by other modules (via hook_dart_sitezone(&$sitezone));
+    // This value might be changed on a tag by tag basis later. 
+    $sitezone = array_combine(array('site','zone'), explode('/',$default_sitezone));
+    $sitezone = module_invoke_all('dart_sitezone', $sitezone);
+  
+    $js .= 'var dartSite = ' . drupal_to_js($sitezone['site']) . ';' . "\n";
+    $js .= 'var dartZone = ' . drupal_to_js($sitezone['zone']) . ';' . "\n";
+  
+    // Include the inline js & dart.js file.
+    drupal_add_js(rtrim($js, "\n"), 'inline');
+    drupal_add_js(drupal_get_path('module', 'dart') . '/dart.js');
+  
+    // Regenerate scripts variable to incorporate newly added scripts.
+    $variables['scripts'] = drupal_get_js();
   }
-
-  // Include the user-defined js injection if they entered one.
-  $js .= variable_get('dart_js', '') . "\n";
-
-  // Initialize dartVars js variable.
-  // - Invoking hook_dart_get_js_vars: modules that impliment this hook should 
-  //   return an array structured exactly like the array that dart_get_dart_vars returns.
-  $dart_vars = array_merge(module_invoke_all('dart_get_vars'), dart_get_dart_vars());
-
-  $js .= 'var dartVars = ' . drupal_to_js($dart_vars) . ';' . "\n";
-
-  // Set the default site/zone for this page request in the format site/zone. 
-  // This will either be the default site/zone (specified in the DART config page)
-  // or the site/zone as changed by other modules (via hook_dart_sitezone(&$sitezone));
-  // This value might be changed on a tag by tag basis later. 
-  $sitezone = array_combine(array('site','zone'), explode('/',variable_get('dart_sitezone', '')));
-  $sitezone = module_invoke_all('dart_sitezone', $sitezone);
-
-  $js .= 'var dartSite = ' . drupal_to_js($sitezone['site']) . ';' . "\n";
-  $js .= 'var dartZone = ' . drupal_to_js($sitezone['zone']) . ';' . "\n";
-
-  // Include the inline js & dart.js file.
-  drupal_add_js(rtrim($js, "\n"), 'inline');
-  drupal_add_js(drupal_get_path('module', 'dart') . '/dart.js');
-
-  // Regenerate scripts variable to incorporate newly added scripts.
-  $variables['scripts'] = drupal_get_js();
 }
 
 /**

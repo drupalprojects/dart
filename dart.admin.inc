@@ -18,6 +18,7 @@ function dart_admin_settings() {
     '#type' => 'textfield',
     '#title' => t('Default DART site/zone'),
     '#default_value' => variable_get('dart_sitezone',''),
+    '#required' => TRUE,
     '#description' => t('The value to use when no "site/zone" is specified on a given page. Example: sports/yankees.'),
     '#maxlength' => 32,
   );
