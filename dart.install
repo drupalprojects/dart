@@ -1,0 +1,84 @@
+<?php
+// $Id$
+
+/**
+ * Implementation of hook_install().
+ */
+function dart_install() {
+  // Create tables.
+  drupal_install_schema('dart');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function dart_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('dart');
+
+  // Remove variables
+  variable_delete('dart_js');
+  variable_delete('dart_kvs');
+  variable_delete('dart_prefix');
+  variable_delete('dart_sitezone');
+  variable_delete('dart_vals');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function dart_schema() {
+  $schema['dart_tags'] = array(
+    'description' => 'Stores information about DART tags.',
+    'fields' => array(
+      'dtid'     => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => "The tag's unique id."
+        ),
+      'name'  => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => "The tag's unique name.",
+        ),
+      'pos'  => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => "The tag's position (pos) value.",
+        ),
+      'sz'  => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => "The tag's size (sz) value.",
+        ),
+      'kvs'  => array(
+        'type' => 'blob',
+        'description' => 'A series of key|val pairs to include on this tag.',
+        ),
+      'site'  => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+        'default' => '',
+        'description' => "The tag's site (as in size/zone) value.",
+        ),
+      'zone'  => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+        'default' => '',
+        'description' => "The tag's zone (as in size/zone) value.",
+        ),
+      ),
+    'primary key' => array('dtid'),
+    );
+
+  return $schema;
+}

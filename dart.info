@@ -1,0 +1,6 @@
+; $Id$
+
+name = DART
+description = Provides general functionality for integrating DART ads onto a site.
+core = 6.x
+package = Advertising
