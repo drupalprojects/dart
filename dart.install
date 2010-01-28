@@ -17,11 +17,13 @@ function dart_uninstall() {
   drupal_uninstall_schema('dart');
 
   // Remove variables
+  /*
   variable_del('dart_js');
   variable_del('dart_kvs');
   variable_del('dart_prefix');
   variable_del('dart_sitezone');
   variable_del('dart_vals');
+  */
 }
 
 /**
@@ -37,39 +39,44 @@ function dart_schema() {
         'not null' => TRUE,
         'description' => "The tag's unique id."
         ),
-      'name'  => array(
+      'name' => array(
         'type' => 'varchar',
         'length' => 128,
         'not null' => TRUE,
         'default' => '',
         'description' => "The tag's unique name.",
         ),
-      'pos'  => array(
+      'pos' => array(
         'type' => 'varchar',
         'length' => 32,
         'not null' => TRUE,
         'default' => '',
         'description' => "The tag's position (pos) value.",
         ),
-      'sz'  => array(
+      'sz' => array(
         'type' => 'varchar',
         'length' => 64,
         'not null' => TRUE,
         'default' => '',
         'description' => "The tag's size (sz) value.",
         ),
-      'kvs'  => array(
+      'kvs' => array(
         'type' => 'blob',
         'description' => 'A series of key|val pairs to include on this tag.',
         ),
-      'site'  => array(
+      'block' => array(
+        'type' => 'int',
+        'default' => 0,
+        'description' => 'If true, a block will be created in which to display this tag',
+      ),
+      'site' => array(
         'type' => 'varchar',
         'length' => 32,
         'not null' => FALSE,
         'default' => '',
         'description' => "The tag's site (as in size/zone) value.",
         ),
-      'zone'  => array(
+      'zone' => array(
         'type' => 'varchar',
         'length' => 32,
         'not null' => FALSE,

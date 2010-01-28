@@ -71,7 +71,7 @@ function dart_menu() {
 }
 
 /**
- * Implimentation of hook_theme
+ * Implimentation of hook_theme().
  */
 function dart_theme(){
   return array(
@@ -87,7 +87,7 @@ function dart_theme(){
 }
 
 /**
- * Implimentation of hook_init
+ * Implimentation of hook_init().
  */
 function dart_init(){
   // Include key/value pairs defined in the DART configuration form.
@@ -108,6 +108,31 @@ function dart_init(){
     }
   }
   
+}
+
+/**
+ * Implimentation of hook_block().
+ */
+function dart_block($op = 'list', $delta = 0, $edit = array()){
+  switch($op){
+    case 'list':
+      $result = db_query('SELECT * FROM {dart_tags} WHERE block = %d', 1);
+      while ($tag = db_fetch_object($result)) {
+        $block['dart-tag-'. $tag->dtid]['info'] = t('DART tag: !tagname', array('!tagname' => $tag->name));
+      }
+      break;
+    case 'configure':
+      break;
+    case 'save':
+      break;
+    case 'view':
+      $dtid = ltrim($delta, 'dart-tag-');
+      $block['content'] = theme('dart_tag',$dtid);
+      break;
+  }
+  if (isset($block)) {
+    return $block;
+  }
 }
 
 /**
@@ -185,7 +210,7 @@ function dart_tag_delete($dtid){
  */
 function dart_preprocess_page(&$variables){
   $default_sitezone = variable_get('dart_sitezone', '');
-  if($sitezone){
+  if($default_sitezone){
     $js = '';
   
     // Set the DART Prefix variable.

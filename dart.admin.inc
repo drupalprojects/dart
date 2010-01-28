@@ -59,6 +59,12 @@ function dart_admin_settings() {
  * @see dart_admin_tag_submit()
  */
 function dart_admin_tag(&$form_state, $edit=array()){
+  $form['block'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Create a block for this tag'),
+    '#description' => t('Checking this will create a block (configurable on admin/build/block) in which this ad tag is displayed.'),
+    '#default_value' => isset($edit['block']) ? $edit['block'] : '',
+  );
   $form['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Tag Name'),
@@ -66,6 +72,22 @@ function dart_admin_tag(&$form_state, $edit=array()){
     '#required' => TRUE,
     '#maxlength' => 128,
     '#default_value' => isset($edit['name']) ? $edit['name'] : '',
+  );
+  $form['pos'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Tag Position (pos)'),
+    '#description' => t('Example: rt_rail_box1'),
+    '#required' => TRUE,
+    '#maxlength' => 32,
+    '#default_value' => isset($edit['pos']) ? $edit['pos'] : '',
+  );
+  $form['sz'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Tag Size (sz)'),
+    '#description' => t('Example: 300x600,300x250'),
+    '#required' => TRUE,
+    '#maxlength' => 64,
+    '#default_value' => isset($edit['sz']) ? $edit['sz'] : '',
   );
   $form['overrides'] = array(
     '#type' => 'fieldset',
@@ -89,22 +111,6 @@ function dart_admin_tag(&$form_state, $edit=array()){
     '#required' => FALSE,
     '#maxlength' => 32,
     '#default_value' => isset($edit['zone']) ? $edit['zone'] : '',
-  );
-  $form['pos'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Tag Position (pos)'),
-    '#description' => t('Example: rt_rail_box1'),
-    '#required' => TRUE,
-    '#maxlength' => 32,
-    '#default_value' => isset($edit['pos']) ? $edit['pos'] : '',
-  );
-  $form['sz'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Tag Size (sz)'),
-    '#description' => t('Example: 300x600,300x250'),
-    '#required' => TRUE,
-    '#maxlength' => 64,
-    '#default_value' => isset($edit['sz']) ? $edit['sz'] : '',
   );
   $form['kvs'] = array(
     '#type' => 'textarea',
