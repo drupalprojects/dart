@@ -270,17 +270,20 @@ function template_preprocess_dart_tag(&$variables){
   $variables['tag'] = $tag;
 
   if ($tag) {
-    // Handle tag-specific overrides.
+    // Tag name & prefix variables.
     $vars = array(
       "dartTagName"=>$tag->name,
       "dartURL"=>DART_URL,
     );
+    // Set site variable.
     if (!empty($tag->site)){
       $vars['dartSite'] = $tag->site;
     }
+    // Set zone variable.
     if (!empty($tag->zone)){
       $vars['dartZone'] = $tag->zone;
     }
+    // Set KeyVals (kvs) varibale.
     if (!empty($tag->kvs)){
       $dart_vars = array();
       $pairs = preg_split("/\r\n|\n|\r/", $tag->kvs);
@@ -290,6 +293,11 @@ function template_preprocess_dart_tag(&$variables){
       }
       $vars['dartVars'] = $dart_vars;
     }
+    // Set slug variable.
+    $slug = variable_get('dart_slug', '<none>');
+    $slug = empty($tag->slug) ? $slug : $tag->slug;
+    $variables['slug'] = $slug != '<none>' ? $slug : ''; 
+
 
     $variables['pos'] = $tag->pos;
     $variables['sz'] = $tag->sz;

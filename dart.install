@@ -83,9 +83,25 @@ function dart_schema() {
         'default' => '',
         'description' => "The tag's zone (as in size/zone) value.",
         ),
+      'slug' => array(
+        'type' => 'varchar', 
+        'length' => 64, 
+        'not null' => FALSE,
+        'description' => "The tag's slug value.",
+        )
       ),
     'primary key' => array('dtid'),
     );
 
   return $schema;
+}
+
+/**
+ * This update ads the 'dart_tags.slug' field to the database.
+ */
+function dart_update_6000() {
+  $ret = array();
+  db_add_field($ret, 'dart_tags', 'slug', array('type' => 'varchar', 'length' => 64, 'not null' => FALSE, 'description' => "The tag's slug value."));
+  return $ret;
+
 }

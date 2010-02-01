@@ -22,6 +22,14 @@ function dart_admin_settings() {
     '#description' => t('The value to use when no "site/zone" is specified on a given page. Example: sports/yankees.'),
     '#maxlength' => 32,
   );
+  $form['dart_slug'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Slug'),
+    '#default_value' => variable_get('dart_slug','<none>'),
+    '#required' => FALSE,
+    '#description' => t('Slug all ads with the following with this label. Use <none> for no slug. Example: Advertisement'),
+    '#maxlength' => 64,
+  );
   $form['dart_vals'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Defaults'),
@@ -111,6 +119,14 @@ function dart_admin_tag(&$form_state, $edit=array()){
     '#required' => FALSE,
     '#maxlength' => 32,
     '#default_value' => isset($edit['zone']) ? $edit['zone'] : '',
+  );
+  $form['overrides']['slug'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Slug'),
+    '#description' => t('Override the default slug for this ad tag. Use <none> for no slug. Leave this field empty to use the default slug. Example: Advertisement'),
+    '#required' => FALSE,
+    '#maxlength' => 64,
+    '#default_value' => isset($edit['slug']) ? $edit['slug'] : '',
   );
   $form['kvs'] = array(
     '#type' => 'textarea',

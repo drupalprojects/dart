@@ -9,9 +9,6 @@ Drupal.DART = {};
  * Using document.write, add a DART tag to the page
  */
 Drupal.DART.tag = function (pos, sz, vars) {
-  console.log('-----------------'+pos+'------------------');
-  console.log(pos);  console.log(sz);  console.log(vars);  console.log(dartVars);  console.log(dartSite+"/"+dartZone);
-
   var localDartVars = dartVars;
   var dartSiteZone = (dartSite in vars ? vars.dartSite : dartSite) + "/" + (dartZone in vars ? vars.dartZone : dartZone);
 
@@ -31,8 +28,10 @@ Drupal.DART.tag = function (pos, sz, vars) {
 
   ad += '"></script>';
 
-  console.log(ad);
   document.write(ad);
+  //console.log('-----------------'+pos+'------------------');
+  //console.log(sz);  console.log(vars);  console.log(dartVars);  console.log(dartSite+"/"+dartZone);
+  //console.log(ad);
 }
 
 /**
