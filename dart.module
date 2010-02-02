@@ -79,10 +79,13 @@ function dart_theme(){
       'template' => 'dart-tag',
       'arguments' => array('dtid' => '', 'class' => ''),
     ),
+    'dart_noscript_tag' => array(
+      'template' => 'dart-noscript-tag',
+      'arguments' => array('tag' => NULL),
+    ),
     'dart_var' => array(
       'arguments' => array('key' => '', 'val' => '', 'type' => ''),
     ),
-
   );
 }
 
@@ -209,8 +212,8 @@ function dart_tag_delete($dtid){
  * Implimentation of hook_preprocess_page.
  */
 function dart_preprocess_page(&$variables){
-  $default_sitezone = variable_get('dart_sitezone', '');
-  if($default_sitezone){
+  $sitezone = _dart_sitezone();
+  if($sitezone){
     $js = '';
   
     // Set the DART Prefix variable.
@@ -231,28 +234,20 @@ function dart_preprocess_page(&$variables){
   
     // Include the user-defined js injection if they entered one.
     $js .= variable_get('dart_js', '') . "\n";
-  
+
     // Initialize dartVars js variable.
     // - Invoking hook_dart_get_js_vars: modules that impliment this hook should 
     //   return an array structured exactly like the array that dart_get_dart_vars returns.
     $dart_vars = array_merge(module_invoke_all('dart_get_vars'), dart_get_dart_vars());
-  
+
     $js .= 'var dartVars = ' . drupal_to_js($dart_vars) . ';' . "\n";
-  
-    // Set the default site/zone for this page request in the format site/zone. 
-    // This will either be the default site/zone (specified in the DART config page)
-    // or the site/zone as changed by other modules (via hook_dart_sitezone(&$sitezone));
-    // This value might be changed on a tag by tag basis later. 
-    $sitezone = array_combine(array('site','zone'), explode('/',$default_sitezone));
-    $sitezone = module_invoke_all('dart_sitezone', $sitezone);
-  
     $js .= 'var dartSite = ' . drupal_to_js($sitezone['site']) . ';' . "\n";
     $js .= 'var dartZone = ' . drupal_to_js($sitezone['zone']) . ';' . "\n";
-  
+
     // Include the inline js & dart.js file.
     drupal_add_js(rtrim($js, "\n"), 'inline');
     drupal_add_js(drupal_get_path('module', 'dart') . '/dart.js');
-  
+
     // Regenerate scripts variable to incorporate newly added scripts.
     $variables['scripts'] = drupal_get_js();
   }
@@ -265,7 +260,7 @@ function dart_preprocess_page(&$variables){
  *
  * @see dart-tag.tpl.php
  */
-function template_preprocess_dart_tag(&$variables){
+function template_preprocess_dart_tag(&$variables) {
   $tag = dart_tag_load($variables['dtid']);
   $variables['tag'] = $tag;
 
@@ -285,23 +280,47 @@ function template_preprocess_dart_tag(&$variables){
     }
     // Set KeyVals (kvs) varibale.
     if (!empty($tag->kvs)){
-      $dart_vars = array();
-      $pairs = preg_split("/\r\n|\n|\r/", $tag->kvs);
-      foreach($pairs as $pair){
-        list($key, $val, $eval) = explode("|", $pair);
-        $dart_vars[$key] = _dart_kv($val,$eval);
-      }
-      $vars['dartVars'] = $dart_vars;
+      $vars['dartVars'] = _dart_kvs($tag->kvs);
     }
     // Set slug variable.
     $slug = variable_get('dart_slug', '<none>');
     $slug = empty($tag->slug) ? $slug : $tag->slug;
     $variables['slug'] = $slug != '<none>' ? $slug : ''; 
+    // Set noscript variable.
+    $variables['noscript'] = (variable_get('dart_noscript', '1') == 1);
 
-
+    // Set tag values.
     $variables['pos'] = $tag->pos;
     $variables['sz'] = $tag->sz;
     $variables['vars'] = drupal_to_js($vars);
+  }
+}
+
+/**
+ * Preprocess the dart_noscript_tag theme hook.
+ *
+ * Inputs: tag
+ *
+ * @see dart-noscript-tag.tpl.php
+ */
+function template_preprocess_dart_noscript_tag(&$variables) {
+  $sitezone = _dart_sitezone();
+  $dart_vars = variable_get('dart_vals',array('tile' => 'tile','ord' => 'ord'));
+
+  $variables['site'] = empty($tag->site) ? $sitezone['site'] : $tag->site;
+  $variables['zone'] = empty($tag->zone) ? $sitezone['zone'] : $tag->zone;
+  $variables['dart_url'] = DART_URL;
+  $variables['dart_prefix'] = variable_get('dart_prefix','');
+  $variables['dart_vars'] = array_merge(_dart_kvs($tag->kvs), dart_get_dart_vars());
+
+  if($dart_vars['tile']){
+    static $tile = 0;
+    $variables['tile'] = $tile++;
+  }
+  if($dart_vars['ord']){
+    static $ord = 0;
+    if ($ord == 0) { $ord = rand(1000000000,9999999999) . '?'; }
+    $variables['ord'] = $ord++;
   }
 }
 
@@ -329,7 +348,7 @@ function template_preprocess_dart_tag(&$variables){
  *   An array of variables to include on dart tags. Example: 
  *   ('key' => array('val' => "value", 'eval' => FALSE)); 
  */
-function dart_add_var($key, $val, $eval = FALSE){
+function dart_add_var($key, $val, $eval = FALSE) {
   static $dart_vars = array();
 
   if (!is_null($key)) {
@@ -345,14 +364,51 @@ function dart_add_var($key, $val, $eval = FALSE){
  *   An array of variables to include on dart tags. Example: 
  *   ('key' => array('val' => "value", 'eval' => FALSE)); 
  */
-function dart_get_dart_vars(){
+function dart_get_dart_vars() {
   return dart_add_var(NULL,NULL);
 }
 
-function _dart_kv($val, $eval){
+/**
+ * This is a helper function to create a key|val array.
+ *
+ * @return
+ *   An array with two keys, "val" & "eval"
+ */
+function _dart_kv($val, $eval) {
   $kv = array(
     "val" => $val,
     "eval" => $eval,
   );
   return $kv;
+}
+
+function _dart_kvs($kvs) {
+  $dart_vars = array();
+  $pairs = preg_split("/\r\n|\n|\r/", $kvs);
+  foreach($pairs as $pair){
+    list($key, $val, $eval) = explode("|", $pair);
+    $dart_vars[$key] = _dart_kv($val,$eval);
+  }
+  return $dart_vars;
+}
+
+/**
+ * Get the site/zone for the current page request.
+ *
+ * @return
+ *   An array in this form:
+ *    ('site' => 'abc', 'zone' => 'xyz')
+ */
+function _dart_sitezone() {
+  $sitezone = variable_get('dart_sitezone', '');
+  if($sitezone) {
+    // Set the default site/zone for this page request in the format site/zone. 
+    // This will either be the default site/zone (specified in the DART config page)
+    // or the site/zone as changed by other modules (via hook_dart_sitezone(&$sitezone));
+    // This value might be changed on a tag by tag basis later. 
+    $sitezone = array_combine(array('site','zone'), explode('/',$sitezone));
+    $sitezone = module_invoke_all('dart_sitezone', $sitezone);
+  }
+
+  return $sitezone;
 }

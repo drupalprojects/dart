@@ -32,13 +32,19 @@ function dart_admin_settings() {
   );
   $form['dart_vals'] = array(
     '#type' => 'checkboxes',
-    '#title' => t('Defaults'),
+    '#title' => t('Tag defaults'),
     '#default_value' => variable_get('dart_vals',array('tile' => 'tile','ord' => 'ord')),
     '#options' => array(
       'tile'  => 'tile (value auto-increments on each tag)',
       'ord'   => 'ord (value changes on each page request)',
     ),
     '#description' => t('Include these values in all of your ad tags.'),
+  );
+  $form['dart_noscript'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('display &lt;noscript&gt; tags'),
+    '#default_value' => variable_get('dart_noscript', '1'),
+    '#description' => t('Check this to display &lt;noscript&gt; tags along with you javascript DART tags.'),
   );
   $form['dart_js'] = array(
     '#type' => 'textarea',
@@ -54,7 +60,6 @@ function dart_admin_settings() {
     '#default_value' => variable_get('dart_kvs',''),
     '#rows' => 5,
   );
-
 
   return system_settings_form($form);
 }
