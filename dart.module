@@ -92,7 +92,7 @@ function dart_theme(){
 /**
  * Implimentation of hook_init().
  */
-function dart_init(){
+function dart_init (){
   // Include key/value pairs defined in the DART configuration form.
   $pairs = variable_get('dart_kvs', '');
   $pairs = preg_split("/\r\n|\n|\r/", $pairs);
@@ -116,8 +116,8 @@ function dart_init(){
 /**
  * Implimentation of hook_block().
  */
-function dart_block($op = 'list', $delta = 0, $edit = array()){
-  switch($op){
+function dart_block ($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
     case 'list':
       $result = db_query('SELECT * FROM {dart_tags} WHERE block = %d', 1);
       while ($tag = db_fetch_object($result)) {
@@ -130,12 +130,35 @@ function dart_block($op = 'list', $delta = 0, $edit = array()){
       break;
     case 'view':
       $dtid = ltrim($delta, 'dart-tag-');
-      $block['content'] = theme('dart_tag',$dtid);
+      $block['content'] = dart_tag($dtid);
       break;
   }
   if (isset($block)) {
     return $block;
   }
+}
+
+/**
+ * Wrapper function for outputting
+ * themed dart tag
+ */
+function dart_tag($dtid, $class='') {
+  global $user;
+
+  $output = '';
+
+  // If the ad should not be hidden (based on role), then display it.
+  if (count(array_intersect(variable_get('dart_roles',array()), array_keys($user->roles))) == 0) {
+    $output .= theme('dart_tag', $dtid, $class);
+  }
+
+  // Include noscript tag.
+  if (variable_get('dart_noscript', '1') == 1) {
+    $tag = dart_tag_load($dtid);
+    $output .= theme('dart_noscript_tag', $tag);
+  } 
+
+  return $output;
 }
 
 /**
@@ -286,8 +309,6 @@ function template_preprocess_dart_tag(&$variables) {
     $slug = variable_get('dart_slug', '<none>');
     $slug = empty($tag->slug) ? $slug : $tag->slug;
     $variables['slug'] = $slug != '<none>' ? $slug : ''; 
-    // Set noscript variable.
-    $variables['noscript'] = (variable_get('dart_noscript', '1') == 1);
 
     // Set tag values.
     $variables['pos'] = $tag->pos;

@@ -97,11 +97,10 @@ function dart_schema() {
 }
 
 /**
- * This update ads the 'dart_tags.slug' field to the database.
+ * Adds the 'dart_tags.slug' field to the database.
  */
 function dart_update_6000() {
   $ret = array();
   db_add_field($ret, 'dart_tags', 'slug', array('type' => 'varchar', 'length' => 64, 'not null' => FALSE, 'description' => "The tag's slug value."));
   return $ret;
-
 }

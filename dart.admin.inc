@@ -60,6 +60,13 @@ function dart_admin_settings() {
     '#default_value' => variable_get('dart_kvs',''),
     '#rows' => 5,
   );
+  $roles = user_roles();
+  $form['dart_roles'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Hide ads from the following users'),
+    '#default_value' => variable_get('dart_roles',array()),
+    '#options' => $roles,
+  );
 
   return system_settings_form($form);
 }
