@@ -28,14 +28,20 @@
   $src .= 'sz=' . $tag->sz . ';';
   foreach ($dart_vars as $key=>$val){
     if (!$val['eval']){
-      $src .= $key . '=' . $val['val'] .';';
+      if (is_array($val['val'])) {
+        foreach ($val['val'] as $subkey=>$subval) {
+          $src .= $key . '=' . $subval .';';
+        }
+      } else {
+        $src .= $key . '=' . $val['val'] .';';
+      }
     }
   }
   if ($tile) {
     $src .= 'tile=' . $tile .';';
   }
   if ($ord) {
-    $src .= 'tile=' . $ord;
+    $src .= 'ord=' . $ord;
   }
   
 ?>
