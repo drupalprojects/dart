@@ -38,32 +38,32 @@ function dart_schema() {
         'unsigned' => TRUE,
         'not null' => TRUE,
         'description' => "The tag's unique id."
-        ),
+      ),
       'name' => array(
         'type' => 'varchar',
         'length' => 128,
         'not null' => TRUE,
         'default' => '',
         'description' => "The tag's unique name.",
-        ),
+      ),
       'pos' => array(
         'type' => 'varchar',
         'length' => 32,
         'not null' => TRUE,
         'default' => '',
         'description' => "The tag's position (pos) value.",
-        ),
+      ),
       'sz' => array(
         'type' => 'varchar',
         'length' => 64,
         'not null' => TRUE,
         'default' => '',
         'description' => "The tag's size (sz) value.",
-        ),
+      ),
       'kvs' => array(
         'type' => 'blob',
         'description' => 'A series of key|val pairs to include on this tag.',
-        ),
+      ),
       'block' => array(
         'type' => 'int',
         'default' => 0,
@@ -75,23 +75,59 @@ function dart_schema() {
         'not null' => FALSE,
         'default' => '',
         'description' => "The tag's site (as in size/zone) value.",
-        ),
+      ),
       'zone' => array(
         'type' => 'varchar',
         'length' => 32,
         'not null' => FALSE,
         'default' => '',
         'description' => "The tag's zone (as in size/zone) value.",
-        ),
+      ),
       'slug' => array(
         'type' => 'varchar', 
         'length' => 64, 
         'not null' => FALSE,
         'description' => "The tag's slug value.",
-        )
       ),
+      'active' => array(
+        'type' => 'int',
+        'default' => 1,
+        'description' => "If true the tag can be displayed.",
+      ),
+    ),
     'primary key' => array('dtid'),
-    );
+  );
+  $schema['dart_tags_schedule'] = array(
+    'description' => 'Stores information about DART tags.',
+    'fields' => array(
+      'dtsid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => "The schedule event's unique id."
+      ),
+      'dtid'  => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => "The id of the scheduled tag."
+      ),
+      'event_type' => array(
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'default' => 'activate',
+        'description' => "Should the tag be activated or deactivated. Values are 'activate' or 'deactivate'.",
+      ),
+      'event_time' => array(
+        'type' => 'datetime',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "When the event should be triggered.",
+      ),
+    ),
+    'primary key' => array('dtsid'),
+  );
 
   return $schema;
 }
@@ -102,5 +138,24 @@ function dart_schema() {
 function dart_update_6000() {
   $ret = array();
   db_add_field($ret, 'dart_tags', 'slug', array('type' => 'varchar', 'length' => 64, 'not null' => FALSE, 'description' => "The tag's slug value."));
+  return $ret;
+}
+
+/**
+ * Adds the 'dart_tags.active' field to the database.
+ */
+function dart_update_6001() {
+  $ret = array();
+  db_add_field($ret, 'dart_tags', 'active', array('type' => 'int', 'default' => 1, 'description' => "If true the tag can be displayed."));
+  return $ret;
+}
+
+/**
+ * Creates 'dart_tag_schedule' table in the database.
+ */
+function dart_update_6002() {
+  $ret = array();
+  $schema = dart_schema();
+  db_create_table($ret, 'dart_tags_schedule', $schema['dart_tags_schedule']);
   return $ret;
 }
