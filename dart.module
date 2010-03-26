@@ -183,43 +183,21 @@ function dart_cron() {
 function dart_tag($dtid, $class='') {
   global $user;
   $tag = dart_tag_load($dtid);
-
   $output = '';
 
-  // If the ad should not be hidden (based on role or based on active/inactive state), then display it.
-  $show_based_on_status = $tag->active;
-  $show_based_on_role = count(array_intersect(variable_get('dart_roles',array()), array_keys($user->roles))) == 0;
-  if ($show_based_on_status && $show_based_on_role) {
-    $output .= theme('dart_tag', $dtid, $class);
-    // Include noscript tag.
-    if (variable_get('dart_noscript', '1') == 1) {
+  if ($tag->display) {
+    if (!$tag->scriptless) {
+      $output .= theme('dart_tag', $dtid, $class);
+      // Include noscript tag.
+      if (variable_get('dart_noscript', '1') == 1) {
+        $output .= theme('dart_noscript_tag', $tag);
+      }
+    } else {
       $output .= theme('dart_noscript_tag', $tag);
     }
   }
 
   return $output;
-}
-
-/**
- * Return the adtag object matching a DART Tag ID.
- *
- * @param $tag_name
- *   The DART tag's name
- *
- * @return
- *   The adtag object with all of its metadata, if exists, FALSE otherwise.
- *   Results are statically cached.
- */
-function dart_tag_load_by_name($tag_name) {
-  static $tags = array();
-
-  if (!isset($tags[$tag_name])) {
-    // Create the DART tag object.
-    $result = db_query("SELECT * FROM {dart_tags} WHERE name = '%s'", $tag_name);
-    $tags[$tag_name] = db_fetch_object($result);
-  }
-
-  return $tags[$tag_name];
 }
 
 /**
@@ -233,12 +211,29 @@ function dart_tag_load_by_name($tag_name) {
  *   Results are statically cached.
  */
 function dart_tag_load($dtid) {
+  global $user;
   static $tags = array();
 
   if (!isset($tags[$dtid])) {
     // Create the DART tag object.
     $result = db_query('SELECT * FROM {dart_tags} WHERE dtid = %d', $dtid);
-    $tags[$dtid] = db_fetch_object($result);
+    $tag = db_fetch_object($result);
+    $tag->data = unserialize($tag->data);
+
+    // Set a "display" variable.
+    $tag->display = $tag->active;
+
+    // Test if this tag should be displayed on this domain.
+    if ($tag->display) {
+      $tag->display = _dart_display_on_domain($tag);
+    }
+   
+    // Test if this tag should be displayed to the current user.
+    if ($tag->display) {
+      $tag->display = _dart_display_to_user($user);
+    }
+
+    $tags[$dtid] = $tag;
   }
 
   return $tags[$dtid];
@@ -375,6 +370,8 @@ function template_preprocess_dart_tag(&$variables) {
   $variables['tag'] = $tag;
 
   if ($tag) {
+    // Set enabled variable.
+    $variables['enabled'] = $tag->enabled;
     // Tag name & prefix variables.
     $vars = array(
       "dartTagName"=>$tag->name,
@@ -521,4 +518,42 @@ function _dart_sitezone() {
   }
 
   return $sitezone;
+}
+
+/**
+ * Check if tags should be displayed based on user roles.
+ *
+ * @param $user
+ *   Standard user object.
+ *
+ * @return
+ *   Boolean
+ */
+function _dart_display_to_user($user) {
+  return count(array_intersect(variable_get('dart_roles',array()), array_keys($user->roles))) == 0;
+}
+
+/**
+ * Check if tags should be displayed based on domain.
+ *
+ * @param $tag
+ *   A $tag object created by dart_tag_load().
+ *
+ * @return
+ *   Boolean
+ */
+function _dart_display_on_domain($tag) {
+  $tag = (object)$tag;
+
+  $display = TRUE;
+  if (module_exists('domain')) {
+    global $_domain;
+    if ($_domain['domain_id'] == 0) {
+      $display = in_array('zero', $tag->data['domains'], TRUE);
+    } else {
+      $display = in_array($_domain['domain_id'], $tag->data['domains']);
+    }
+  }
+
+  return $display;
 }

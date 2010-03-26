@@ -80,24 +80,40 @@ function dart_admin_settings() {
  * List all tags in a table.
  */
 function dart_admin_tag_list() {
+  $output = '';
+
   $header = array(
+    array('data' => t('Active')),
     array('data' => t('Tag ID'), 'field' => 'dtid'),
     array('data' => t('Tag Name'), 'field' => 'name'),
-    array('data' => t('Position (pos)'), 'field' => 'pos'),
-    array('data' => t('Size (sz)')),
-    array('data' => t('Operations')),
+    array('data' => t('Pos'), 'field' => 'pos'),
+    array('data' => t('Size')),
+    array('data' => t('Display Code')),
+    array('data' => t('Operation')),
   );
-  $result = db_query("SELECT dtid, name, pos, sz FROM {dart_tags}" . tablesort_sql($header));
+  $result = db_query("SELECT active, dtid, name, pos, sz FROM {dart_tags}" . tablesort_sql($header));
   $rows = array();
 
   while ($tag = db_fetch_array($result)) {
-    $tag[] = l(t('Edit'), 'admin/build/adtag/' . $tag['dtid'] . '/edit');
-    $rows[] = $tag;
+    $tag['name'] = l($tag['name'], 'admin/build/adtag/' . $tag['dtid'] . '/edit');
+    $tag['active'] = $tag['active'] ? '&#10004;' : '&#10006;';
+    $tag[] = "<code>" . check_plain("print dart_tag(" . $tag['dtid'] . ");") . "</code>";
+    $tag[] = l(t('edit'), 'admin/build/adtag/' . $tag['dtid'] . '/edit');
+
+
+    $classes = $tag['active'] ? 'active' : 'inactive';
+    $rows[] = array(
+      'data' => $tag,
+      'class' => $classes,
+    );
   }
   if (empty($rows)) {
-    $rows[] = array(array('data' => '<em>'. t('There are currently no DART tags.') .'</em>', 'colspan' => 5));
+    $rows[] = array(array('data' => '<em>'. t('There are currently no DART tags.') .'</em>', 'colspan' => 7));
+  } else {
+    $output .= '<p>' . t('In order to display any of the tags below you must add the provided display code to one of your .tpl files or theme override functions positioned in your markup wherever you would like the tag to appear. If you have chosen to display the tag as a block you can go to !admin-blocks instead of using the provided display code.', array('!admin-blocks' => l('admin/build/blocks', 'admin/build/blocks'))) . '</p>';
   }
-  return theme('table', $header, $rows);
+
+  return $output . theme('table', $header, $rows);
 }
 
 /**
@@ -108,11 +124,24 @@ function dart_admin_tag_list() {
  * @see dart_admin_tag_submit()
  */
 function dart_admin_tag(&$form_state, $edit=array()) {
-  $form['block'] = array(
+  // Set some messages to explain why tags may not be displaying.
+  if (empty($form_state['post']) && isset($edit['display']) && !$edit['display']) {
+    global $user;
+    if (!$edit['active']) {
+      drupal_set_message('This tag is currently set as inactive.','warning');
+    }
+    if (!_dart_display_to_user($user)) {
+      drupal_set_message(t('DART is configured to hide tags from you based on your user role(s). !click_here to change those settings.', array('!click_here' => l('Click here', 'admin/settings/dart'))), 'warning'); 
+    }
+    if (!_dart_display_on_domain($edit)) {
+      drupal_set_message('This tag is configured to prevent it from displaying on the current domain. Change those settings below.','warning');
+    }
+  }
+  
+  $form['active'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Create a block for this tag'),
-    '#description' => t('Checking this will create a block (configurable on admin/build/block) in which this ad tag is displayed.'),
-    '#default_value' => isset($edit['block']) ? $edit['block'] : '',
+    '#title' => t('Check here to make this tag active.'),
+    '#default_value' => isset($edit['active']) ? $edit['active'] : '',
   );
   $form['name'] = array(
     '#type' => 'textfield',
@@ -138,12 +167,49 @@ function dart_admin_tag(&$form_state, $edit=array()) {
     '#maxlength' => 64,
     '#default_value' => isset($edit['sz']) ? $edit['sz'] : '',
   );
+  $form['tag_options_group'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Tag Options'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+  $form['tag_options_group']['block'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Create a block for this tag'),
+    '#description' => t('Checking this will create a block (configurable on admin/build/block) in which this ad tag is displayed.'),
+    '#default_value' => isset($edit['block']) ? $edit['block'] : '',
+  );
+  $form['tag_options_group']['scriptless'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('This tag is scriptless'),
+    '#description' => t('Check this if this tag should be rendered without javascript. Use this option for email based tags.'),
+    '#default_value' => isset($edit['block']) ? $edit['block'] : '',
+  );
+  if (module_exists('domain')) {
+    $available_domains = domain_domains();
+    foreach ($available_domains as $key => $domain) {
+      $options[$domain['domain_id'] === 0 ? 'zero' : $domain['domain_id']] = $domain['subdomain'];
+    }
+    $form['tag_options_group']['domain_group'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Domains/Subdomains'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('Choose which domains/subdomains this tag should appear on.'),
+    );
+    $form['tag_options_group']['domain_group']['domains'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Domains/Subdomains'),
+      '#default_value' => isset($edit['data']['domains']) ? $edit['data']['domains'] : array_keys($options),
+      '#options' => $options,
+    );
+  }
   $form['overrides'] = array(
     '#type' => 'fieldset',
     '#title' => t('DART Overrides'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-    '#description' => t('Override the default settings for this ad tag.'),
+    '#description' => t('Override the !settings for this ad tag.', array('!settings' => l('default settings', 'admin/configure/dart'))),
   );
   $form['overrides']['site'] = array(
     '#type' => 'textfield',
@@ -164,7 +230,7 @@ function dart_admin_tag(&$form_state, $edit=array()) {
   $form['overrides']['slug'] = array(
     '#type' => 'textfield',
     '#title' => t('Slug'),
-    '#description' => t('Override the default slug for this ad tag. Use <none> for no slug. Leave this field empty to use the default slug. Example: Advertisement'),
+    '#description' => t('Override the default slug for this ad tag. Use !none for no slug. Leave this field empty to use the default slug. Example: Advertisement', array('!none' => check_plain('<none>'))),
     '#required' => FALSE,
     '#maxlength' => 64,
     '#default_value' => isset($edit['slug']) ? $edit['slug'] : '',
@@ -212,6 +278,13 @@ function dart_admin_tag_validate($form, &$form_state) {
  * Form submit function for admin tag form.
  */
 function dart_admin_tag_submit($form, &$form_state) {
+  // Adjust the Data field appropriately.
+  $form_state['values']['data'] = array();
+  if (module_exists('domain')) {
+    $form_state['values']['data']['domains'] = $form_state['values']['domains'];
+  }
+  $form_state['values']['data'] = serialize($form_state['values']['data']);
+
   switch($form_state['values']['op']){
     case t('Create Tag'):
       drupal_write_record('dart_tags', $form_state['values']);

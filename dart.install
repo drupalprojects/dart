@@ -15,15 +15,6 @@ function dart_install() {
 function dart_uninstall() {
   // Remove tables.
   drupal_uninstall_schema('dart');
-
-  // Remove variables
-  /*
-  variable_del('dart_js');
-  variable_del('dart_kvs');
-  variable_del('dart_prefix');
-  variable_del('dart_sitezone');
-  variable_del('dart_vals');
-  */
 }
 
 /**
@@ -67,7 +58,12 @@ function dart_schema() {
       'block' => array(
         'type' => 'int',
         'default' => 0,
-        'description' => 'If true, a block will be created in which to display this tag',
+        'description' => 'If true, a block will be created in which to display this tag.',
+      ),
+      'scriptless' => array(
+        'type' => 'int',
+        'default' => 0,
+        'description' => 'If true, the tag will be rendered without javascript.',
       ),
       'site' => array(
         'type' => 'varchar',
@@ -93,6 +89,10 @@ function dart_schema() {
         'type' => 'int',
         'default' => 1,
         'description' => "If true the tag can be displayed.",
+      ),
+      'data' => array(
+        'type' => 'blob',
+        'description' => "Extra data storage.",
       ),
     ),
     'primary key' => array('dtid'),
@@ -157,5 +157,33 @@ function dart_update_6002() {
   $ret = array();
   $schema = dart_schema();
   db_create_table($ret, 'dart_tags_schedule', $schema['dart_tags_schedule']);
+  return $ret;
+}
+
+/**
+ * Creates 'dart_tags.data' field in the database.
+ */
+function dart_update_6003() {
+  $ret = array();
+  db_add_field($ret, 'dart_tags', 'data', array('type' => 'blob', 'description' => "Extra data storage."));
+
+  // If domain module is installed, set all existing tags to show up on all domains.
+  if (module_exists('domain')) {
+    $available_domains = domain_domains();
+    foreach ($available_domains as $key=>$domain) {
+      $domains[] = $domain['domain_id'] == 0 ? 'zero' : $domain['domain_id'];
+    }
+    db_query("UPDATE {dart_tags} SET data ='%s'", serialize(array('domains' => $domains)));
+  }
+
+  return $ret;
+}
+
+/**
+ * Adds the 'dart_tags.scriptless' field to the database.
+ */
+function dart_update_6004() {
+  $ret = array();
+  db_add_field($ret, 'dart_tags', 'scriptless', array('type' => 'int', 'default' => 0, 'description' => "If true, the tag will be rendered without javascript."));
   return $ret;
 }
