@@ -10,8 +10,8 @@ Drupal.DART = {};
  */
 Drupal.DART.tag = function (pos, sz, vars) {
   var localDartVars = dartVars;
-  var dartSiteZone = (dartSite in vars ? vars.dartSite : dartSite) + "/" + (dartZone in vars ? vars.dartZone : dartZone);
-
+  var dartSiteZone = (vars.hasOwnProperty('dartSite') ? vars.dartSite : dartSite) + "/" + (vars.hasOwnProperty('dartZone') ? vars.dartZone : dartZone);
+  
   ad  = '<script type="text/javascript" src="';
   ad += vars.dartURL + "/adj/";
   ad += dartPrefix + '.' + dartSiteZone + ";";
