@@ -8,30 +8,24 @@ Drupal.DART = {};
 /**
  * Using document.write, add a DART tag to the page
  */
-Drupal.DART.tag = function (pos, sz, vars) {
-  var localDartVars = dartVars;
-  var dartSiteZone = (vars.hasOwnProperty('dartSite') ? vars.dartSite : dartSite) + "/" + (vars.hasOwnProperty('dartZone') ? vars.dartZone : dartZone);
-  
+Drupal.DART.tag = function (pos, sz, tag) {
   ad  = '<script type="text/javascript" src="';
-  ad += vars.dartURL + "/adj/";
-  ad += dartPrefix + '.' + dartSiteZone + ";";
+  ad += Drupal.DART.dart_url + "/" + tag.options.method + "/";
+  ad += tag.prefix + '.' + tag.site + "/" + tag.zone + ";";
   ad += this.keyVal('pos', pos, false);
   ad += this.keyVal('sz', sz, false);
-
-  ad += this.keyVals(localDartVars);
-  ad += this.keyVals(vars.dartVars);
+  ad += this.keyVals(tag.options.keyvals);
 
   // If ord exists, add it last.
-  if (typeof ord !== "undefined"){
-    ad += this.keyVal('ord', 'ord', true);
+  if (typeof Drupal.DART.ord !== "undefined"){
+    ad += this.keyVal('ord', Drupal.DART.ord, true);
   }
 
   ad += '"></script>';
 
   document.write(ad);
   //console.log('-----------------'+pos+'------------------');
-  //console.log(sz);  console.log(vars);  console.log(dartVars);  console.log(dartSite+"/"+dartZone);
-  //console.log(ad);
+  //console.log(tag);
 }
 
 /**

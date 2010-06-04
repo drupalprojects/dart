@@ -1,6 +1,8 @@
 <?php
 // $Id$
 
+include_once('dart-tag.inc');
+
 /**
  * The doublclick URL.
  */
@@ -113,30 +115,6 @@ function dart_theme() {
 }
 
 /**
- * Implimentation of hook_init().
- */
-function dart_init() {
-  // Include key/value pairs defined in the DART configuration form.
-  $pairs = variable_get('dart_kvs', '');
-  $pairs = preg_split("/\r\n|\n|\r/", $pairs);
-  foreach($pairs as $pair){
-    list($key, $val, $eval) = explode("|", $pair);
-    dart_add_var($key, $val, $eval == "eval");
-  }
-
-  // Include special vars (ex. tile & ord) as per the DART configuration form.
-  foreach (variable_get('dart_vals',array('tile' => 'tile','ord' => 'ord')) as $key => $val){
-    if (empty($val)){ continue; }
-    switch($key){
-      case 'tile':
-        dart_add_var($key, 'tile++', TRUE);
-        break;
-    }
-  }
-  
-}
-
-/**
  * Implimentation of hook_block().
  */
 function dart_block($op = 'list', $delta = 0, $edit = array()) {
@@ -181,23 +159,8 @@ function dart_cron() {
  * themed dart tag
  */
 function dart_tag($dtid, $class='') {
-  global $user;
   $tag = dart_tag_load($dtid);
-  $output = '';
-
-  if ($tag->display) {
-    if (!$tag->scriptless) {
-      $output .= theme('dart_tag', $dtid, $class);
-      // Include noscript tag.
-      if (variable_get('dart_noscript', '1') == 1) {
-        $output .= theme('dart_noscript_tag', $tag);
-      }
-    } else {
-      $output .= theme('dart_noscript_tag', $tag);
-    }
-  }
-
-  return $output;
+  return $tag->display($class);
 }
 
 /**
@@ -211,30 +174,10 @@ function dart_tag($dtid, $class='') {
  *   Results are statically cached.
  */
 function dart_tag_load($dtid) {
-  global $user;
   static $tags = array();
 
-  if (!isset($tags[$dtid])) {
-    // Create the DART tag object.
-    $result = db_query('SELECT * FROM {dart_tags} WHERE dtid = %d', $dtid);
-    $tag = db_fetch_object($result);
-    $tag->data = unserialize($tag->data);
-
-    // Set a "display" variable.
-    $tag->display = $tag->active;
-
-    // Test if this tag should be displayed on this domain.
-    if ($tag->display) {
-      $tag->display = _dart_display_on_domain($tag);
-    }
-   
-    // Test if this tag should be displayed to the current user.
-    if ($tag->display) {
-      $tag->display = _dart_display_to_user($user);
-    }
-
-    $tags[$dtid] = $tag;
-  }
+  $tag = new DartTag($dtid);
+  $tags[$dtid] = isset($tag->dtid) ? $tag : false;
 
   return $tags[$dtid];
 }
@@ -248,11 +191,15 @@ function dart_tag_load($dtid) {
  * @return
  *   Edit form
  */
-function dart_tag_edit($dart_tag){
+function dart_tag_edit($tag){
   if (isset($_POST['op']) && $_POST['op'] == t('Delete Tag')) {
-    return drupal_get_form('dart_admin_tag_confirm_delete', $dart_tag);
+    return drupal_get_form('dart_admin_tag_confirm_delete', $tag);
   }
-  return drupal_get_form('dart_admin_tag', (array)$dart_tag);
+  
+  // We pass in $tag->obj because that is the data
+  // as it comes out of the database. Otherwise things
+  // like site and zone will be processed already.
+  return drupal_get_form('dart_admin_tag', (array)$tag->obj);
 }
 
 /**
@@ -317,45 +264,25 @@ function dart_event_delete($dtsid){
  * Implimentation of hook_preprocess_page.
  */
 function dart_preprocess_page(&$variables){
-  $sitezone = _dart_sitezone();
-  if($sitezone){
-    $js = '';
-  
-    // Set the DART Prefix variable.
-    $js .= 'var dartPrefix = ' . drupal_to_js(variable_get('dart_prefix','')) . ';' . "\n";
-  
-    // Initialize special vars (ex. tile & ord) as per the DART configuration form.
-    foreach (variable_get('dart_vals',array('tile' => 'tile','ord' => 'ord')) as $key => $val){
-      if (empty($val)){ continue; }
-      switch($key){
-        case 'ord':
-          $js .= "var ord = 1000000000 + Math.floor(Math.random()*900000000);"."\n";
-          break;
-        case 'tile':
-          $js .= "var tile = 0;"."\n";
-          break;
-      }
+  $inline_js = '';
+
+  // Include the user-defined js injection if they entered one.
+  $inline_js .= variable_get('dart_js', '') . "\n";
+
+  // Grab page variables and format them.
+  $page_vars = dart_get_page_vars();
+  if (count($page_vars)) {
+    foreach ($page_vars as $key=>$val) {
+      $inline_js .= 'Drupal.DART.' . $key . ' = ' . ($key == "ord" ? $val : drupal_to_js($val)) . ';' . "\n";
     }
-  
-    // Include the user-defined js injection if they entered one.
-    $js .= variable_get('dart_js', '') . "\n";
-
-    // Initialize dartVars js variable.
-    // - Invoking hook_dart_get_js_vars: modules that impliment this hook should 
-    //   return an array structured exactly like the array that dart_get_dart_vars returns.
-    $dart_vars = array_merge(module_invoke_all('dart_get_vars'), dart_get_dart_vars());
-
-    $js .= 'var dartVars = ' . drupal_to_js($dart_vars) . ';' . "\n";
-    $js .= 'var dartSite = ' . drupal_to_js($sitezone['site']) . ';' . "\n";
-    $js .= 'var dartZone = ' . drupal_to_js($sitezone['zone']) . ';' . "\n";
-
-    // Include the inline js & dart.js file.
-    drupal_add_js(rtrim($js, "\n"), 'inline');
-    drupal_add_js(drupal_get_path('module', 'dart') . '/dart.js');
-
-    // Regenerate scripts variable to incorporate newly added scripts.
-    $variables['scripts'] = drupal_get_js();
   }
+
+  // Include the inline js & dart.js file.
+  drupal_add_js(trim($inline_js, "\n"), 'inline');
+  drupal_add_js(drupal_get_path('module', 'dart') . '/dart.js');
+
+  // Regenerate scripts variable to incorporate newly added scripts.
+  $variables['scripts'] = drupal_get_js();
 }
 
 /**
@@ -367,38 +294,12 @@ function dart_preprocess_page(&$variables){
  */
 function template_preprocess_dart_tag(&$variables) {
   $tag = dart_tag_load($variables['dtid']);
-  $variables['tag'] = $tag;
 
-  if ($tag) {
-    // Set enabled variable.
-    $variables['enabled'] = $tag->enabled;
-    // Tag name & prefix variables.
-    $vars = array(
-      "dartTagName"=>$tag->name,
-      "dartURL"=>DART_URL,
-    );
-    // Set site variable.
-    if (!empty($tag->site)){
-      $vars['dartSite'] = $tag->site;
-    }
-    // Set zone variable.
-    if (!empty($tag->zone)){
-      $vars['dartZone'] = $tag->zone;
-    }
-    // Set KeyVals (kvs) varibale.
-    if (!empty($tag->kvs)){
-      $vars['dartVars'] = _dart_kvs($tag->kvs);
-    }
-    // Set slug variable.
-    $slug = variable_get('dart_slug', '<none>');
-    $slug = empty($tag->slug) ? $slug : $tag->slug;
-    $variables['slug'] = $slug != '<none>' ? $slug : ''; 
-
-    // Set tag values.
-    $variables['pos'] = $tag->pos;
-    $variables['sz'] = $tag->sz;
-    $variables['vars'] = drupal_to_js($vars);
-  }
+  $variables['tag']     = $tag;
+  $variables['slug']    = $tag->slug;
+  $variables['pos']     = $tag->pos;
+  $variables['sz']      = $tag->sz;
+  $variables['js_tag']  = drupal_to_js($tag);
 }
 
 /**
@@ -409,151 +310,57 @@ function template_preprocess_dart_tag(&$variables) {
  * @see dart-noscript-tag.tpl.php
  */
 function template_preprocess_dart_noscript_tag(&$variables) {
-  $sitezone = _dart_sitezone();
-  $dart_vars = variable_get('dart_vals',array('tile' => 'tile','ord' => 'ord'));
+  $tag = $variables['tag'];
 
-  if($dart_vars['tile']){
+  $special_kvs = variable_get('dart_special_kvs',array());
+  if($special_kvs['tile']){
     static $tile = 0;
-    $variables['tile'] = $tile++;
+    $tile++;
   }
-  if($dart_vars['ord']){
+  if($special_kvs['ord']){
     static $ord = 0;
     if ($ord == 0) { $ord = rand(1000000000,9999999999) . '?'; }
-    $variables['ord'] = $ord++;
   }
 
-  $variables['site'] = empty($tag->site) ? $sitezone['site'] : $tag->site;
-  $variables['zone'] = empty($tag->zone) ? $sitezone['zone'] : $tag->zone;
-  $variables['dart_url'] = DART_URL;
-  $variables['dart_prefix'] = variable_get('dart_prefix','');
-  $variables['dart_vars'] = array_merge(_dart_kvs($tag->kvs), dart_get_dart_vars());
-}
-
-/**
- * Create a staticly stored array of vars to include 
- * on all ad tags throughout the page being generated.
- * Each tag has an opportunity to override these vars.
- *
- * @param $key
- *   The name of the var to be included in the page's DART ad tags.
- * @param $val
- *   The value of the var to be included in the page's DART ad tags.
- *   - If $val is an array, then $key will be used once per 
- *   - array value; creating several key|value pairs. Example:
- *     ('key' => array('val' => array("val1","val2"), 'eval' => FALSE));
- *     will result in the following being added to the page's DART ad tags:
- *     key=val1;key=val2;
- * @param $eval
- *   A boolean indicating if $val needs to be evaluated by javascript. 
- *   This should be set to TRUE when $val is the name of a variable or
- *   a statement that would normally be passed to the javascript eval()
- *   function.
- *
- * @return
- *   An array of variables to include on dart tags. Example: 
- *   ('key' => array('val' => "value", 'eval' => FALSE)); 
- */
-function dart_add_var($key, $val, $eval = FALSE) {
-  static $dart_vars = array();
-
-  if (!is_null($key)) {
-    $dart_vars[$key] = _dart_kv($val,$eval);
-  }
-  return $dart_vars;
-}
-
-/**
- * This is a stub function for dart_add_var(NULL,NULL);
- *
- * @return
- *   An array of variables to include on dart tags. Example: 
- *   ('key' => array('val' => "value", 'eval' => FALSE)); 
- */
-function dart_get_dart_vars() {
-  return dart_add_var(NULL,NULL);
-}
-
-/**
- * This is a helper function to create a key|val array.
- *
- * @return
- *   An array with two keys, "val" & "eval"
- */
-function _dart_kv($val, $eval) {
-  $kv = array(
-    "val" => $val,
-    "eval" => $eval,
-  );
-  return $kv;
-}
-
-function _dart_kvs($kvs) {
-  $dart_vars = array();
-  if(!empty($kvs)){  
-    $pairs = preg_split("/\r\n|\n|\r/", $kvs);
-    foreach($pairs as $pair){
-      list($key, $val, $eval) = explode("|", $pair);
-      $dart_vars[$key] = _dart_kv($val,$eval);
+  $src  = DART_URL . '/jump/' . $tag->prefix . '.' . $tag->site . '/' . $tag->zone . ';';
+  $src .= 'pos=' . $tag->pos . ';';
+  $src .= 'sz=' . $tag->sz . ';';
+  foreach ($tag->options['keyvals'] as $key=>$val){
+    if (!$val['eval']){
+      if (is_array($val['val'])) {
+        foreach ($val['val'] as $subkey=>$subval) {
+          $src .= $key . '=' . $subval .';';
+        }
+      } else {
+        $src .= $key . '=' . $val['val'] .';';
+      }
     }
   }
-  return $dart_vars;
+  $src .= $tile ? 'tile=' . $tile .';' : '';
+  $src .= $ord ? 'ord=' . $ord : '';
+
+  $variables['src'] = $src;
 }
 
-/**
- * Get the site/zone for the current page request.
- *
- * @return
- *   An array in this form:
- *    ('site' => 'abc', 'zone' => 'xyz')
- */
-function _dart_sitezone() {
-  $sitezone = variable_get('dart_sitezone', '');
-  if($sitezone) {
-    // Set the default site/zone for this page request in the format site/zone. 
-    // This will either be the default site/zone (specified in the DART config page)
-    // or the site/zone as changed by other modules (via hook_dart_sitezone(&$sitezone));
-    // This value might be changed on a tag by tag basis later. 
-    $sitezone = array_combine(array('site','zone'), explode('/',$sitezone));
-    $sitezone = module_invoke_all('dart_sitezone', $sitezone);
-  }
+function dart_get_page_vars() {
+  $vars = array();
 
-  return $sitezone;
-}
+  // Set the dart url
+  $vars['dart_url'] = DART_URL;
 
-/**
- * Check if tags should be displayed based on user roles.
- *
- * @param $user
- *   Standard user object.
- *
- * @return
- *   Boolean
- */
-function _dart_display_to_user($user) {
-  return count(array_intersect(variable_get('dart_roles',array()), array_keys($user->roles))) == 0;
-}
-
-/**
- * Check if tags should be displayed based on domain.
- *
- * @param $tag
- *   A $tag object created by dart_tag_load().
- *
- * @return
- *   Boolean
- */
-function _dart_display_on_domain($tag) {
-  $tag = (object)$tag;
-
-  $display = TRUE;
-  if (module_exists('domain')) {
-    global $_domain;
-    if ($_domain['domain_id'] == 0) {
-      $display = in_array('zero', $tag->data['domains'], TRUE);
-    } else {
-      $display = in_array($_domain['domain_id'], $tag->data['domains']);
+  // Setup page-wide Dart vals as varibales.
+  foreach (variable_get('dart_special_kvs',array()) as $key => $val){
+    if (empty($val)){ continue; }
+    switch($key){
+      case 'ord':
+        $vars['ord'] = "1000000000 + Math.floor(Math.random()*900000000)";
+        break;
+      case 'tile':
+        $vars['tile'] = "0";
+        break;
     }
+
   }
 
-  return $display;
+  return $vars;
 }

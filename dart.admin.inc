@@ -12,66 +12,114 @@ define('DART_EVENT_DATE_FORMAT', 'Y-m-d');
  * @ingroup forms
  */
 function dart_admin_settings() {
-  $form['dart_prefix'] = array(
-    '#type' => 'textfield',
-    '#title' => t('DART prefix'),
-    '#default_value' => variable_get('dart_prefix',''),
-    '#description' => t('Typically a short version of your company/organization\'s name (provided by Doubleclick).'),
-    '#maxlength' => 32,
+  // Default tag settings.
+  $form['default_tag_settings'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Default Tag Settings'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
   );
-  $form['dart_sitezone'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Default DART site/zone'),
-    '#default_value' => variable_get('dart_sitezone',''),
-    '#required' => TRUE,
-    '#description' => t('The value to use when no "site/zone" is specified on a given page. Example: sports/yankees.'),
-    '#maxlength' => 32,
+  $form['default_tag_settings']['dart_prefix'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('DART prefix'),
+    '#default_value'  => variable_get('dart_prefix',''),
+    '#required'       => TRUE,
+    '#description'    => t('Typically a short version of your company/organization\'s name (provided by Doubleclick).'),
+    '#maxlength'      => 32,
   );
-  $form['dart_slug'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Slug'),
-    '#default_value' => variable_get('dart_slug','<none>'),
-    '#required' => FALSE,
-    '#description' => t('Slug all ads with the following with this label. Use <none> for no slug. Example: Advertisement'),
-    '#maxlength' => 64,
+  $form['default_tag_settings']['dart_sitezone'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Default DART site/zone'),
+    '#default_value'  => variable_get('dart_sitezone',''),
+    '#required'       => TRUE,
+    '#description'    => t('The value to use when no "site/zone" is specified on a given page. Example: pets/dogs.'),
+    '#maxlength'      => 32,
   );
-  $form['dart_vals'] = array(
-    '#type' => 'checkboxes',
-    '#title' => t('Tag defaults'),
-    '#default_value' => variable_get('dart_vals',array('tile' => 'tile','ord' => 'ord')),
-    '#options' => array(
-      'tile'  => 'tile (value auto-increments on each tag)',
-      'ord'   => 'ord (value changes on each page request)',
-    ),
-    '#description' => t('Include these values in all of your ad tags.'),
+  $form['default_tag_settings']['dart_slug'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Slug'),
+    '#default_value'  => variable_get('dart_slug','<none>'),
+    '#required'       => FALSE,
+    '#description'    => t('Slug all ads with the following with this label. Use <none> for no slug. Example: Advertisement'),
+    '#maxlength'      => 64,
   );
-  $form['dart_noscript'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('display &lt;noscript&gt; tags'),
-    '#default_value' => variable_get('dart_noscript', '1'),
-    '#description' => t('Check this to display &lt;noscript&gt; tags along with you javascript DART tags.'),
+
+  // Gloabal key/val pairs
+  $form['gloabl_key_vals'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Global Key|Value Pairs'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
   );
-  $form['dart_js'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Inject javascript'),
-    '#description' => t('Inject this javascript into the &lt;head&gt; on each page request. You do not need to add code to create a random number for use as the ORD if you checked "Include ord value" above. <br/>This javascript will be injected above the key|value pairs you enter in the field below, so you can declare variables here that you will include as part of a key|value pair there.'),
-    '#default_value' => variable_get('dart_js',''),
+  $form['gloabl_key_vals']['dart_special_vals'] = array(
+    '#type'           => 'checkboxes',
+    '#title'          => t('Special key|val pairs'),
+    '#default_value'  => variable_get('dart_special_vals',array('tile' => 'tile','ord' => 'ord')),
+    '#options'        => array(
+                          'tile' => t('tile (value auto-increments on each tag)'),
+                          'ord'  => t('ord (value changes on each page request)'),
+                         ),
+    '#description' => t('Include these special values in all of your ad tags.'),
+  );
+  $form['gloabl_key_vals']['dart_kvs'] = array(
+    '#type'           => 'textarea',
+    '#title'          => t('key|value pairs'),
+    '#description'    => t('Add key|value pairs that should be included on every ad tag (one per line). If you need a value to be evaluated by javascript append "|eval" to the pair. <br/>Examples: <ul><li>dcopt|ist</li><li>randomNum|Math.random()|eval</li><li>var|varDefinedIn<em>InjectJavascript</em>FieldBelow|eval</li></ul>'),
+    '#default_value'  => variable_get('dart_kvs',''),
     '#rows' => 5,
   );
-  $form['dart_kvs'] = array(
-    '#type' => 'textarea',
-    '#title' => t('key|value pairs'),
-    '#description' => t('Add key|value pairs that should be included on every ad tag (one per line). If you need a value to be evaluated by javascript append "|eval" to the pair. <br/>Examples: <ul><li>dcopt|ist</li><li>randomNum|Math.random()|eval</li><li>var|varDefinedIn<em>InjectJavascript</em>FieldAbove|eval</li></ul>'),
-    '#default_value' => variable_get('dart_kvs',''),
-    '#rows' => 5,
+
+  // Global display options.
+  $form['display_options'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Global Display Options'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
   );
-  $roles = user_roles();
-  $form['dart_roles'] = array(
-    '#type' => 'checkboxes',
-    '#title' => t('Hide ads from the following users'),
-    '#default_value' => variable_get('dart_roles',array()),
-    '#options' => $roles,
+  $form['display_options']['dart_noscript'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('display &lt;noscript&gt; tags'),
+    '#default_value'  => variable_get('dart_noscript', '1'),
+    '#description'    => t('Check this to display &lt;noscript&gt; tags along with you javascript DART tags.'),
   );
+
+  // Global display rules.
+  $form['display_rules'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Global Display Rules'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
+  );
+  $form['display_rules']['users'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('User Rules'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['display_rules']['users']['dart_roles'] = array(
+    '#type'           => 'checkboxes',
+    '#title'          => t('Hide ads from the following user roles'),
+    '#default_value'  => variable_get('dart_roles',array()),
+    '#options'        => user_roles(),
+  );
+
+  // Javascript.
+  $form['javascript'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Inject Javascript'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
+  );
+  $form['javascript']['dart_js'] = array(
+    '#type'           => 'textarea',
+    '#title'          => t('Inject javascript'),
+    '#description'    => t('Inject this javascript into the &lt;head&gt; on each page request. You do not need to add code to create a random number for use as the ORD if you checked "Include ord value" above. <br/>This javascript will be injected above the key|value pairs you enter in the field below, so you can declare variables here that you will include as part of a key|value pair there.'),
+    '#default_value'  => variable_get('dart_js',''),
+    '#rows'           => 5,
+  );
+
+  // Add vertical tabs display if available.
+  $form['#pre_render'][] = 'vertical_tabs_form_pre_render';
 
   return system_settings_form($form);
 }
@@ -125,123 +173,199 @@ function dart_admin_tag_list() {
  */
 function dart_admin_tag(&$form_state, $edit=array()) {
   // Set some messages to explain why tags may not be displaying.
-  if (empty($form_state['post']) && isset($edit['display']) && !$edit['display']) {
-    global $user;
+  if (empty($form_state['post'])) {
     if (!$edit['active']) {
       drupal_set_message('This tag is currently set as inactive.','warning');
-    }
-    if (!_dart_display_to_user($user)) {
-      drupal_set_message(t('DART is configured to hide tags from you based on your user role(s). !click_here to change those settings.', array('!click_here' => l('Click here', 'admin/settings/dart'))), 'warning'); 
-    }
-    if (!_dart_display_on_domain($edit)) {
-      drupal_set_message('This tag is configured to prevent it from displaying on the current domain. Change those settings below.','warning');
     }
   }
   
   $form['active'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Check here to make this tag active.'),
-    '#default_value' => isset($edit['active']) ? $edit['active'] : '',
+    '#type'           => 'checkbox',
+    '#title'          => t('Check here to make this tag active.'),
+    '#default_value'  => isset($edit['active']) ? $edit['active'] : '',
   );
-  $form['name'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Tag Name'),
-    '#description' => t('A unique name for this ad tag.'),
-    '#required' => TRUE,
-    '#maxlength' => 128,
-    '#default_value' => isset($edit['name']) ? $edit['name'] : '',
+
+  // Tag settings.
+  $form['tag_settings'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Default Tag Settings'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
   );
-  $form['pos'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Tag Position (pos)'),
-    '#description' => t('Example: rt_rail_box1'),
-    '#required' => TRUE,
-    '#maxlength' => 32,
-    '#default_value' => isset($edit['pos']) ? $edit['pos'] : '',
+  $form['tag_settings']['name'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Tag Name'),
+    '#description'    => t('A unique name for this ad tag.'),
+    '#required'       => TRUE,
+    '#maxlength'      => 128,
+    '#default_value'  => isset($edit['name']) ? $edit['name'] : '',
   );
-  $form['sz'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Tag Size (sz)'),
-    '#description' => t('Example: 300x600,300x250'),
-    '#required' => TRUE,
-    '#maxlength' => 64,
-    '#default_value' => isset($edit['sz']) ? $edit['sz'] : '',
+  $form['tag_settings']['pos'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Tag Position (pos)'),
+    '#description'    => t('Example: rt_rail_box1'),
+    '#required'       => TRUE,
+    '#maxlength'      => 32,
+    '#default_value'  => isset($edit['pos']) ? $edit['pos'] : '',
   );
-  $form['tag_options_group'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Tag Options'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
+  $form['tag_settings']['sz'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Tag Size (sz)'),
+    '#description'    => t('Example: 300x600,300x250'),
+    '#required'       => TRUE,
+    '#maxlength'      => 64,
+    '#default_value'  => isset($edit['sz']) ? $edit['sz'] : '',
   );
-  $form['tag_options_group']['block'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Create a block for this tag'),
-    '#description' => t('Checking this will create a block (configurable on admin/build/block) in which this ad tag is displayed.'),
-    '#default_value' => isset($edit['block']) ? $edit['block'] : '',
+  $form['tag_settings']['overrides'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('DART Overrides'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+    '#description'  => t('Override the !settings for this ad tag.', array('!settings' => l('default settings', 'admin/configure/dart'))),
   );
-  $form['tag_options_group']['scriptless'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('This tag is scriptless'),
-    '#description' => t('Check this if this tag should be rendered without javascript. Use this option for email based tags.'),
-    '#default_value' => isset($edit['block']) ? $edit['block'] : '',
+  $form['tag_settings']['overrides']['site'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Tag Site (site)'),
+    '#description'    => t('In rare circumstances you may want a tag to use an alternate DART site regardless of the page it appears on.'),
+    '#required'       => FALSE,
+    '#maxlength'      => 32,
+    '#default_value'  => isset($edit['settings']['site']) ? $edit['settings']['site'] : '',
   );
+  $form['tag_settings']['overrides']['zone'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Tag Zone (zone)'),
+    '#description'    => t('In rare circumstances you may want a tag to always use an alternate DART zone regardless of the page it appears on.'),
+    '#required'       => FALSE,
+    '#maxlength'      => 32,
+    '#default_value'  => isset($edit['settings']['zone']) ? $edit['settings']['zone'] : '',
+  );
+  $form['tag_settings']['overrides']['slug'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Slug'),
+    '#description'    => t('Override the default slug for this ad tag. Use !none for no slug. Leave this field empty to use the default slug. Example: Advertisement', array('!none' => check_plain('<none>'))),
+    '#required'       => FALSE,
+    '#maxlength'      => 64,
+    '#default_value'  => isset($edit['settings']['slug']) ? $edit['settings']['slug'] : '',
+  );
+
+  // Display options.
+  $form['display_options'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Display Options'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
+  );
+  $form['display_options']['block'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Create a block for this tag'),
+    '#description'    => t('Checking this will create a block (configurable on admin/build/block) in which this ad tag is displayed.'),
+    '#default_value'  => isset($edit['settings']['options']['block']) ? $edit['settings']['options']['block'] : '',
+  );
+  $form['display_options']['scriptless'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('This tag is scriptless'),
+    '#description'    => t('Check this if this tag should be rendered without javascript. Use this option for email based tags.'),
+    '#default_value'  => isset($edit['settings']['options']['scriptless']) ? $edit['settings']['options']['scriptless'] : '',
+  );
+  $form['display_options']['method'] = array(
+    '#type'           => 'radios',
+    '#title'          => t('Tag method'),
+    '#description'    => t('If you are unsure, use "adj" and/or contact doubleclick.'),
+    '#default_value'  => isset($edit['settings']['options']['method']) ? $edit['settings']['options']['method'] : 'adj',
+    '#options'        => array('adj' => t('&lt;script&gt; (adj)'), 'adi' => t('&lt;iframe&gt; (adi)')),
+  );
+
+  // Display rules.
+  $form['display_rules'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Display Rules'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
+  );
+  $form['display_rules']['nodes_paths'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Nodes & Paths'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['display_rules']['nodes_paths']['paths'] = array(
+    '#type'           => 'select',
+    '#title'          => t('For what paths should this tag appear'),
+    '#options'        => array(
+                           'all_paths'  => t('Display on any path'),
+                           'all_nodes'  => t('Display only on /node/% paths'),
+                           'non_nodes'   => t('Display only on non- /node/% paths'),
+                         ),
+    '#default_value'  => isset($edit['settings']['rules']['paths']) ? $edit['settings']['rules']['paths'] : 'all_paths',
+    '#description'    => t('URL aliases are ignored when determining the current path.'),
+  );
+  $options = node_get_types('names');
+  $form['display_rules']['nodes_paths']['node_types'] = array(
+    '#type'           => 'checkboxes',
+    '#title'          => t('On what node types should tag appear'),
+    '#default_value'  => isset($edit['settings']['rules']['node_types']) ? $edit['settings']['rules']['node_types'] : array_keys($options),
+    '#options'        => $options,
+  );
+  
   if (module_exists('domain')) {
+    $options = array();
     $available_domains = domain_domains();
     foreach ($available_domains as $key => $domain) {
       $options[$domain['domain_id'] === 0 ? 'zero' : $domain['domain_id']] = $domain['subdomain'];
     }
-    $form['tag_options_group']['domain_group'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Domains/Subdomains'),
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
-      '#description' => t('Choose which domains/subdomains this tag should appear on.'),
+    $form['display_rules']['domain_group'] = array(
+      '#type'         => 'fieldset',
+      '#title'        => t('Domains/Subdomains'),
+      '#collapsible'  => TRUE,
+      '#collapsed'    => TRUE,
     );
-    $form['tag_options_group']['domain_group']['domains'] = array(
-      '#type' => 'checkboxes',
-      '#title' => t('Domains/Subdomains'),
-      '#default_value' => isset($edit['data']['domains']) ? $edit['data']['domains'] : array_keys($options),
-      '#options' => $options,
+    $form['display_rules']['domain_group']['domains'] = array(
+      '#type'           => 'checkboxes',
+      '#title'          => t('On which domains/subdomains should this tag appear'),
+      '#default_value'  => isset($edit['settings']['rules']['domains']) ? $edit['settings']['rules']['domains'] : array_keys($options),
+      '#options'        => $options,
     );
   }
-  $form['overrides'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('DART Overrides'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#description' => t('Override the !settings for this ad tag.', array('!settings' => l('default settings', 'admin/configure/dart'))),
+  $form['display_rules']['taxonomy_group'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Taxonomy'),
+    '#description'  => t('Only display this ad tag on nodes that are tagged with the terms entered below. Leave all vocabularies blank to display ad tags on all nodes.'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
   );
-  $form['overrides']['site'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Tag Site (site)'),
-    '#description' => t('In rare circumstances you may want a tag to use an alternate DART site regardless of the page it appears on.'),
-    '#required' => FALSE,
-    '#maxlength' => 32,
-    '#default_value' => isset($edit['site']) ? $edit['site'] : '',
+  $form['display_rules']['taxonomy_group']['taxonomy'] = array(
+    '#tree'         => TRUE,
   );
-  $form['overrides']['zone'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Tag Zone (zone)'),
-    '#description' => t('In rare circumstances you may want a tag to always use an alternate DART zone regardless of the page it appears on.'),
-    '#required' => FALSE,
-    '#maxlength' => 32,
-    '#default_value' => isset($edit['zone']) ? $edit['zone'] : '',
+  $options = array();
+  $vocabularies = taxonomy_get_vocabularies();
+  foreach($vocabularies as $vocabulary){
+    $form['display_rules']['taxonomy_group']['taxonomy'][$vocabulary->vid] = array(
+      '#type' => 'textfield',
+      '#default_value' => isset($edit['settings']['rules']['taxonomy'][$vocabulary->vid]) ? $edit['settings']['rules']['taxonomy'][$vocabulary->vid] : '',
+      '#maxlength' => 100,
+      '#autocomplete_path' => 'taxonomy/autocomplete/'. $vocabulary->vid,
+      '#title' => $vocabulary->name,
+      '#description' => t('A comma-separated list of terms describing this content (Example: funny, bungie jumping, "Company, Inc.").')
+    );
+  }
+  
+
+  // Key/val pairs.
+  $form['key_vals'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Key|val pairs'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
   );
-  $form['overrides']['slug'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Slug'),
-    '#description' => t('Override the default slug for this ad tag. Use !none for no slug. Leave this field empty to use the default slug. Example: Advertisement', array('!none' => check_plain('<none>'))),
-    '#required' => FALSE,
-    '#maxlength' => 64,
-    '#default_value' => isset($edit['slug']) ? $edit['slug'] : '',
+  $form['key_vals']['keyvals'] = array(
+    '#type'           => 'textarea',
+    '#title'          => t('Tag specific key|value pairs'),
+    '#description'    => t('Add key|value pairs that should be included on <strong>this tag only</strong> (one per line). If you need a value to be evaluated by javascript append "|eval" to the pair. <br/>Examples: <ul><li>dcopt|ist</li><li>randomNum|Math.random()|eval</li></ul>'),
+    '#default_value'  => isset($edit['settings']['options']['keyvals']) ? $edit['settings']['options']['keyvals'] : '',
+    '#rows'           => 5,
   );
-  $form['kvs'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Tag specific key|value pairs'),
-    '#description' => t('Add key|value pairs that should be included on <strong>this tag only</strong> (one per line). If you need a value to be evaluated by javascript append "|eval" to the pair. <br/>Examples: <ul><li>dcopt|ist</li><li>randomNum|Math.random()|eval</li><li>var|varDefinedIn<em>InjectJavascript</em>FieldAbove|eval</li></ul>'),
-    '#default_value' => isset($edit['kvs']) ? $edit['kvs'] : '',
-    '#rows' => 5,
-  );
+
+  // Form buttons.
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Create Tag')
@@ -259,6 +383,9 @@ function dart_admin_tag(&$form_state, $edit=array()) {
     );
   }
 
+  // Add vertical tabs display if available.
+  $form['#pre_render'][] = 'vertical_tabs_form_pre_render';
+
   return $form;
 }
 
@@ -266,10 +393,12 @@ function dart_admin_tag(&$form_state, $edit=array()) {
  * Form validation function for admin tag form.
  */
 function dart_admin_tag_validate($form, &$form_state) {
-  // Ensure that "name" is unique (for new submissions only).
-  if ($form_state['values']['tag_name'] && !isset($form_state['values']['dtid'])) {
-    if(db_result(db_query("SELECT count(*) FROM {dart_tags WHERE name = '%s'}", $form_state['values']['tag_name']))){
-      form_set_error('tag_name', t('The tag name %name already exists. Please choose another name for this tag.', array('%name' => $form_state['values']['tag_name'])));
+  // Ensure that "name" is unique.
+  $results = db_query("SELECT dtid FROM {dart_tags} WHERE name = '%s'", $form_state['values']['name']);
+  while ($dtid = db_result($results)){
+    if ($dtid != $form_state['values']['dtid']){
+      form_set_error('name', t('The tag name %name already exists. Please choose another name for this tag.', array('%name' => $form_state['values']['name'])));
+      break;
     }
   }
 }
@@ -278,12 +407,21 @@ function dart_admin_tag_validate($form, &$form_state) {
  * Form submit function for admin tag form.
  */
 function dart_admin_tag_submit($form, &$form_state) {
-  // Adjust the Data field appropriately.
-  $form_state['values']['data'] = array();
-  if (module_exists('domain')) {
-    $form_state['values']['data']['domains'] = $form_state['values']['domains'];
-  }
-  $form_state['values']['data'] = serialize($form_state['values']['data']);
+  // Prepare form data to be saved in the database.
+  $settings = array();
+  $settings['options']['block']        = $form_state['values']['block'];
+  $settings['options']['scriptless']   = $form_state['values']['scriptless'];
+  $settings['options']['keyvals']      = addcslashes($form_state['values']['keyvals'],"\n\r");
+  $settings['options']['method']       = $form_state['values']['method'];
+  $settings['site']                    = $form_state['values']['site'];
+  $settings['zone']                    = $form_state['values']['zone'];
+  $settings['slug']                    = $form_state['values']['slug'];
+  $settings['rules']['domains']        = $form_state['values']['domains'];
+  $settings['rules']['paths']          = $form_state['values']['paths'];
+  $settings['rules']['node_types']     = $form_state['values']['node_types'];
+  $settings['rules']['taxonomy']       = $form_state['values']['taxonomy'];
+
+  $form_state['values']['settings'] = serialize($settings);
 
   switch($form_state['values']['op']){
     case t('Create Tag'):

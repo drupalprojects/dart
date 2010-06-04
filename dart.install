@@ -51,48 +51,9 @@ function dart_schema() {
         'default' => '',
         'description' => "The tag's size (sz) value.",
       ),
-      'kvs' => array(
+      'settings' => array(
         'type' => 'blob',
-        'description' => 'A series of key|val pairs to include on this tag.',
-      ),
-      'block' => array(
-        'type' => 'int',
-        'default' => 0,
-        'description' => 'If true, a block will be created in which to display this tag.',
-      ),
-      'scriptless' => array(
-        'type' => 'int',
-        'default' => 0,
-        'description' => 'If true, the tag will be rendered without javascript.',
-      ),
-      'site' => array(
-        'type' => 'varchar',
-        'length' => 32,
-        'not null' => FALSE,
-        'default' => '',
-        'description' => "The tag's site (as in size/zone) value.",
-      ),
-      'zone' => array(
-        'type' => 'varchar',
-        'length' => 32,
-        'not null' => FALSE,
-        'default' => '',
-        'description' => "The tag's zone (as in size/zone) value.",
-      ),
-      'slug' => array(
-        'type' => 'varchar', 
-        'length' => 64, 
-        'not null' => FALSE,
-        'description' => "The tag's slug value.",
-      ),
-      'active' => array(
-        'type' => 'int',
-        'default' => 1,
-        'description' => "If true the tag can be displayed.",
-      ),
-      'data' => array(
-        'type' => 'blob',
-        'description' => "Extra data storage.",
+        'description' => "Serialized array of settings.",
       ),
     ),
     'primary key' => array('dtid'),
@@ -185,5 +146,57 @@ function dart_update_6003() {
 function dart_update_6004() {
   $ret = array();
   db_add_field($ret, 'dart_tags', 'scriptless', array('type' => 'int', 'default' => 0, 'description' => "If true, the tag will be rendered without javascript."));
+  return $ret;
+}
+
+/**
+ * Completely rejiggering the structure of the 'dart_tags'
+ * table so that future changes will not be so draconian.
+ */
+function dart_update_6005() {
+  $ret = array();
+
+  // Grab all the data from the existing table and rejigger it.
+  $tags = array();
+  $sql = "SELECT * FROM {dart_tags}";
+  $results = db_query($sql);
+  
+  $ret[] = array('success' => $results !== FALSE, 'query' => check_plain($sql));
+  while ($tag = db_fetch_array($results)) {
+    $tag['data'] = unserialize($tag['data']);
+
+    $tag['settings'] = array();
+    $tag['settings']['options']['block']        = $tag['block'];
+    $tag['settings']['options']['scriptless']   = $tag['scriptless'];
+    $tag['settings']['options']['keyvals']      = addcslashes($tag['kvs'],"\n\r");
+    $tag['settings']['options']['method']       = 'adj';
+    $tag['settings']['site']                    = $tag['site'];
+    $tag['settings']['zone']                    = $tag['zone'];
+    $tag['settings']['slug']                    = $tag['slug'];
+    $tag['settings']['rules']['domains']        = $tag['data']['domains'];
+
+    $tag['settings'] = serialize($tag['settings']);
+    $tags[] = $tag;
+  }
+
+  // Delete superfluous columns.
+  $cols = array('block', 'scriptless', 'kvs', 'site', 'zone', 'slug', 'data');
+  foreach ($cols as $col){
+    db_drop_field($ret, 'dart_tags', $col);
+  }
+  // Add the settings column.
+  db_add_field($ret, 'dart_tags', 'settings', array('type' => 'blob', 'description' => "Serialized array of settings."));
+
+  // Update existing rows using the data grabbed earlier.
+  foreach ($tags as $tag) {
+    $result = db_query("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = %d", $tag['settings'], $tag['dtid']);
+    $ret[] = array('success' => $results !== FALSE, 'query' => check_plain("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = ".$tag['dtid']));
+  }
+
+  // Rename dart_vals to dart_special_kvs
+  $special_kvs = variable_get('dart_vals', '');
+  variable_set('dart_special_kvs', $special_kvs)
+  variable_del('dart_vals');
+  
   return $ret;
 }

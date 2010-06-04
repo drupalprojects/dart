@@ -10,16 +10,7 @@
  *        vars listed below will be NULL as well
  * - $pos: The position (pos).
  * - $sz: The size (sz).
- * - $vars: A js object with information needed by the tag.
- *          Example:
- *          {
- *            dartSiteZone : 'over.ride/value',
- *            dartVars : {
- *                         key1 : {val:'foo', eval:true},
- *                         key2 : {val:'bar', eval:false},
- *                         key3 : {val:'foobar', eval:true}
- *                       },
- *          }
+ * - $js_tag: a js version of $tag.
  * - $slug: A label to display above the ad.
  *
  * @see template_preprocess_dart_tag()
@@ -30,5 +21,5 @@
   <?php if($slug) { ?>
     <span class="dart_slug"><?php print $slug; ?></span>
   <?php } ?>
-  <script type="text/javascript">Drupal.DART.tag('<?php print $pos; ?>', '<?php print $sz; ?>', <?php print $vars; ?>);</script>
+  <script type="text/javascript">Drupal.DART.tag('<?php print $pos; ?>', '<?php print $sz; ?>', <?php print $js_tag; ?>);</script>
 <?php } ?>
