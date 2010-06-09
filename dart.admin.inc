@@ -259,7 +259,7 @@ function dart_admin_tag(&$form_state, $edit=array()) {
     '#type'           => 'checkbox',
     '#title'          => t('Create a block for this tag'),
     '#description'    => t('Checking this will create a block (configurable on admin/build/block) in which this ad tag is displayed.'),
-    '#default_value'  => isset($edit['settings']['options']['block']) ? $edit['settings']['options']['block'] : '',
+    '#default_value'  => isset($edit['block']) ? $edit['block'] : '',
   );
   $form['display_options']['scriptless'] = array(
     '#type'           => 'checkbox',
@@ -409,7 +409,6 @@ function dart_admin_tag_validate($form, &$form_state) {
 function dart_admin_tag_submit($form, &$form_state) {
   // Prepare form data to be saved in the database.
   $settings = array();
-  $settings['options']['block']        = $form_state['values']['block'];
   $settings['options']['scriptless']   = $form_state['values']['scriptless'];
   $settings['options']['keyvals']      = addcslashes($form_state['values']['keyvals'],"\n\r");
   $settings['options']['method']       = $form_state['values']['method'];

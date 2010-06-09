@@ -117,12 +117,15 @@ class DartTag {
       // then tag variables injected by other modules, finally
       // tag specific variables. Variables are overridden
       // in this order.
-      $keyvals = array_merge(
+      $keyvals = $this->merge_key_vals(
                    $this->key_vals_global(),
                    module_invoke_all('dart_get_vars'),
                    $this->key_vals($this->options['keyvals'])
                  );
       $this->options['keyvals'] = $keyvals;
+
+      // Setup block value properly.
+      $this->options['block'] = $this->obj->settings['block'];
 
       // Setup the site & zone. Global site/zone value
       // is loaded first, then tag specific, then site/zone as
@@ -142,6 +145,7 @@ class DartTag {
 
       // Setup global display rules settings.
       $this->rules['user_roles'] = variable_get('dart_roles',array());
+
     }
   }
 
@@ -177,7 +181,7 @@ class DartTag {
    *   key|val|eval
    *
    * @return
-   *   An array with two keys, "val" & "eval".
+   *   An array of key/val arrays.
    */
   private function key_vals($keyvals) {
     $vals = array();
@@ -185,7 +189,7 @@ class DartTag {
       $pairs = preg_split("/\r\n|\n|\r/", $keyvals);
       foreach($pairs as $pair){
         list($key, $val, $eval) = explode("|", $pair);
-        $vals[$key] = $this->key_val($val,$eval=='eval');
+        $vals[$key][] = $this->key_val($val,$eval=='eval');
       }
     }
     return $vals;
@@ -196,7 +200,7 @@ class DartTag {
    * all tags.
    *
    * @return
-   *   An array with two keys, "val" & "eval"
+   *   An array of key/val arrays
    *   as returned by key_vals().
    */
   private function key_vals_global() {
@@ -212,6 +216,33 @@ class DartTag {
       }
     }
     return $this->key_vals($keyvals);
+  }
+
+  /**
+   * Merges arrays of key/val arrays. If two arrays have the same key,
+   * then the resulting array will include a value in the form:
+   * array('key' => array(
+   *                  array('val' =>'val_1', 'eval' => TRUE), 
+   *                  array('val' =>'val_2', 'eval' => TRUE)
+   *                ))
+   *
+   * @param ...
+   *   A variable number of arguments each of which being an array
+   *   in the form array('key' => array('val' => 'val_1', 'eval' => TRUE), ...)
+   */
+  private function merge_key_vals() {
+    $keyvals = array();
+
+    $args = func_get_args();
+    foreach ($args as $arg) {
+      foreach ($arg as $key=>$val) {
+        foreach ($val as $v) {
+            $keyvals[$key][] = $v;
+          }
+        }
+    }
+
+    return $keyvals;
   }
 
   /**

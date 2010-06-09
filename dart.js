@@ -52,13 +52,10 @@ Drupal.DART.keyVal = function(key, val, useEval){
 Drupal.DART.keyVals = function(vals){
   var ad = '';
   for(var key in vals){
-    val = vals[key];
-    if (typeof val['val'] === 'object') {
-      for(var i in val['val']){
-        ad += this.keyVal(key, val['val'][i], val['eval']);
-      }
-    } else {
-      ad += this.keyVal(key, val['val'], val['eval']);
+    value = vals[key];
+    for(var val in value){
+      v = value[val];
+      ad += this.keyVal(key, v['val'], v['eval']);
     }
   }
   return ad;
