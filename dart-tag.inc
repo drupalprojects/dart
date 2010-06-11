@@ -26,10 +26,8 @@ class DartTag {
                       // 'keyvals'    - An array of key value pars to
                       //                include in the tags.
                       // 'method'     - javascript or iframe.
-                      // 'terms'      - String to be used as 'key' when
-                      //                displaying 'key=term1;key=term2'
-                      //                in tags on node pages. If empty, 
-                      //                don't display terms in tags. 
+                      // 'terms'      - Keyed array of taxonomy terms to
+                      //                be included in the tags.
 
   public $rules;      // Array of display rules for tag.
                       // - node_type
@@ -119,7 +117,7 @@ class DartTag {
       // in this order.
       $keyvals = $this->merge_key_vals(
                    $this->key_vals_global(),
-                   module_invoke_all('dart_get_vars'),
+                   module_invoke_all('dart_get_vars', $this),
                    $this->key_vals($this->options['keyvals'])
                  );
       $this->options['keyvals'] = $keyvals;
@@ -145,7 +143,6 @@ class DartTag {
 
       // Setup global display rules settings.
       $this->rules['user_roles'] = variable_get('dart_roles',array());
-
     }
   }
 
@@ -310,4 +307,5 @@ class DartTag {
 
     return $pass;
   }
+
 }

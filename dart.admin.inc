@@ -16,6 +16,7 @@ function dart_admin_settings() {
   $form['default_tag_settings'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Default Tag Settings'),
+    '#weight'       => -20,
     '#collapsible'  => TRUE,
     '#collapsed'    => FALSE,
   );
@@ -408,18 +409,7 @@ function dart_admin_tag_validate($form, &$form_state) {
  */
 function dart_admin_tag_submit($form, &$form_state) {
   // Prepare form data to be saved in the database.
-  $settings = array();
-  $settings['options']['scriptless']   = $form_state['values']['scriptless'];
-  $settings['options']['keyvals']      = addcslashes($form_state['values']['keyvals'],"\n\r");
-  $settings['options']['method']       = $form_state['values']['method'];
-  $settings['site']                    = $form_state['values']['site'];
-  $settings['zone']                    = $form_state['values']['zone'];
-  $settings['slug']                    = $form_state['values']['slug'];
-  $settings['rules']['domains']        = $form_state['values']['domains'];
-  $settings['rules']['paths']          = $form_state['values']['paths'];
-  $settings['rules']['node_types']     = $form_state['values']['node_types'];
-  $settings['rules']['taxonomy']       = $form_state['values']['taxonomy'];
-
+  $settings = dart_tag_settings($form_state['values']);
   $form_state['values']['settings'] = serialize($settings);
 
   switch($form_state['values']['op']){
@@ -436,6 +426,23 @@ function dart_admin_tag_submit($form, &$form_state) {
 
   }
   $form_state['redirect'] = 'admin/build/adtag';
+}
+
+function dart_tag_settings($values){
+  $settings = array();
+  $settings['options']['scriptless']   = $values['scriptless'];
+  $settings['options']['keyvals']      = addcslashes($values['keyvals'],"\n\r");
+  $settings['options']['method']       = $values['method'];
+  $settings['site']                    = $values['site'];
+  $settings['zone']                    = $values['zone'];
+  $settings['slug']                    = $values['slug'];
+  $settings['rules']['domains']        = $values['domains'];
+  $settings['rules']['paths']          = $values['paths'];
+  $settings['rules']['node_types']     = $values['node_types'];
+  $settings['rules']['taxonomy']       = $values['taxonomy'];
+
+  $settings = module_invoke_all('dart_settings', $settings, $values);
+  return $settings;
 }
 
 /**

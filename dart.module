@@ -34,62 +34,62 @@ function dart_perm() {
 function dart_menu() {
   // Admin dart pages.
   $items['admin/settings/dart'] = array(
-    'title' => 'DART Settings',
-    'description' => "Configure your site-wide DART settings.",
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('dart_admin_settings'),
-    'access arguments' => array('administer DART tags'),
-    'file' => 'dart.admin.inc',
+    'title'             => 'DART Settings',
+    'description'       => "Configure your site-wide DART settings.",
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('dart_admin_settings'),
+    'access arguments'  => array('administer DART tags'),
+    'file'              => 'dart.admin.inc',
   );
   $items['admin/build/adtag'] = array(
-    'title' => 'DART Ad Tags',
-    'description' => 'List and create DART ad tags to be placed throughout your site.',
-    'page callback' => 'dart_admin_tag_list',
-    'access arguments' => array('administer DART tags'),
-    'file' => 'dart.admin.inc',
+    'title'             => 'DART Ad Tags',
+    'description'       => 'List and create DART ad tags to be placed throughout your site.',
+    'page callback'     => 'dart_admin_tag_list',
+    'access arguments'  => array('administer DART tags'),
+    'file'              => 'dart.admin.inc',
   );
   $items['admin/build/adtag/list'] = array(
-    'title' => 'List tags',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => -10,
+    'title'             => 'List tags',
+    'type'              => MENU_DEFAULT_LOCAL_TASK,
+    'weight'            => -10,
   );
   $items['admin/build/adtag/create'] = array(
-    'title' => 'Create tag',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('dart_admin_tag'),
-    'access arguments' => array('administer DART tags'),
-    'type' => MENU_LOCAL_TASK,
-    'file' => 'dart.admin.inc',
+    'title'             => 'Create tag',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('dart_admin_tag'),
+    'access arguments'  => array('administer DART tags'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'dart.admin.inc',
   );
   $items['admin/build/adtag/%dart_tag/edit'] = array(
-    'title' => 'Edit tag',
-    'page callback' => 'dart_tag_edit',
-    'page arguments' => array(3),
-    'access arguments' => array('administer DART tags'),
-    'file' => 'dart.admin.inc',
+    'title'             => 'Edit tag',
+    'page callback'     => 'dart_tag_edit',
+    'page arguments'    => array(3),
+    'access arguments'  => array('administer DART tags'),
+    'file'              => 'dart.admin.inc',
   );
   $items['admin/build/adtag/schedule'] = array(
-    'title' => 'Scheduled tag events',
-    'description' => 'Schedule when DART tags should be activated or deactivated',
-    'page callback' => 'dart_admin_event_list',
-    'access arguments' => array('schedule DART tags'),
-    'type' => MENU_LOCAL_TASK,
-    'file' => 'dart.admin.inc',
+    'title'             => 'Scheduled tag events',
+    'description'       => 'Schedule when DART tags should be activated or deactivated',
+    'page callback'     => 'dart_admin_event_list',
+    'access arguments'  => array('schedule DART tags'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'dart.admin.inc',
   );
   $items['admin/build/adtag/schedule/create'] = array(
-    'title' => 'Schedule new event',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('dart_admin_event'),
-    'access arguments' => array('schedule DART tags'),
-    'type' => MENU_LOCAL_TASK,
-    'file' => 'dart.admin.inc',
+    'title'             => 'Schedule new event',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('dart_admin_event'),
+    'access arguments'  => array('schedule DART tags'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'dart.admin.inc',
   );
   $items['admin/build/adtag/schedule/%dart_event/edit'] = array(
-    'title' => 'Edit event',
-    'page callback' => 'dart_event_edit',
-    'page arguments' => array(4),
-    'access arguments' => array('schedule DART tags'),
-    'file' => 'dart.admin.inc',
+    'title'             => 'Edit event',
+    'page callback'     => 'dart_event_edit',
+    'page arguments'    => array(4),
+    'access arguments'  => array('schedule DART tags'),
+    'file'              => 'dart.admin.inc',
   );
 
   return $items;
@@ -176,8 +176,11 @@ function dart_tag($dtid, $class='') {
 function dart_tag_load($dtid) {
   static $tags = array();
 
-  $tag = new DartTag($dtid);
-  $tags[$dtid] = isset($tag->dtid) ? $tag : false;
+  if (!isset($tags[$dtid])){
+    $tag = new DartTag($dtid);
+    $tags[$dtid] = isset($tag->dtid) ? $tag : false;
+    // dsm($tag);
+  }
 
   return $tags[$dtid];
 }
