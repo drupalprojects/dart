@@ -1,7 +1,7 @@
 <?php
 // $Id$
 
-include_once('dart-tag.inc');
+include_once('dart_tag.inc');
 
 /**
  * The doublclick URL.
