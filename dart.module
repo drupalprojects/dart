@@ -244,14 +244,17 @@ function template_preprocess_dart_noscript_tag(&$variables) {
   $src  = DART_URL . '/jump/' . $tag->prefix . '.' . $tag->site . '/' . $tag->zone . ';';
   $src .= 'pos=' . $tag->pos . ';';
   $src .= 'sz=' . $tag->sz . ';';
+
   foreach ($tag->options['keyvals'] as $key=>$val){
-    if (!$val['eval']){
-      if (is_array($val['val'])) {
-        foreach ($val['val'] as $subkey=>$subval) {
-          $src .= $key . '=' . $subval .';';
+    foreach ($val as $v){
+      if (!$v['eval']){
+        if (is_array($v['val'])) {
+          foreach ($v['val'] as $subkey=>$subval) {
+            $src .= $key . '=' . $subval .';';
+          }
+        } else {
+          $src .= $key . '=' . $v['val'] .';';
         }
-      } else {
-        $src .= $key . '=' . $val['val'] .';';
       }
     }
   }

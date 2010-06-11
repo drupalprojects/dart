@@ -8,7 +8,7 @@
  * Variables available:
  * - $tag: The full tag object or NULL. If it's NULL, all other 
  *         vars listed below will be NULL as well.
- * - $src: The src path for a noscrip ad call.
+ * - $src: The src path for a noscript ad call.
  *
  * @see template_preprocess_dart_noscript_tag()
  */
