@@ -25,7 +25,7 @@ function dart_help($path, $arg) {
  * Implementation of hook_perm().
  */
 function dart_perm() {
-  return array('administer DART tags', 'schedule DART tags');
+  return array('administer DART tags');
 }
 
 /**
@@ -66,29 +66,6 @@ function dart_menu() {
     'page callback'     => 'dart_tag_edit',
     'page arguments'    => array(3),
     'access arguments'  => array('administer DART tags'),
-    'file'              => 'dart.admin.inc',
-  );
-  $items['admin/build/adtag/schedule'] = array(
-    'title'             => 'Scheduled tag events',
-    'description'       => 'Schedule when DART tags should be activated or deactivated',
-    'page callback'     => 'dart_admin_event_list',
-    'access arguments'  => array('schedule DART tags'),
-    'type'              => MENU_LOCAL_TASK,
-    'file'              => 'dart.admin.inc',
-  );
-  $items['admin/build/adtag/schedule/create'] = array(
-    'title'             => 'Schedule new event',
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('dart_admin_event'),
-    'access arguments'  => array('schedule DART tags'),
-    'type'              => MENU_LOCAL_TASK,
-    'file'              => 'dart.admin.inc',
-  );
-  $items['admin/build/adtag/schedule/%dart_event/edit'] = array(
-    'title'             => 'Edit event',
-    'page callback'     => 'dart_event_edit',
-    'page arguments'    => array(4),
-    'access arguments'  => array('schedule DART tags'),
     'file'              => 'dart.admin.inc',
   );
 
@@ -136,21 +113,6 @@ function dart_block($op = 'list', $delta = 0, $edit = array()) {
   }
   if (isset($block)) {
     return $block;
-  }
-}
-
-/**
- * Implimentation of hook_cron().
- */
-function dart_cron() {
-  // Grab all events scheduled to run "today" or earlier.
-  $result = db_query('SELECT dtsid, dtid, event_type FROM {dart_tags_schedule} WHERE event_time <= date(now())');
-  while ($event = db_fetch_array($result)) {
-    // Trigger event accordingly.
-    db_query('UPDATE {dart_tags} SET active = %d WHERE dtid = %d', array($event['event_type'] == 'activate' ? 1 : 0, $event['dtid']));
-    // Delete the scheduled event so it isn't run again.
-    db_query('DELETE FROM {dart_tags_schedule} WHERE dtsid = %d', array($event['dtsid']));
-    watchdog('DART', 'Scheduled DART tag event: id#@dtid was @status', array('@dtid' => $event['dtid'], '@status' => $event['event_type'] . 'd'), WATCHDOG_NOTICE);
   }
 }
 
@@ -212,55 +174,9 @@ function dart_tag_edit($tag){
  *   The DART tag's ID
  */
 function dart_tag_delete($dtid){
-  db_query('DELETE FROM {dart_tags} WHERE dtid = %d', $dtid);
-}
-
-/**
- * Return the DARTscheduled event object matching a DART Tag Schedule ID.
- *
- * @param $dtsid
- *   The DART tag's schedule ID
- *
- * @return
- *   The event object with all of its metadata, if exists, FALSE otherwise.
- *   Results are statically cached.
- */
-function dart_event_load($dtsid) {
-  static $events = array();
-
-  if (!isset($events[$dtsid])) {
-    // Create the DART tag scheduled event object.
-    $result = db_query('SELECT * FROM {dart_tags_schedule} WHERE dtsid = %d', $dtsid);
-    $events[$dtsid] = db_fetch_object($result);
-  }
-
-  return $events[$dtsid];
-}
-
-/**
- * Menu callback used to display DART tag edit form.
- *
- * @param $dart_tag
- *   The DART tag object
- *
- * @return
- *   Edit form
- */
-function dart_event_edit($dart_event){
-  if (isset($_POST['op']) && $_POST['op'] == t('Cancel Event')) {
-    return drupal_get_form('dart_admin_event_confirm_delete', $dart_event);
-  }
-  return drupal_get_form('dart_admin_event', (array)$dart_event);
-}
-
-/**
- * Delete a scheduled DART tag event from the database.
- *
- * @param $dtsid
- *   The DART tag's scheduled event ID
- */
-function dart_event_delete($dtsid){
-  db_query('DELETE FROM {dart_tags_schedule} WHERE dtsid = %d', $dtsid);
+  $tag = new DartTag($dtid);
+  db_query('DELETE FROM {dart_tags} WHERE dtid = %d', $tag->dtid);
+  module_invoke_all('dart_tag', 'delete', $tag);
 }
 
 /**
@@ -345,6 +261,9 @@ function template_preprocess_dart_noscript_tag(&$variables) {
   $variables['src'] = $src;
 }
 
+/**
+ * Returns an array of js variables to be included at the top of every page.
+ */
 function dart_get_page_vars() {
   $vars = array();
 

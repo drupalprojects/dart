@@ -1,7 +1,7 @@
 ; $Id$
 
-name = DART Taxonomy Map
-description = Allows taxonomy terms to be included in DART tags via a managed term mapping.
+name = DART Taxonomy
+description = Allows taxonomy terms to be included in DART tags.
 core = 6.x
 dependencies[] = dart
 dependencies[] = taxonomy_manager

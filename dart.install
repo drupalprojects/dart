@@ -63,37 +63,6 @@ function dart_schema() {
     ),
     'primary key' => array('dtid'),
   );
-  $schema['dart_tags_schedule'] = array(
-    'description' => 'Stores information about DART tags.',
-    'fields' => array(
-      'dtsid' => array(
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'description' => "The schedule event's unique id."
-      ),
-      'dtid'  => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'description' => "The id of the scheduled tag."
-      ),
-      'event_type' => array(
-        'type' => 'varchar',
-        'length' => 10,
-        'not null' => TRUE,
-        'default' => 'activate',
-        'description' => "Should the tag be activated or deactivated. Values are 'activate' or 'deactivate'.",
-      ),
-      'event_time' => array(
-        'type' => 'datetime',
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => "When the event should be triggered.",
-      ),
-    ),
-    'primary key' => array('dtsid'),
-  );
 
   return $schema;
 }

@@ -1,0 +1,57 @@
+<?php
+// $Id$
+
+/**
+ * Implementation of hook_install().
+ */
+function dart_scheduler_install() {
+  // Create tables.
+  drupal_install_schema('dart_scheduler');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function dart_scheduler_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('dart_scheduler');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function dart_scheduler_schema() {
+  $schema['dart_tags_schedule'] = array(
+    'description' => 'Stores information about DART tags.',
+    'fields' => array(
+      'dtsid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => "The schedule event's unique id."
+      ),
+      'dtid'  => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => "The id of the scheduled tag."
+      ),
+      'event_type' => array(
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'default' => 'activate',
+        'description' => "Should the tag be activated or deactivated. Values are 'activate' or 'deactivate'.",
+      ),
+      'event_time' => array(
+        'type' => 'datetime',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "When the event should be triggered.",
+      ),
+    ),
+    'primary key' => array('dtsid'),
+  );
+
+  return $schema;
+}

@@ -1,0 +1,7 @@
+; $Id$
+
+name = DART Scheduler
+description = Allows taxonomy terms to be included in DART tags via a managed term mapping.
+core = 6.x
+dependencies[] = dart
+package = Advertising
