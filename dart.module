@@ -241,7 +241,7 @@ function template_preprocess_dart_noscript_tag(&$variables) {
     if ($ord == 0) { $ord = rand(1000000000,9999999999) . '?'; }
   }
 
-  $src  = DART_URL . '/jump/' . $tag->prefix . '.' . $tag->site . '/' . $tag->zone . ';';
+  $src  = DART_URL . '/ad/' . $tag->prefix . '.' . $tag->site . '/' . $tag->zone . ';';
   $src .= 'pos=' . $tag->pos . ';';
   $src .= 'sz=' . $tag->sz . ';';
 
@@ -262,6 +262,7 @@ function template_preprocess_dart_noscript_tag(&$variables) {
   $src .= $ord ? 'ord=' . $ord : '';
 
   $variables['src'] = $src;
+  $variables['jump_src'] = str_ireplace('/ad/','/jump/',$src);
 }
 
 /**
