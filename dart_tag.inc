@@ -260,7 +260,7 @@ class DartTag {
     $pass = true;
 
     switch($rule){
-      case 'domain':
+      case 'domains':
         global $_domain;
         $domain_id = $_domain['domain_id'] == 0 ? 'zero' : $_domain['domain_id'];
         $pass = !empty($data[$domain_id]);
