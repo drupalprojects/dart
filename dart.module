@@ -122,7 +122,13 @@ function dart_block($op = 'list', $delta = 0, $edit = array()) {
  */
 function dart_tag($dtid, $class='') {
   $tag = dart_tag_load($dtid);
-  return $tag->display($class);
+  if ($tag){
+    $output = $tag->display($class);
+  } else {
+    dart_set_message(t('%dtid is not a valid DART tag ID.', array('%dtid' => $dtid)), 'error');
+    $output = '<!-- ' . t('DART tag %dtid does not exist and could not be placed here.', array('%dtid' => $dtid)) . ' !>';
+  }
+  return $output;
 }
 
 /**

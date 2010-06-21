@@ -15,6 +15,9 @@ function dart_install() {
 function dart_uninstall() {
   // Remove tables.
   drupal_uninstall_schema('dart');
+
+  // Remove any blocks created by DART.
+  db_query("DELETE FROM {blocks} WHERE module='dart'");
 }
 
 /**
