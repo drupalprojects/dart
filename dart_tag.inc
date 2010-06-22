@@ -10,6 +10,8 @@ class DartTag {
   public $dtid;       // Unique dart tag id.
   public $obj;        // The tag exactly as it exists in the database.
 
+  public $active;     // Boolean; true if tag is active.
+
   public $name;       // Unique tag name.
   public $pos;        // Dart pos (ex. top-banner).
   public $sz;         // Dart sz (ex. 300x250,300x600).
