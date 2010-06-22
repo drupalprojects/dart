@@ -47,7 +47,7 @@ function dart_admin_settings() {
     '#collapsible'  => TRUE,
     '#collapsed'    => FALSE,
   );
-  $form['gloabl_key_vals']['dart_special_vals'] = array(
+  $form['gloabl_key_vals']['dart_special_kvs'] = array(
     '#type'           => 'checkboxes',
     '#title'          => t('Special key|val pairs'),
     '#default_value'  => variable_get('dart_special_vals',array('tile' => 'tile','ord' => 'ord')),
@@ -436,7 +436,7 @@ function dart_tag_settings($values){
   $settings['rules']['node_types']     = $values['node_types'];
   $settings['rules']['taxonomy']       = $values['taxonomy'];
 
-  $settings = module_invoke_all('dart_settings', $settings, $values);
+  module_invoke_all('dart_settings', $settings, $values);
   return $settings;
 }
 
