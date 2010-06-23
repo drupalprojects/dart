@@ -2,6 +2,11 @@
 // $Id$
 
 /**
+ * @file
+ * Admin form handling for DART Scheduler.
+ */
+
+/**
  * Event date format for scheduling DART tags.
  */
 define('DART_EVENT_DATE_FORMAT', 'Y-m-d');
@@ -24,14 +29,14 @@ function dart_admin_event_list() {
       'name' => $tag['name'],
       'event_type' => $tag['event_type'],
       'event_time' => date(DART_EVENT_DATE_FORMAT, strtotime($tag['event_time'])),
-      'op' => l(t('Edit'), 'admin/build/adtag/schedule/' . $tag['dtsid'] . '/edit'), 
+      'op' => l(t('Edit'), 'admin/build/adtag/schedule/' . $tag['dtsid'] . '/edit'),
     );
     $rows[] = $row;
   }
   if (empty($rows)) {
     $rows[] = array(array('data' => '<em>'. t('There are currently no scheduled events.') .'</em>', 'colspan' => 4));
   }
-  
+
   $create_link = l('<input type="button" value="Schedule a new event" />', 'admin/build/adtag/schedule/create', array('html' => TRUE));
   return theme('table', $header, $rows) . $create_link;
 }
@@ -92,11 +97,11 @@ function dart_admin_event(&$form_state, $edit=array()) {
       '#value' => t('Reschedule Event'),
     );
     $form['delete'] = array(
-      '#type' => 'submit', 
+      '#type' => 'submit',
       '#value' => t('Cancel Event'),
     );
     $form['dtsid'] = array(
-      '#type' => 'value', 
+      '#type' => 'value',
       '#value' => $edit['dtsid'],
     );
   }
@@ -120,7 +125,7 @@ function dart_admin_event_validate($form, &$form_state) {
  * Form submit function for admin event form.
  */
 function dart_admin_event_submit($form, &$form_state) {
-  switch($form_state['values']['op']){
+  switch ($form_state['values']['op']) {
     case t('Schedule Event'):
       drupal_write_record('dart_tags_schedule', $form_state['values']);
       drupal_set_message(t('The DART tag event has been scheduled.'));

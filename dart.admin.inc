@@ -2,6 +2,11 @@
 // $Id$
 
 /**
+ * @file
+ * Admin form handling for the DART module.
+ */
+
+/**
  * Form builder; Configure dart settings for this site.
  *
  * @ingroup forms
@@ -18,7 +23,7 @@ function dart_admin_settings() {
   $form['default_tag_settings']['dart_prefix'] = array(
     '#type'           => 'textfield',
     '#title'          => t('DART prefix'),
-    '#default_value'  => variable_get('dart_prefix',''),
+    '#default_value'  => variable_get('dart_prefix', ''),
     '#required'       => TRUE,
     '#description'    => t('Typically a short version of your company/organization\'s name (provided by Doubleclick).'),
     '#maxlength'      => 32,
@@ -26,7 +31,7 @@ function dart_admin_settings() {
   $form['default_tag_settings']['dart_sitezone'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Default DART site/zone'),
-    '#default_value'  => variable_get('dart_sitezone',''),
+    '#default_value'  => variable_get('dart_sitezone', ''),
     '#required'       => TRUE,
     '#description'    => t('The value to use when no "site/zone" is specified on a given page. Example: pets/dogs.'),
     '#maxlength'      => 32,
@@ -34,7 +39,7 @@ function dart_admin_settings() {
   $form['default_tag_settings']['dart_slug'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Slug'),
-    '#default_value'  => variable_get('dart_slug','<none>'),
+    '#default_value'  => variable_get('dart_slug', '<none>'),
     '#required'       => FALSE,
     '#description'    => t('Slug all ads with the following with this label. Use <none> for no slug. Example: Advertisement'),
     '#maxlength'      => 64,
@@ -50,18 +55,17 @@ function dart_admin_settings() {
   $form['gloabl_key_vals']['dart_special_kvs'] = array(
     '#type'           => 'checkboxes',
     '#title'          => t('Special key|val pairs'),
-    '#default_value'  => variable_get('dart_special_vals',array('tile' => 'tile','ord' => 'ord')),
+    '#default_value'  => variable_get('dart_special_vals', array('tile' => 'tile', 'ord' => 'ord')),
     '#options'        => array(
                           'tile' => t('tile (value auto-increments on each tag)'),
-                          'ord'  => t('ord (value changes on each page request)'),
-                         ),
+                          'ord'  => t('ord (value changes on each page request)')),
     '#description' => t('Include these special values in all of your ad tags.'),
   );
   $form['gloabl_key_vals']['dart_kvs'] = array(
     '#type'           => 'textarea',
     '#title'          => t('key|value pairs'),
     '#description'    => t('Add key|value pairs that should be included on every ad tag (one per line). If you need a value to be evaluated by javascript append "|eval" to the pair. <br/>Examples: <ul><li>dcopt|ist</li><li>randomNum|Math.random()|eval</li><li>var|varDefinedIn<em>InjectJavascript</em>FieldBelow|eval</li></ul>'),
-    '#default_value'  => variable_get('dart_kvs',''),
+    '#default_value'  => variable_get('dart_kvs', ''),
     '#rows' => 5,
   );
 
@@ -95,7 +99,7 @@ function dart_admin_settings() {
   $form['display_rules']['users']['dart_roles'] = array(
     '#type'           => 'checkboxes',
     '#title'          => t('Hide ads from the following user roles'),
-    '#default_value'  => variable_get('dart_roles',array()),
+    '#default_value'  => variable_get('dart_roles', array()),
     '#options'        => user_roles(),
   );
 
@@ -110,7 +114,7 @@ function dart_admin_settings() {
     '#type'           => 'textarea',
     '#title'          => t('Inject javascript'),
     '#description'    => t('Inject this javascript into the &lt;head&gt; on each page request. You do not need to add code to create a random number for use as the ORD if you checked "Include ord value" above. <br/>This javascript will be injected above the key|value pairs you enter in the field below, so you can declare variables here that you will include as part of a key|value pair there.'),
-    '#default_value'  => variable_get('dart_js',''),
+    '#default_value'  => variable_get('dart_js', ''),
     '#rows'           => 5,
   );
 
@@ -153,7 +157,8 @@ function dart_admin_tag_list() {
   }
   if (empty($rows)) {
     $rows[] = array(array('data' => '<em>'. t('There are currently no DART tags.') .'</em>', 'colspan' => 7));
-  } else {
+  }
+  else {
     $output .= '<p>' . t('In order to display any of the tags below you must add the provided display code to one of your .tpl files or theme override functions positioned in your markup wherever you would like the tag to appear. If you have chosen to display the tag as a block you can go to !admin-blocks instead of using the provided display code.', array('!admin-blocks' => l('admin/build/blocks', 'admin/build/blocks'))) . '</p>';
   }
 
@@ -171,10 +176,10 @@ function dart_admin_tag(&$form_state, $edit=array()) {
   // Set some messages to explain why tags may not be displaying.
   if (empty($form_state['post'])) {
     if (!$edit['active']) {
-      drupal_set_message('This tag is currently set as inactive.','warning');
+      drupal_set_message('This tag is currently set as inactive.', 'warning');
     }
   }
-  
+
   $form['active'] = array(
     '#type'           => 'checkbox',
     '#title'          => t('Check here to make this tag active.'),
@@ -290,8 +295,7 @@ function dart_admin_tag(&$form_state, $edit=array()) {
     '#options'        => array(
                            'all_paths'  => t('Display on any path'),
                            'all_nodes'  => t('Display only on /node/% paths'),
-                           'non_nodes'   => t('Display only on non- /node/% paths'),
-                         ),
+                           'non_nodes'   => t('Display only on non- /node/% paths')),
     '#default_value'  => isset($edit['settings']['rules']['paths']) ? $edit['settings']['rules']['paths'] : 'all_paths',
     '#description'    => t('URL aliases are ignored when determining the current path.'),
   );
@@ -302,7 +306,7 @@ function dart_admin_tag(&$form_state, $edit=array()) {
     '#default_value'  => isset($edit['settings']['rules']['node_types']) ? $edit['settings']['rules']['node_types'] : array_keys($options),
     '#options'        => $options,
   );
-  
+
   if (module_exists('domain')) {
     $options = array();
     $available_domains = domain_domains();
@@ -334,7 +338,7 @@ function dart_admin_tag(&$form_state, $edit=array()) {
   );
   $options = array();
   $vocabularies = taxonomy_get_vocabularies();
-  foreach($vocabularies as $vocabulary){
+  foreach ($vocabularies as $vocabulary) {
     $form['display_rules']['taxonomy_group']['taxonomy'][$vocabulary->vid] = array(
       '#type' => 'textfield',
       '#default_value' => isset($edit['settings']['rules']['taxonomy'][$vocabulary->vid]) ? $edit['settings']['rules']['taxonomy'][$vocabulary->vid] : '',
@@ -344,7 +348,6 @@ function dart_admin_tag(&$form_state, $edit=array()) {
       '#description' => t('A comma-separated list of terms describing this content (Example: funny, bungie jumping, "Company, Inc.").')
     );
   }
-  
 
   // Key/val pairs.
   $form['key_vals'] = array(
@@ -370,11 +373,11 @@ function dart_admin_tag(&$form_state, $edit=array()) {
   if (isset($edit['dtid'])) {
     $form['submit']['#value'] = t('Save Tag');
     $form['delete'] = array(
-      '#type' => 'submit', 
+      '#type' => 'submit',
       '#value' => t('Delete Tag')
     );
     $form['dtid'] = array(
-      '#type' => 'value', 
+      '#type' => 'value',
       '#value' => $edit['dtid']
     );
   }
@@ -391,8 +394,8 @@ function dart_admin_tag(&$form_state, $edit=array()) {
 function dart_admin_tag_validate($form, &$form_state) {
   // Ensure that "name" is unique.
   $results = db_query("SELECT dtid FROM {dart_tags} WHERE name = '%s'", $form_state['values']['name']);
-  while ($dtid = db_result($results)){
-    if ($dtid != $form_state['values']['dtid']){
+  while ($dtid = db_result($results)) {
+    if ($dtid != $form_state['values']['dtid']) {
       form_set_error('name', t('The tag name %name already exists. Please choose another name for this tag.', array('%name' => $form_state['values']['name'])));
       break;
     }
@@ -407,7 +410,7 @@ function dart_admin_tag_submit($form, &$form_state) {
   $settings = dart_tag_settings($form_state['values']);
   $form_state['values']['settings'] = serialize($settings);
 
-  switch($form_state['values']['op']){
+  switch ($form_state['values']['op']) {
     case t('Create Tag'):
       drupal_write_record('dart_tags', $form_state['values']);
       drupal_set_message(t('The DART tag has been created.'));
@@ -423,10 +426,10 @@ function dart_admin_tag_submit($form, &$form_state) {
   $form_state['redirect'] = 'admin/build/adtag';
 }
 
-function dart_tag_settings($values){
+function dart_tag_settings($values) {
   $settings = array();
   $settings['options']['scriptless']   = $values['scriptless'];
-  $settings['options']['keyvals']      = addcslashes($values['keyvals'],"\n\r");
+  $settings['options']['keyvals']      = addcslashes($values['keyvals'], "\n\r");
   $settings['options']['method']       = $values['method'];
   $settings['site']                    = $values['site'];
   $settings['zone']                    = $values['zone'];

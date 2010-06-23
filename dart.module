@@ -73,7 +73,7 @@ function dart_menu() {
 }
 
 /**
- * Implimentation of hook_theme().
+ * Implementation of hook_theme().
  */
 function dart_theme() {
   return array(
@@ -92,7 +92,7 @@ function dart_theme() {
 }
 
 /**
- * Implimentation of hook_block().
+ * Implementation of hook_block().
  */
 function dart_block($op = 'list', $delta = 0, $edit = array()) {
   switch ($op) {
@@ -122,9 +122,10 @@ function dart_block($op = 'list', $delta = 0, $edit = array()) {
  */
 function dart_tag($dtid, $class='') {
   $tag = dart_tag_load($dtid);
-  if ($tag){
+  if ($tag) {
     $output = $tag->display($class);
-  } else {
+  }
+  else {
     drupal_set_message(t('%dtid is not a valid DART tag ID.', array('%dtid' => $dtid)), 'error');
     $output = '<!-- ' . t('DART tag %dtid does not exist and could not be placed here.', array('%dtid' => $dtid)) . ' !>';
   }
@@ -144,9 +145,9 @@ function dart_tag($dtid, $class='') {
 function dart_tag_load($dtid) {
   static $tags = array();
 
-  if (!isset($tags[$dtid])){
+  if (!isset($tags[$dtid])) {
     $tag = new DartTag($dtid);
-    $tags[$dtid] = isset($tag->dtid) ? $tag : false;
+    $tags[$dtid] = isset($tag->dtid) ? $tag : FALSE;
     // dsm($tag);
   }
 
@@ -162,11 +163,11 @@ function dart_tag_load($dtid) {
  * @return
  *   Edit form
  */
-function dart_tag_edit($tag){
+function dart_tag_edit($tag) {
   if (isset($_POST['op']) && $_POST['op'] == t('Delete Tag')) {
     return drupal_get_form('dart_admin_tag_confirm_delete', $tag);
   }
-  
+
   // We pass in $tag->obj because that is the data
   // as it comes out of the database. Otherwise things
   // like site and zone will be processed already.
@@ -179,16 +180,16 @@ function dart_tag_edit($tag){
  * @param $dtid
  *   The DART tag's ID
  */
-function dart_tag_delete($dtid){
+function dart_tag_delete($dtid) {
   $tag = new DartTag($dtid);
   db_query('DELETE FROM {dart_tags} WHERE dtid = %d', $tag->dtid);
   module_invoke_all('dart_tag', 'delete', $tag);
 }
 
 /**
- * Implimentation of hook_preprocess_page.
+ * Implementation of hook_preprocess_page().
  */
-function dart_preprocess_page(&$variables){
+function dart_preprocess_page(&$variables) {
   $inline_js = '';
 
   // Include the user-defined js injection if they entered one.
@@ -197,7 +198,7 @@ function dart_preprocess_page(&$variables){
   // Grab page variables and format them.
   $page_vars = dart_get_page_vars();
   if (count($page_vars)) {
-    foreach ($page_vars as $key=>$val) {
+    foreach ($page_vars as $key => $val) {
       $inline_js .= 'Drupal.DART.' . $key . ' = ' . ($key == "ord" ? $val : drupal_to_js($val)) . ';' . "\n";
     }
   }
@@ -237,28 +238,31 @@ function template_preprocess_dart_tag(&$variables) {
 function template_preprocess_dart_noscript_tag(&$variables) {
   $tag = $variables['tag'];
 
-  $special_kvs = variable_get('dart_special_kvs',array());
-  if($special_kvs['tile']){
+  $special_kvs = variable_get('dart_special_kvs', array());
+  if ($special_kvs['tile']) {
     static $tile = 0;
     $tile++;
   }
-  if($special_kvs['ord']){
+  if ($special_kvs['ord']) {
     static $ord = 0;
-    if ($ord == 0) { $ord = rand(1000000000,9999999999) . '?'; }
+    if ($ord == 0) {
+      $ord = rand(1000000000, 9999999999) . '?';
+    }
   }
 
   $src  = DART_URL . '/ad/' . $tag->prefix . '.' . $tag->site . '/' . $tag->zone . ';';
   $src .= 'pos=' . $tag->pos . ';';
   $src .= 'sz=' . $tag->sz . ';';
 
-  foreach ($tag->options['keyvals'] as $key=>$val){
-    foreach ($val as $v){
-      if (!$v['eval']){
+  foreach ($tag->options['keyvals'] as $key => $val) {
+    foreach ($val as $v) {
+      if (!$v['eval']) {
         if (is_array($v['val'])) {
-          foreach ($v['val'] as $subkey=>$subval) {
+          foreach ($v['val'] as $subkey => $subval) {
             $src .= $key . '=' . $subval .';';
           }
-        } else {
+        }
+        else {
           $src .= $key . '=' . $v['val'] .';';
         }
       }
@@ -268,7 +272,7 @@ function template_preprocess_dart_noscript_tag(&$variables) {
   $src .= $ord ? 'ord=' . $ord : '';
 
   $variables['src'] = $src;
-  $variables['jump_src'] = str_ireplace('/ad/','/jump/',$src);
+  $variables['jump_src'] = str_ireplace('/ad/', '/jump/', $src);
 }
 
 /**
@@ -281,9 +285,11 @@ function dart_get_page_vars() {
   $vars['dart_url'] = DART_URL;
 
   // Setup page-wide Dart vals as varibales.
-  foreach (variable_get('dart_special_kvs',array()) as $key => $val){
-    if (empty($val)){ continue; }
-    switch($key){
+  foreach (variable_get('dart_special_kvs', array()) as $key => $val) {
+    if (empty($val)) {
+      continue;
+    }
+    switch ($key) {
       case 'ord':
         $vars['ord'] = "1000000000 + Math.floor(Math.random()*900000000)";
         break;

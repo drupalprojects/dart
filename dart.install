@@ -2,6 +2,11 @@
 // $Id$
 
 /**
+ * @file
+ * Installation file for DART module.
+ */
+
+/**
  * Implementation of hook_install().
  */
 function dart_install() {
@@ -80,7 +85,7 @@ function dart_schema() {
  */
 function dart_update_6000() {
   $ret = array();
-  db_add_field($ret, 'dart_tags', 'slug', array('type' => 'varchar', 'length' => 64, 'not null' => FALSE, 'description' => "The tag's slug value."));
+  db_add_field($ret, 'dart_tags', 'slug', array('type' => 'varchar', 'length' => 64, 'not NULL' => FALSE, 'description' => "The tag's slug value."));
   return $ret;
 }
 
@@ -89,7 +94,7 @@ function dart_update_6000() {
  */
 function dart_update_6001() {
   $ret = array();
-  db_add_field($ret, 'dart_tags', 'active', array('type' => 'int', 'default' => 1, 'description' => "If true the tag can be displayed."));
+  db_add_field($ret, 'dart_tags', 'active', array('type' => 'int', 'default' => 1, 'description' => "If TRUE the tag can be displayed."));
   return $ret;
 }
 
@@ -113,10 +118,10 @@ function dart_update_6003() {
   // If domain module is installed, set all existing tags to show up on all domains.
   if (module_exists('domain')) {
     $available_domains = domain_domains();
-    foreach ($available_domains as $key=>$domain) {
+    foreach ($available_domains as $key => $domain) {
       $domains[] = $domain['domain_id'] == 0 ? 'zero' : $domain['domain_id'];
     }
-    db_query("UPDATE {dart_tags} SET data ='%s'", serialize(array('domains' => $domains)));
+    $ret[] = update_sql("UPDATE {dart_tags} SET data ='%s'", serialize(array('domains' => $domains)));
   }
 
   return $ret;
@@ -127,7 +132,7 @@ function dart_update_6003() {
  */
 function dart_update_6004() {
   $ret = array();
-  db_add_field($ret, 'dart_tags', 'scriptless', array('type' => 'int', 'default' => 0, 'description' => "If true, the tag will be rendered without javascript."));
+  db_add_field($ret, 'dart_tags', 'scriptless', array('type' => 'int', 'default' => 0, 'description' => "If TRUE, the tag will be rendered without javascript."));
   return $ret;
 }
 
@@ -142,7 +147,7 @@ function dart_update_6005() {
   $tags = array();
   $sql = "SELECT * FROM {dart_tags}";
   $results = db_query($sql);
-  
+
   $ret[] = array('success' => $results !== FALSE, 'query' => check_plain($sql));
   while ($tag = db_fetch_array($results)) {
     $tag['data'] = unserialize($tag['data']);
@@ -150,7 +155,7 @@ function dart_update_6005() {
     $tag['settings'] = array();
     $tag['settings']['options']['block']        = $tag['block'];
     $tag['settings']['options']['scriptless']   = $tag['scriptless'];
-    $tag['settings']['options']['keyvals']      = addcslashes($tag['kvs'],"\n\r");
+    $tag['settings']['options']['keyvals']      = addcslashes($tag['kvs'], "\n\r");
     $tag['settings']['options']['method']       = 'adj';
     $tag['settings']['site']                    = $tag['site'];
     $tag['settings']['zone']                    = $tag['zone'];
@@ -163,7 +168,7 @@ function dart_update_6005() {
 
   // Delete superfluous columns.
   $cols = array('block', 'scriptless', 'kvs', 'site', 'zone', 'slug', 'data');
-  foreach ($cols as $col){
+  foreach ($cols as $col) {
     db_drop_field($ret, 'dart_tags', $col);
   }
   // Create the new 'settings' column.
@@ -171,42 +176,40 @@ function dart_update_6005() {
 
   // Update existing rows using the data grabbed earlier.
   foreach ($tags as $tag) {
-    $result = db_query("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = %d", $tag['settings'], $tag['dtid']);
-    $ret[] = array('success' => $results !== FALSE, 'query' => check_plain("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = ".$tag['dtid']));
+    $ret[] = update_sql("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = %d", $tag['settings'], $tag['dtid']);
   }
 
   // Rename dart_vals to dart_special_kvs
   $special_kvs = variable_get('dart_vals', '');
   variable_set('dart_special_kvs', $special_kvs);
   variable_del('dart_vals');
-  
+
   return $ret;
 }
 
 /**
- * Move the "block" setting from the "settings" field 
+ * Move the "block" setting from the "settings" field
  * to its own field so that it can be queried on.
  */
 function dart_update_6006() {
   $ret = array();
 
   // Create the new 'block' column.
-  db_add_field($ret, 'dart_tags', 'block', array('type' => 'int', 'not null' => true, 'default' => 0, 'description' => "If true, a block will be created in which to display this tag."));
+  db_add_field($ret, 'dart_tags', 'block', array('type' => 'int', 'not NULL' => TRUE, 'default' => 0, 'description' => "If TRUE, a block will be created in which to display this tag."));
 
   // Grab the 'block' value out of 'settings'
   // and update the dart tag record.
   $sql = "SELECT * FROM {dart_tags}";
   $results = db_query($sql);
 
-  while($tag = db_fetch_array($results)) {
+  while ($tag = db_fetch_array($results)) {
     $tag['settings'] = unserialize($tag['settings']);
 
     $tag['block'] = $tag['settings']['options']['block'];
     unset($tag['settings']['options']['block']);
     $tag['settings'] = serialize($tag['settings']);
 
-    $result = db_query("UPDATE {dart_tags} SET block = %d, settings = '%s' WHERE dtid = %d", $tag['block'], $tag['settings'], $tag['dtid']);
-    $ret[] = array('success' => $results !== FALSE, 'query' => check_plain("UPDATE {dart_tags} SET block = %d, settings = '%s' WHERE dtid = ".$tag['dtid']));
+    $ret[] = update_sql("UPDATE {dart_tags} SET block = %d, settings = '%s' WHERE dtid = %d", $tag['block'], $tag['settings'], $tag['dtid']);
   }
   return $ret;
 }

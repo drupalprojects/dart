@@ -40,7 +40,7 @@ function dart_scheduler_menu() {
 }
 
 /**
- * Implimentation of hook_cron().
+ * Implementation of hook_cron().
  */
 function dart_cron() {
   // Grab all events scheduled to run "today" or earlier.
@@ -86,7 +86,7 @@ function dart_event_load($dtsid) {
  * @return
  *   Edit form
  */
-function dart_event_edit($dart_event){
+function dart_event_edit($dart_event) {
   if (isset($_POST['op']) && $_POST['op'] == t('Cancel Event')) {
     return drupal_get_form('dart_admin_event_confirm_delete', $dart_event);
   }
@@ -99,12 +99,12 @@ function dart_event_edit($dart_event){
  * @param $dtsid
  *   The DART tag's scheduled event ID
  */
-function dart_event_delete($dtsid){
+function dart_event_delete($dtsid) {
   db_query('DELETE FROM {dart_tags_schedule} WHERE dtsid = %d', $dtsid);
 }
 
 /**
- * Implimention of hook_dart_tag().
+ * Implementation of hook_dart_tag().
  */
 function dart_event_dart_tag($op, $tag) {
   switch ($op) {

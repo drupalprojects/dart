@@ -2,6 +2,11 @@
 // $Id$
 
 /**
+ * @file
+ * Installation file for DART Scheduler module.
+ */
+
+/**
  * Implementation of hook_install().
  */
 function dart_scheduler_install() {
@@ -27,25 +32,25 @@ function dart_scheduler_schema() {
       'dtsid' => array(
         'type' => 'serial',
         'unsigned' => TRUE,
-        'not null' => TRUE,
+        'not NULL' => TRUE,
         'description' => "The schedule event's unique id."
       ),
       'dtid'  => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE,
+        'not NULL' => TRUE,
         'description' => "The id of the scheduled tag."
       ),
       'event_type' => array(
         'type' => 'varchar',
         'length' => 10,
-        'not null' => TRUE,
+        'not NULL' => TRUE,
         'default' => 'activate',
         'description' => "Should the tag be activated or deactivated. Values are 'activate' or 'deactivate'.",
       ),
       'event_time' => array(
         'type' => 'datetime',
-        'not null' => TRUE,
+        'not NULL' => TRUE,
         'default' => 0,
         'description' => "When the event should be triggered.",
       ),

@@ -12,13 +12,13 @@ Drupal.DART.tag = function (pos, sz, tag) {
   ad  = '<script type="text/javascript" src="';
   ad += Drupal.DART.dart_url + "/" + tag.options.method + "/";
   ad += tag.prefix + '.' + tag.site + "/" + tag.zone + ";";
-  ad += this.keyVal('pos', pos, false);
-  ad += this.keyVal('sz', sz, false);
+  ad += this.keyVal('pos', pos, FALSE);
+  ad += this.keyVal('sz', sz, FALSE);
   ad += this.keyVals(tag.options.keyvals);
 
   // If ord exists, add it last.
-  if (typeof Drupal.DART.ord !== "undefined"){
-    ad += this.keyVal('ord', Drupal.DART.ord, true);
+  if (typeof Drupal.DART.ord !== "undefined") {
+    ad += this.keyVal('ord', Drupal.DART.ord, TRUE);
   }
 
   ad += '"></script>';
@@ -31,7 +31,7 @@ Drupal.DART.tag = function (pos, sz, tag) {
 /**
  * Format a key|val pair into a dart tag key|val pair.
  */
-Drupal.DART.keyVal = function(key, val, useEval){
+Drupal.DART.keyVal = function(key, val, useEval) {
   kvp  = key + "=";
   kvp += useEval ? eval(val) : val;
   kvp += key == "ord" ? "?" : ";";
@@ -44,16 +44,16 @@ Drupal.DART.keyVal = function(key, val, useEval){
  * @param vals
  *   an object in this form:
  *   {
- *     key1 : {val:'foo', eval:true},
- *     key2 : {val:'bar', eval:false},
- *     key3 : {val:'foobar', eval:true}
+ *     key1 : {val:'foo', eval:TRUE},
+ *     key2 : {val:'bar', eval:FALSE},
+ *     key3 : {val:'foobar', eval:TRUE}
  *   }
  */
-Drupal.DART.keyVals = function(vals){
+Drupal.DART.keyVals = function(vals) {
   var ad = '';
-  for(var key in vals){
+  for(var key in vals) {
     value = vals[key];
-    for(var val in value){
+    for(var val in value) {
       v = value[val];
       ad += this.keyVal(key, v['val'], v['eval']);
     }
