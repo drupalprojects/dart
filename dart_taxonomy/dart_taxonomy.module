@@ -15,6 +15,25 @@ function dart_taxonomy_taxonomy($op, $type, $array) {
 }
 
 /**
+ * Implementation of hook_theme().
+ */
+function dart_taxonomy_theme() {
+  return array( 
+    'dart_taxonomy_manager_tree_elements' => array( 
+      'arguments' => array('element'), 
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_theme_registry_alter().
+ * Takes over the theme_taxonomy_manager_tree_elements function.
+ */
+function dart_taxonomy_theme_registry_alter(&$theme_registry) {
+  $theme_registry['taxonomy_manager_tree_elements']['function'] = 'theme_dart_taxonomy_tree_elements';
+}
+
+/**
  * Implementation of hook_form_alter().
  */
 function dart_taxonomy_form_taxonomy_manager_form_alter(&$form, &$form_state) {
@@ -114,6 +133,9 @@ function dart_taxonomy_form_taxonomy_manager_form_alter(&$form, &$form_state) {
   }
 }
 
+/**
+ * Form submit function.
+ */
 function dart_taxonomy_dart_bulk_submit($form, $form_state) {
   // Create a new map for each selected term.
   foreach ($form_state['values']['taxonomy']['manager']['tree']['selected_terms'] as $tid) {
@@ -264,6 +286,36 @@ function dart_taxonomy_save_map($tid, $data) {
       db_query("UPDATE {dart_taxonomy_map} AS dtm SET dtm.key='%s', dtm.val='%s', dtm.exclude=%d WHERE dtm.tid=%d", $key, $val, $exclude, $tid);
     }
   }
+}
+
+/**
+ * Theme function. Effectively this function is a preprocess 
+ * function for theme_taxonomy_manager_tree_elements.
+ */
+function theme_dart_taxonomy_tree_elements($elements) {
+  foreach ($elements as $elem) {
+    $tid = $elem['tid']['#value'];
+    if (db_result(db_query('SELECT tid FROM {dart_taxonomy_map} WHERE tid=%d', $tid))) {
+      $elements[$tid]['checkbox']['#suffix'] = theme('image', drupal_get_path('module', 'dart_taxonomy') . '/images/dart-altered.png', '(' . t('Altered by DART') . ')', t('Altered by DART'), array('class' => 'dart-altered'));
+    }
+  }
+
+  return theme_taxonomy_manager_tree_elements($elements);
+}
+
+/**
+ * Theme function. Effectively this function is a preprocess 
+ * function for theme_taxonomy_manager_tree_elements.
+ */
+function theme_dart_taxonomy_tree_elements($elements) {
+  foreach ($elements as $elem) {
+    $tid = $elem['tid']['#value'];
+    if (db_result(db_query('SELECT tid FROM {dart_taxonomy_map} WHERE tid=%d', $tid))) {
+      $elements[$tid]['checkbox']['#suffix'] = theme('image', drupal_get_path('module', 'dart_taxonomy') . '/images/dart-altered.png', '(' . t('Altered by DART') . ')', t('Altered by DART'), array('class' => 'dart-altered'));
+    }
+  }
+
+  return theme_taxonomy_manager_tree_elements($elements);
 }
 
 /**
