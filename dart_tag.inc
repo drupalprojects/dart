@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Class for creating and managing Dart Tag objects.
+ * Class definition for creating and managing Dart Tag objects.
  */
 
 class DartTag {

@@ -12,13 +12,13 @@ Drupal.DART.tag = function (pos, sz, tag) {
   ad  = '<script type="text/javascript" src="';
   ad += Drupal.DART.dart_url + "/" + tag.options.method + "/";
   ad += tag.prefix + '.' + tag.site + "/" + tag.zone + ";";
-  ad += this.keyVal('pos', pos, FALSE);
-  ad += this.keyVal('sz', sz, FALSE);
+  ad += this.keyVal('pos', pos, false);
+  ad += this.keyVal('sz', sz, false);
   ad += this.keyVals(tag.options.keyvals);
 
   // If ord exists, add it last.
   if (typeof Drupal.DART.ord !== "undefined") {
-    ad += this.keyVal('ord', Drupal.DART.ord, TRUE);
+    ad += this.keyVal('ord', Drupal.DART.ord, true);
   }
 
   ad += '"></script>';
@@ -44,9 +44,9 @@ Drupal.DART.keyVal = function(key, val, useEval) {
  * @param vals
  *   an object in this form:
  *   {
- *     key1 : {val:'foo', eval:TRUE},
- *     key2 : {val:'bar', eval:FALSE},
- *     key3 : {val:'foobar', eval:TRUE}
+ *     key1 : {val:'foo', eval:true},
+ *     key2 : {val:'bar', eval:false},
+ *     key3 : {val:'foobar', eval:true}
  *   }
  */
 Drupal.DART.keyVals = function(vals) {
