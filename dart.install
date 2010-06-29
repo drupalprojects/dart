@@ -85,7 +85,7 @@ function dart_schema() {
  */
 function dart_update_6000() {
   $ret = array();
-  db_add_field($ret, 'dart_tags', 'slug', array('type' => 'varchar', 'length' => 64, 'not NULL' => FALSE, 'description' => "The tag's slug value."));
+  db_add_field($ret, 'dart_tags', 'slug', array('type' => 'varchar', 'length' => 64, 'not null' => FALSE, 'description' => "The tag's slug value."));
   return $ret;
 }
 
@@ -94,7 +94,7 @@ function dart_update_6000() {
  */
 function dart_update_6001() {
   $ret = array();
-  db_add_field($ret, 'dart_tags', 'active', array('type' => 'int', 'default' => 1, 'description' => "If TRUE the tag can be displayed."));
+  db_add_field($ret, 'dart_tags', 'active', array('type' => 'int', 'default' => 1, 'description' => "If true the tag can be displayed."));
   return $ret;
 }
 
@@ -132,7 +132,7 @@ function dart_update_6003() {
  */
 function dart_update_6004() {
   $ret = array();
-  db_add_field($ret, 'dart_tags', 'scriptless', array('type' => 'int', 'default' => 0, 'description' => "If TRUE, the tag will be rendered without javascript."));
+  db_add_field($ret, 'dart_tags', 'scriptless', array('type' => 'int', 'default' => 0, 'description' => "If true, the tag will be rendered without javascript."));
   return $ret;
 }
 
@@ -195,7 +195,7 @@ function dart_update_6006() {
   $ret = array();
 
   // Create the new 'block' column.
-  db_add_field($ret, 'dart_tags', 'block', array('type' => 'int', 'not NULL' => TRUE, 'default' => 0, 'description' => "If TRUE, a block will be created in which to display this tag."));
+  db_add_field($ret, 'dart_tags', 'block', array('type' => 'int', 'not null' => TRUE, 'default' => 0, 'description' => "If true, a block will be created in which to display this tag."));
 
   // Grab the 'block' value out of 'settings'
   // and update the dart tag record.
