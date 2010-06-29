@@ -304,21 +304,6 @@ function theme_dart_taxonomy_tree_elements($elements) {
 }
 
 /**
- * Theme function. Effectively this function is a preprocess 
- * function for theme_taxonomy_manager_tree_elements.
- */
-function theme_dart_taxonomy_tree_elements($elements) {
-  foreach ($elements as $elem) {
-    $tid = $elem['tid']['#value'];
-    if (db_result(db_query('SELECT tid FROM {dart_taxonomy_map} WHERE tid=%d', $tid))) {
-      $elements[$tid]['checkbox']['#suffix'] = theme('image', drupal_get_path('module', 'dart_taxonomy') . '/images/dart-altered.png', '(' . t('Altered by DART') . ')', t('Altered by DART'), array('class' => 'dart-altered'));
-    }
-  }
-
-  return theme_taxonomy_manager_tree_elements($elements);
-}
-
-/**
  * Returns the tid to be used for displaying the
  * term's value within a DART ad tag.
  *
