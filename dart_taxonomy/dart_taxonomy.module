@@ -251,7 +251,6 @@ function dart_taxonomy_dart_taxonomy_value_callback() {
   return $options;
 }
 
-
 /**
  * Save a dart taxonomy map in the database.
  *
