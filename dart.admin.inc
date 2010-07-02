@@ -439,7 +439,7 @@ function dart_tag_settings($values) {
   $settings['rules']['node_types']     = $values['node_types'];
   $settings['rules']['taxonomy']       = $values['taxonomy'];
 
-  module_invoke_all('dart_settings', $settings, $values);
+  drupal_alter('dart_settings', $settings, $values);
   return $settings;
 }
 

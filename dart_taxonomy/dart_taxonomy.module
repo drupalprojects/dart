@@ -194,7 +194,7 @@ function dart_taxonomy_form_dart_admin_settings_alter(&$form, &$form_state) {
 /**
  * Implementation of hook_dart_settings().
  */
-function dart_taxonomy_dart_settings(&$settings, $values) {
+function dart_taxonomy_dart_settings_alter(&$settings, $values) {
   if (isset($values['terms'])) {
     $settings['options']['terms'] = $values['terms'];
   }
