@@ -96,11 +96,16 @@ function dart_admin_settings() {
     '#collapsible'  => TRUE,
     '#collapsed'    => TRUE,
   );
-  $form['display_rules']['users']['dart_roles'] = array(
+  $form['display_rules']['users']['dart_display_rule_roles'] = array(
     '#type'           => 'checkboxes',
-    '#title'          => t('Hide ads from the following user roles'),
-    '#default_value'  => variable_get('dart_roles', array()),
+    '#title'          => t('Hide DART ads from the following user roles'),
+    '#default_value'  => variable_get('dart_display_rule_roles', array()),
     '#options'        => user_roles(),
+  );
+  $form['display_rules']['dart_display_rule_admin'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Hide DART ads from admin pages'),
+    '#default_value'  => variable_get('dart_display_rule_admin', 0),
   );
 
   // Javascript.

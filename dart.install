@@ -213,3 +213,16 @@ function dart_update_6006() {
   }
   return $ret;
 }
+
+/**
+ * Rename the dart_roles variable for consistancey.
+ */
+function dart_update_6007() {
+  $ret = array();
+
+  $temp = variable_get('dart_roles', array());
+  variable_set('dart_display_rule_roles', $temp);
+  variable_del('dart_roles');
+
+  return $ret;
+}

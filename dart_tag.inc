@@ -64,7 +64,15 @@ class DartTag {
       return $output;
     }
 
-    // Check display rules.
+    // Check global display rules.
+    if (!$this->check_display_rule('user_role', variable_get('dart_display_rule_roles', array()))){
+      return $output;
+    }
+    if (!$this->check_display_rule('admin_pages', variable_get('dart_display_rule_admin', 0))){
+      return $output;
+    }
+
+    // Check tag-specific display rules.
     foreach ($this->rules as $key => $val) {
       if (!$this->check_display_rule($key, $val)) {
         return $output;
@@ -143,9 +151,6 @@ class DartTag {
       // Setup the slug properly.
       $this->slug = empty($this->slug) ? variable_get('dart_slug', '') : $this->slug;
       $this->slug = $this->slug == '<none>' ? '' : $this->slug;
-
-      // Setup global display rules settings.
-      $this->rules['user_roles'] = variable_get('dart_roles', array());
     }
   }
 
@@ -307,6 +312,9 @@ class DartTag {
       case 'user_role':
         global $user;
         $pass = count(array_intersect($data, array_keys($user->roles))) == 0;
+        break;
+      case 'admin_pages':
+        $pass = arg(0) != 'admin' && !(arg(0) == 'node' && (in_array(arg(1), array('add', 'edit', 'delete'))));
         break;
     }
 
