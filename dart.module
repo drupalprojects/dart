@@ -33,7 +33,7 @@ function dart_perm() {
  */
 function dart_menu() {
   // Admin dart pages.
-  $items['admin/settings/dart'] = array(
+  $items['admin/build/adtag/settings'] = array(
     'title'             => 'DART Settings',
     'description'       => "Configure your site-wide DART settings.",
     'page callback'     => 'drupal_get_form',
