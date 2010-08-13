@@ -34,7 +34,7 @@
 }
 #dart-test-page-form .form-submit {
   width: 75px;
-  margin-left: 25px;
+  margin: 0 0 0 25px;
 }
 #dart-test-page-form label {
   width: 75px;
