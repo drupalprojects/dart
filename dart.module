@@ -33,12 +33,12 @@ function dart_perm() {
  */
 function dart_menu() {
   // Test pages.
-  $items['dart/testpage'] = array(
-    'title'             => 'DART TESTPAGE',
+  $items['admin/build/adtag/testpage'] = array(
+    'title'             => 'Testpage',
     'description'       => "Displays all ad tags on one page",
     'page callback'     => 'dart_test_page',
     'access arguments'  => array('administer DART tags'),
-    'type'              => MENU_CALLBACK,
+    'weight'            => 100,
   );
   // Admin pages.
   $items['admin/build/adtag/settings'] = array(
