@@ -271,9 +271,11 @@ class DartTag {
 
     switch ($rule) {
       case 'domains':
-        global $_domain;
-        $domain_id = $_domain['domain_id'] == 0 ? 'zero' : $_domain['domain_id'];
-        $pass = !empty($data[$domain_id]);
+        if (module_exists('domain')) {
+          global $_domain;
+          $domain_id = $_domain['domain_id'] == 0 ? 'zero' : $_domain['domain_id'];
+          $pass = !empty($data[$domain_id]);
+        }
         break;
       case 'paths':
         switch ($data) {
@@ -294,19 +296,21 @@ class DartTag {
         }
         break;
       case 'taxonomy':
-        $dart_terms = array();
-        foreach ($data as $d) {
-          if (!empty($d)) {
-            $dart_terms = array_merge($dart_terms, explode(', ', $d));
+        if (module_exists('taxonomy')) {
+          $dart_terms = array();
+          foreach ($data as $d) {
+            if (!empty($d)) {
+              $dart_terms = array_merge($dart_terms, explode(', ', $d));
+            }
           }
-        }
-        if (!empty($dart_terms) && arg(0) == 'node' && is_numeric(arg(1))) {
-          $node_terms = array();
-          $node = node_load(arg(1));
-          foreach ($node->taxonomy as $term) {
-            $node_terms[] = $term->name;
+          if (!empty($dart_terms) && arg(0) == 'node' && is_numeric(arg(1))) {
+            $node_terms = array();
+            $node = node_load(arg(1));
+            foreach ($node->taxonomy as $term) {
+              $node_terms[] = $term->name;
+            }
+            $pass = count(array_intersect($dart_terms, $node_terms)) > 0;
           }
-          $pass = count(array_intersect($dart_terms, $node_terms)) > 0;
         }
         break;
       case 'user_role':
