@@ -55,7 +55,7 @@ function dart_admin_settings() {
   $form['gloabl_key_vals']['dart_special_kvs'] = array(
     '#type'           => 'checkboxes',
     '#title'          => t('Special key|val pairs'),
-    '#default_value'  => variable_get('dart_special_vals', array('tile' => 'tile', 'ord' => 'ord')),
+    '#default_value'  => variable_get('dart_special_kvs', array('tile' => 'tile', 'ord' => 'ord')),
     '#options'        => array(
                           'tile' => t('tile (value auto-increments on each tag)'),
                           'ord'  => t('ord (value changes on each page request)')),
