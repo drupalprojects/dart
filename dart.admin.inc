@@ -188,7 +188,7 @@ function dart_admin_tag(&$form_state, $edit=array()) {
   $form['active'] = array(
     '#type'           => 'checkbox',
     '#title'          => t('Check here to make this tag active.'),
-    '#default_value'  => isset($edit['active']) ? $edit['active'] : '',
+    '#default_value'  => isset($edit['active']) ? $edit['active'] : 'active',
   );
 
   // Tag settings.
