@@ -41,12 +41,14 @@ function dart_taxonomy_form_taxonomy_manager_form_alter(&$form, &$form_state) {
   drupal_add_css(drupal_get_path('module', 'dart_taxonomy') . '/css/dart.css');
 
   // Edit the taxonomy manager toolbar.
-  $form['toolbar']['dart_bulk_show'] = array(
-    '#type'       => 'button',
-    '#value'      => t('Dart Bulk Edit'),
-    '#attributes' => array('class' => 'taxonomy-manager-buttons dart-bulk'),
-    '#theme'      => 'no_submit_button',
-  );
+  if (isset($form['toolbar'])) {
+    $form['toolbar']['dart_bulk_show'] = array(
+      '#type'       => 'button',
+      '#value'      => t('Dart Bulk Edit'),
+      '#attributes' => array('class' => 'taxonomy-manager-buttons dart-bulk'),
+      '#theme'      => 'no_submit_button',
+    );
+  }
 
   // Create the DART Bulk Edit form.
   drupal_add_js(array('hideForm' => array(
