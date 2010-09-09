@@ -218,10 +218,11 @@ class DartTag {
       }
       switch ($key) {
         case 'tile':
-          $keyvals .= $key . '|tile++|eval' . "\n" . $keyvals;
+          $keyvals .= "\n" . $key . '|Drupal.DART.tile++|eval';
           break;
       }
     }
+
     return $this->key_vals($keyvals);
   }
 

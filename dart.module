@@ -205,7 +205,8 @@ function dart_preprocess_page(&$variables) {
 
   // Grab page variables and format them.
   $page_vars = dart_get_page_vars();
-  if (count($page_vars)) {
+
+  if (!empty($page_vars)) {
     foreach ($page_vars as $key => $val) {
       $inline_js .= 'Drupal.DART.' . $key . ' = ' . ($key == "ord" ? $val : drupal_to_js($val)) . ';' . "\n";
     }
@@ -385,6 +386,5 @@ function dart_get_page_vars() {
     }
 
   }
-
   return $vars;
 }
