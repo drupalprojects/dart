@@ -270,9 +270,11 @@ function dart_taxonomy_save_map($tid, $data) {
   $key      = $data['key'];
   $val      = $data['val'];
   $exclude  = $data['exclude'] == 1 ? 1 : 0;
-  $map      = _dart_taxonomy_get_map($tid);
 
-  if (empty($map)) {
+  $map        = _dart_taxonomy_get_map($tid);
+  $empty_map  = empty($key) && empty($val) && empty($exclude);
+
+  if (empty($map) && !$empty_map) {
     // This is a new mapping;
     db_query("INSERT INTO {dart_taxonomy_map} VALUES (%d,'%s', '%s',%d)", $tid, $key, $val, $exclude);
   }

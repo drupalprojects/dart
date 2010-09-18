@@ -61,3 +61,12 @@ function dart_taxonomy_schema() {
 
   return $schema;
 }
+
+/**
+ * Removes empty mappings created in error.
+ */
+function dart_taxonomy_update_6000() {
+  $ret = array();
+  $ret[] = update_sql("DELETE FROM {dart_taxonomy_map} WHERE `key`='' AND `val`='' AND `exclude`=0");
+  return $ret;
+}
