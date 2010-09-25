@@ -9,7 +9,14 @@ Drupal.DART = {};
  * Using document.write, add a DART tag to the page
  */
 Drupal.DART.tag = function (pos, sz, tag) {
-  ad  = '<script type="text/javascript" src="';
+	
+  var options = 'type="text/javascript"';
+  var tagname = 'script';
+  if(tag.options.method == 'adi') {
+	tagname = 'iframe';		
+	options = 'frameborder="0" scrolling="no" width="' + sz.split("x")[0] + '" height="' + sz.split("x")[1] + '"';		
+  }
+  ad  = '<' + tagname + ' ' + options + ' src="';
   ad += Drupal.DART.dart_url + "/" + tag.options.method + "/";
   ad += tag.prefix + '.' + tag.site + "/" + tag.zone + ";";
   ad += this.keyVal('pos', pos, false);
@@ -21,7 +28,7 @@ Drupal.DART.tag = function (pos, sz, tag) {
     ad += this.keyVal('ord', Drupal.DART.ord, true);
   }
 
-  ad += '"></script>';
+  ad += '"></' + tagname + '>';
 
   document.write(ad);
   //console.log('-----------------'+pos+'------------------');
