@@ -135,7 +135,7 @@ function dart_tag($dtid, $class='') {
   }
   else {
     drupal_set_message(t('%dtid is not a valid DART tag ID.', array('%dtid' => $dtid)), 'error');
-    $output = '<!-- ' . t('DART tag %dtid does not exist and could not be placed here.', array('%dtid' => $dtid)) . ' !>';
+    $output = '<!-- ' . t('DART tag %dtid does not exist and could not be placed here.', array('%dtid' => $dtid)) . ' -->';
   }
   return $output;
 }
