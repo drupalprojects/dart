@@ -250,6 +250,7 @@ function dart_taxonomy_dart_taxonomy_value_callback() {
   $options = array();
   $options['_dart_taxonomy_callback_tid'] = 'Term ID';
   $options['_dart_taxonomy_callback_truncated'] = 'Truncated Term Name (6 chars)';
+  $options['_dart_taxonomy_callback_full'] = 'Full Term Name';
   return $options;
 }
 
@@ -332,7 +333,22 @@ function _dart_taxonomy_callback_tid($term) {
  *   truncated term name
  */
 function _dart_taxonomy_callback_truncated($term, $char_count=6) {
-  return drupal_substr(drupal_strtolower(ereg_replace("[^A-Za-z0-9]", "", $term->name )), 0, $char_count);
+  return drupal_substr(drupal_strtolower(preg_replace("/[^A-Za-z0-9]/", "", $term->name )), 0, $char_count);
+}
+
+/**
+ * Returns the full (lowercase) term name
+ * without spaces or punctuation to be used for displaying the
+ * term's value within a DART ad tag.
+ *
+ * @param $term
+ *   term object
+ *
+ * @return
+ *   term name
+ */
+function _dart_taxonomy_callback_full($term) {
+  return drupal_strtolower(preg_replace("/[^A-Za-z0-9_\-]/", "", str_replace(' ', '_', $term->name) ));
 }
 
 /**
