@@ -1,0 +1,14 @@
+<?php
+// $Id$
+
+/**
+ * Implementation of hook_update_N().
+ */
+function dart_scheduler_update_6200() {
+  $ret = array();
+
+  // Delete the dart_scheduler table.
+  db_drop_table($ret, 'dart_tags_schedule');
+
+  return $ret;
+}

@@ -1,0 +1,97 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Installation file for DART Taxonomy module.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function dart_taxonomy_install() {
+  // Create tables.
+  drupal_install_schema('dart_taxonomy');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function dart_taxonomy_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('dart_taxonomy');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function dart_taxonomy_schema() {
+  $schema['dart_taxonomy_map'] = array(
+    'description' => 'Stores information about how taxonomy terms should be displayed in DART tags.',
+    'fields' => array(
+      'tid' => array(
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not NULL'    => TRUE,
+        'description' => "Unique taxonomy term ID."
+      ),
+      'key' => array(
+        'type'        => 'varchar',
+        'length'      => 32,
+        'not NULL'    => TRUE,
+        'default'     => '',
+        'description' => "The key to be used for this term within a DART tag.",
+      ),
+      'val' => array(
+        'type'        => 'varchar',
+        'length'      => 128,
+        'not NULL'    => TRUE,
+        'default'     => '',
+        'description' => "The value to be used for this term within a DART tag.",
+      ),
+      'exclude' => array(
+        'type'        => 'int',
+        'not NULL'    => TRUE,
+        'default'     => '0',
+        'description' => "Boolean. True if the term should be excluded from DART tags.",
+      ),
+    ),
+    'primary key' => array('tid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_update_N().
+ */
+function dart_taxonomy_update_6200() {
+  $ret = array();
+
+  // Test to see if the core dart module has been updated yet.
+  $table = db_fetch_array(db_query('DESCRIBE {dart_tags}'));
+  $mode = $table['Field'] == "dtid" ? 6.1 : 6.2;
+
+  // Rename variables. This uses a function from dart.install.
+  module_load_install('dart');
+  _dart_rename_variables(array('dart_taxonomy_default_value_callback' => 'dart_taxonomy_default_callback'));
+
+  // Rename "options->terms" to "options->include_terms".
+  $tags = db_query('SELECT * FROM {dart_tags}');
+  while ($tag = db_fetch_object($tags)) {
+    $tag->settings = unserialize($tag->settings);
+    if (isset($tag->settings['options']['terms'])) {
+      $tag->settings['options']['include_terms'] = $tag->settings['options']['terms'];
+      unset($tag->settings['options']['terms']);
+
+      if ($mode == 6.1) {
+        db_query("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = %d", serialize($tag->settings), $tag->dtid);
+      }
+      else {
+        db_query("UPDATE {dart_tags} SET settings = '%s' WHERE machinename = '%s'", serialize($tag->settings), $tag->machinename);
+      }
+    }
+  }
+
+  return $ret;
+}

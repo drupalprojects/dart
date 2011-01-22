@@ -8,31 +8,20 @@ Drupal.DART = {};
 /**
  * Using document.write, add a DART tag to the page
  */
-Drupal.DART.tag = function (pos, sz, tag) {
-	
-  var options = 'type="text/javascript"';
-  var tagname = 'script';
-  if(tag.options.method == 'adi') {
-	tagname = 'iframe';		
-	options = 'frameborder="0" scrolling="no" width="' + sz.split("x")[0] + '" height="' + sz.split("x")[1] + '"';		
-  }
-  ad  = '<' + tagname + ' ' + options + ' src="';
-  ad += Drupal.DART.dart_url + "/" + tag.options.method + "/";
-  ad += tag.prefix + '.' + tag.site + "/" + tag.zone + ";";
-  ad += this.keyVal('pos', pos, false);
-  ad += this.keyVal('sz', sz, false);
-  ad += this.keyVals(tag.options.keyvals);
+Drupal.DART.tag = function(tag) {
+  var tagname = tag.settings.options.method == 'adj' ? 'script' : 'iframe';
+  var options = tag.settings.options.method == 'adj' ? 'type="text/javascript"' : 'frameborder="0" scrolling="no" width="' + tag.sz.split("x")[0] + '" height="' + tag.sz.split("x")[1] + '"';;
 
-  // If ord exists, add it last.
-  if (typeof Drupal.DART.ord !== "undefined") {
-    ad += this.keyVal('ord', Drupal.DART.ord, true);
-  }
+  ad  = '<' + tagname + ' ' + options + ' src="';
+  ad += dart_url + "/" + tag.settings.options.method + "/";
+  ad += tag.prefix + '.' + tag.site + "/" + tag.zone + ";";
+  ad += this.keyVals(tag.key_vals);
 
   ad += '"></' + tagname + '>';
 
   document.write(ad);
-  //console.log('-----------------'+pos+'------------------');
-  //console.log(tag);
+  // console.log('-----------------'+tag.pos+'------------------');
+  // console.log(tag);
 }
 
 /**
@@ -51,9 +40,9 @@ Drupal.DART.keyVal = function(key, val, useEval) {
  * @param vals
  *   an object in this form:
  *   {
- *     key1 : {val:'foo', eval:true},
- *     key2 : {val:'bar', eval:false},
- *     key3 : {val:'foobar', eval:true}
+ *     key1 : {{val:'foo', eval:true}, {val:'foo2', eval:false}}
+ *     key2 : {{val:'bar', eval:false}},
+ *     key3 : {{val:'foobar', eval:true}}
  *   }
  */
 Drupal.DART.keyVals = function(vals) {
