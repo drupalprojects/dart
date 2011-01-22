@@ -303,7 +303,7 @@ function _dart_taxonomy_callbacks() {
     '_dart_taxonomy_callback_full'      => 'Full Term Name',
   );
 
-  drupal_alter('dart_taxonomy_value_callbacks', $options);
+  drupal_alter('dart_taxonomy_callbacks', $options);
 
   return $options;
 }
