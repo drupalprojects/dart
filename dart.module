@@ -162,7 +162,7 @@ function dart_tag($machinename) {
     drupal_set_message(t('%machinename is not a valid DART tag.', array('%machinename' => $machinename)), 'error');
     return;
   }
-dsm($tag);
+
   if ($tag->active && $show_tag) {
     // Build the tag based on its display options.
     // $output = dart_tag_build($tag);
