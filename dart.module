@@ -328,6 +328,7 @@ function dart_test_page() {
 
   $output  = drupal_get_form('dart_test_page_form');
   foreach ($tags as $tag) {
+    $tag->mode = 'test';
     $tag->site = isset($_GET['site']) ? $_GET['site'] : $tag->site;
     $tag->zone = isset($_GET['zone']) ? $_GET['zone'] : $tag->zone;
 
@@ -457,8 +458,15 @@ function template_preprocess_dart_tag(&$variables) {
   $variables['attributes']  = array('class' => 'dart-tag');
   $variables['json_tag']    = drupal_to_js($tag);
 
-  $variables['show_script_tag']   = $tag->settings['options']['scriptless'];
-  $variables['show_noscript_tag'] = variable_get('dart_noscript', 1);
+  if ($tag->mode == 'test') {
+    $variables['show_script_tag']   = TRUE;
+    $variables['show_noscript_tag'] = TRUE;  
+  }
+  else {
+    $variables['show_script_tag']   = $tag->settings['options']['scriptless'];
+    $variables['show_noscript_tag'] = variable_get('dart_noscript', 1);
+  }
+  
   $variables['noscript_tag']      = $variables['show_noscript_tag'] ? '<noscript>' . l(theme('image', $tag->noscript['src']), $tag->noscript['href'], array('html' => TRUE)) . '</noscript>' : '';
 
   $variables['tag'] = $tag;
