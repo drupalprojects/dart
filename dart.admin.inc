@@ -119,7 +119,7 @@ function dart_admin_settings() {
 
 function dart_admin_settings_validate($form, &$form_state) {
   // Validate "key_vals" before its name is changed.
-  _dart_key_val_form_validate($form, &$form_state);
+  _dart_key_val_form_validate($form, $form_state);
 
   // Rename the key_vals value to dart_key_vals to avoid namespace conflicts.
   $form_state['values']['dart_key_vals'] = $form_state['values']['key_vals'];

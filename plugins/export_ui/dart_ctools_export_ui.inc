@@ -182,7 +182,7 @@ function dart_tag_form(&$form, &$form_state) {
  * Form validation for the dart_tag form.
  */
 function dart_tag_form_validate($form, &$form_state) {
-  _dart_key_val_form_validate($form, &$form_state);
+  _dart_key_val_form_validate($form, $form_state);
 }
 
 /**
