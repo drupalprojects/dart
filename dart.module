@@ -463,7 +463,7 @@ function template_preprocess_dart_tag(&$variables) {
     $variables['show_noscript_tag'] = TRUE;  
   }
   else {
-    $variables['show_script_tag']   = $tag->settings['options']['scriptless'];
+    $variables['show_script_tag']   = !$tag->settings['options']['scriptless'];
     $variables['show_noscript_tag'] = variable_get('dart_noscript', 1);
   }
   
