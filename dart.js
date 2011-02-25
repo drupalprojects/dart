@@ -1,4 +1,3 @@
-// $Id$
 
 /**
  * Create a DART object to handle tagging functionality
