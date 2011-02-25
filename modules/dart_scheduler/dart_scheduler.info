@@ -1,4 +1,3 @@
-; $Id$
 
 name = DART Scheduler
 description = Allows DART tags to be scheduled to appear or not.

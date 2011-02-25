@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * The maximum number of key|value pair fields to show on forms by defaut.
