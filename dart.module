@@ -244,10 +244,10 @@ function dart_tag_prepare(&$tags) {
 
     // Build data for the noscript tag.
     $tag->noscript = dart_tag_prepare_noscript($tag);
-  }
 
-  // Give other modules the opportunity to add infrmation to the tag.
-  drupal_alter('dart_tag', $tag);
+    // Give other modules the opportunity to add information to this tag.
+    drupal_alter('dart_tag', $tag);
+  }
 }
 
 /**
