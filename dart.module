@@ -204,7 +204,9 @@ function dart_tag_load($machinename = '') {
 function dart_tag_prepare(&$tags) {
   // Unserialize the settings array.
   foreach ($tags as &$tag) {
-    $tag->settings = unserialize($tag->settings);
+    if (is_string($tag->settings)) {
+      $tag->settings = unserialize($tag->settings);
+    }
 
     // Build an exhaustive key_vals array to use for display purposes that
     // incorporates global, special & tag-specific key|value pairs.
