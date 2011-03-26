@@ -84,8 +84,8 @@ function dart_menu() {
 function dart_block($op = 'list', $delta = 0, $edit = array()) {
   switch ($op) {
     case 'list':
-      $result = db_query('SELECT * FROM {dart_tags} WHERE block = %d', 1);
-      while ($tag = db_fetch_object($result)) {
+      $tags = _dart_block_tags();
+      foreach ($tags as $tag) {
         $block['dart-tag-'. $tag->machinename]['info'] = t('DART tag: !tagname', array('!tagname' => $tag->name));
       }
       break;
@@ -382,6 +382,23 @@ function _dart_tag_settings_data_structure() {
   drupal_alter('dart_tag_settings_data_structure', $structure);
 
   return $structure;
+}
+
+/**
+ * Helper function that returns an array of all tags that will
+ * be rendered as blocks.
+ */
+function _dart_block_tags() {
+  $block_tags = array();
+  $tags = dart_tag_load();
+dpm($tags);
+  foreach ($tags as $tag) {
+    if ($tag->block) {
+      $block_tags[] = $tag;
+    }
+  }
+
+  return $block_tags;
 }
 
 /**
