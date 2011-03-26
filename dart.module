@@ -391,7 +391,7 @@ function _dart_tag_settings_data_structure() {
 function _dart_block_tags() {
   $block_tags = array();
   $tags = dart_tag_load();
-dpm($tags);
+
   foreach ($tags as $tag) {
     if ($tag->block) {
       $block_tags[] = $tag;
