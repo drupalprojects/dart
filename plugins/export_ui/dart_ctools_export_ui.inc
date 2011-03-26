@@ -95,16 +95,16 @@ function dart_tag_form(&$form, &$form_state) {
     '#collapsed'    => TRUE,
     '#description'  => t('Override the !settings for this ad tag.', array('!settings' => l(t('default settings'), 'admin/configure/dart'))),
   );
-  $default_zone = variable_get('dart_site', '');
+  $default_site = variable_get('dart_global_site', '');
   $form['tag_settings']['overrides']['site'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Site'),
-    '#description'    => t('In rare circumstances you may want to override the !settings: %default', array('!settings' => l(t('default DART site'), 'admin/configure/dart'), '%default' => empty($default_zone) ? t('No default value has been set.') : $default_zone)),
+    '#description'    => t('In rare circumstances you may want to override the !settings: %default', array('!settings' => l(t('default DART site'), 'admin/configure/dart'), '%default' => empty($default_site) ? t('No default value has been set.') : $default_site)),
     '#required'       => FALSE,
     '#maxlength'      => 32,
     '#default_value'  => $tag->settings['overrides']['site'],
   );
-  $default_zone = variable_get('dart_zone', '');
+  $default_zone = variable_get('dart_global_zone', '');
   $form['tag_settings']['overrides']['zone'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Zone'),
