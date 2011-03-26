@@ -45,7 +45,7 @@ function dart_admin_settings() {
   $form['dart_global_slug'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Global Slug'),
-    '#default_value'  => variable_get('dart_slug', '<none>'),
+    '#default_value'  => variable_get('dart_global_slug', '<none>'),
     '#required'       => FALSE,
     '#description'    => t('Slug all ad tags with the following with this label. Use @tag for no slug. Example: Advertisement', array('@tag' => '<none>')),
     '#maxlength'      => 64,
