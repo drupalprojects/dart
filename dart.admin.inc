@@ -119,6 +119,44 @@ function dart_admin_settings() {
     '#rows'           => 5,
   );
 
+  // Ad Test Settngs.
+  $form['default_ad_test_settings'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Ad Test Settings'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+    '#weight'       => 50,
+    '#description'  => 'Enter the values that DART tags should use for prefix, site & zone when you add the ?adtest=true query string to any url. Additionally note that you can override these values at any time by adding ?adtest=true &amp;prefix=testprefix &amp;site=testsite &amp;zone=testzone to any url. <div><h3>Examples:</h3><ul><li>mysite.com?adtest=true</li><li>mysite.com?adtest=true&prefix=testprefix</li><li>mysite.com?adtest=true&prefix=testprefix&zone=testzone</li></ul></div>',
+  );
+  $form['default_ad_test_settings']['default_test_tag_settings'] = array(
+    '#theme'        => 'dart_global_defaults_form',
+    '#description'    => t('The default values to use when the query string ?adtest=true is present in the url.'),
+  );
+  $form['default_ad_test_settings']['default_test_tag_settings']['dart_test_prefix'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Default test prefix'),
+    '#default_value'  => variable_get('dart_test_prefix', ''),
+    '#description'    => t('The prefix to use when the query string ?adtest=true is present.'),
+    '#required'       => FALSE,
+    '#maxlength'      => 32,
+  );
+  $form['default_ad_test_settings']['default_test_tag_settings']['dart_test_site'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Default test site'),
+    '#default_value'  => variable_get('dart_test_site', ''),
+    '#description'    => t('The site to use when the query string ?adtest=true is present.'),
+    '#required'       => FALSE,
+    '#maxlength'      => 32,
+  );
+  $form['default_ad_test_settings']['default_test_tag_settings']['dart_test_zone'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Default test zone'),
+    '#default_value'  => variable_get('dart_test_zone', ''),
+    '#description'    => t('The zone to use when the query string ?adtest=true is present.'),
+    '#required'       => FALSE,
+    '#maxlength'      => 32,
+  );
+
   // Add vertical tabs display if available.
   $form['#pre_render'][] = 'vertical_tabs_form_pre_render';
 
@@ -138,27 +176,50 @@ function dart_admin_settings_validate($form, &$form_state) {
  * Theme the dart settings form for global prefix.site/zone.
  */
 function theme_dart_global_defaults_form($form) {
+  // Specify which fields we are theming.
+  switch ($form['#parents'][0]) {
+    case 'default_tag_settings':
+      $mode = 'global';
+      $element_name = 'dart_global_prefix_site_zone';
+      $fields = array(
+        'prefix'  => 'dart_global_prefix',
+        'site'    => 'dart_global_site',
+        'zone'    => 'dart_global_zone',
+      );
+      break;
+    case 'default_test_tag_settings';
+      $mode = 'test';
+      $element_name = 'dart_test_prefix_site_zone';
+      $fields = array(
+        'prefix'  => 'dart_test_prefix',
+        'site'    => 'dart_test_site',
+        'zone'    => 'dart_test_zone',
+      );
+      break;
+  }
+
   // Removie titles.
-  unset($form['dart_global_prefix']['#title'], $form['dart_global_site']['#title'], $form['dart_global_zone']['#title']);
+  unset($form[$fields['prefix']]['#title'], $form[$fields['site']]['#title'], $form[$fields['zone']]['#title']);
   // Set widths.
-  $form['dart_global_prefix']['#attributes']['style'] = 'width: 60px;';
-  $form['dart_global_site']['#attributes']['style'] = 'width: 200px;';
-  $form['dart_global_zone']['#attributes']['style'] = 'width: 200px;';
+  $form[$fields['prefix']]['#attributes']['style'] = 'width: 60px;';
+  $form[$fields['site']]['#attributes']['style'] = 'width: 200px;';
+  $form[$fields['zone']]['#attributes']['style'] = 'width: 200px;';
 
   $replacements = array(
-    '!prefix' => drupal_render($form['dart_global_prefix']),
-    '!site' => drupal_render($form['dart_global_site']),
-    '!zone' => drupal_render($form['dart_global_zone']),
+    '!prefix' => drupal_render($form[$fields['prefix']]),
+    '!site' => drupal_render($form[$fields['site']]),
+    '!zone' => drupal_render($form[$fields['zone']]),
   );
-  $form['dart_global_prefix_sit_zone'] = array(
+  $form[$element_name] = array(
     '#type'   => 'markup',
-    "#prefix" => '<div class="form-item container-inline"><label>prefix . site / zone</label><br/>',
+    '#prefix' => '<div class="form-item container-inline"><label>' . $mode . ' prefix . site / zone</label><br/>',
     "#suffix" => '<p class="description">' . $form['#description'] . '</p></div>',
     '#value'  => t('!prefix . !site / !zone', $replacements),
   );
-  unset($form['dart_global_prefix']);
-  unset($form['dart_global_site']);
-  unset($form['dart_global_zone']);
+
+  unset($form[$fields['prefix']]);
+  unset($form[$fields['site']]);
+  unset($form[$fields['zone']]);
 
   return drupal_render($form);
 }

@@ -249,6 +249,9 @@ function dart_tag_prepare(&$tags) {
 
     // Give other modules the opportunity to add information to this tag.
     drupal_alter('dart_tag', $tag);
+
+    // Check if tags should be displayed using test values for prefix.site/zone().
+    dart_tag_adtest($tag);
   }
 }
 
@@ -370,6 +373,18 @@ function dart_test_page_form(&$form_state, $edit=array()) {
   );
 
   return $form;
+}
+
+/**
+ * Alters tags to use test prefix.site.zone if the adtest query string.
+ */
+function dart_tag_adtest(&$tag) {
+  // If there is an "adtest" query string, show test ad tags instead.
+  if (isset($_GET['adtest']) && $_GET['adtest'] == 'true') {
+    $tag->prefix = $_GET['prefix'] ? $_GET['prefix'] : variable_get('dart_test_prefix', '');
+    $tag->site = $_GET['site'] ? $_GET['site'] : variable_get('dart_test_site', '');
+    $tag->zone = $_GET['zone'] ? $_GET['zone'] : variable_get('dart_test_zone', '');
+  }
 }
 
 /**
