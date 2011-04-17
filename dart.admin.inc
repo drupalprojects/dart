@@ -11,6 +11,7 @@
  * @ingroup forms
  */
 function dart_admin_settings() {
+  drupal_add_js(drupal_get_path('module', 'dart') . '/dart.admin.js');
   $form['#validate'][] = 'dart_admin_settings_validate';
   
   // Default tag settings.
@@ -80,6 +81,14 @@ function dart_admin_settings() {
                           'tile' => t('tile (value auto-increments on each tag)'),
                           'ord'  => t('ord (value changes on each page request)')),
     '#description' => t('Include these special values in all of your ad tags.'),
+    '#weight'         => -10,
+  );
+  $form['global_key_vals']['dart_special_tile_init'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Initial value of tile'),
+    '#default_value'  => variable_get('dart_special_tile_init', '0'),
+    '#size'           => 1,
+    '#weight'         => -5,
   );
 
   // Container for the key_value forms.

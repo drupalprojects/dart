@@ -256,8 +256,11 @@ function dart_tag_prepare(&$tags) {
  * Build data for the noscript tag.
  */
 function dart_tag_prepare_noscript($tag) {
-  static $tile = 0;
+  static $tile = NULL;
   static $ord = 0;
+
+  // Set an initial value for tile.
+  $tile = is_null($tile) ? variable_get('dart_special_tile_init', '0') : $tile;
 
   // Add the special key|value pairs to the noscript tag.
   $special_key_vals  = _dart_get_special_key_vals();
@@ -458,7 +461,7 @@ function _dart_get_page_key_vals() {
           $key_vals['ord'] = "1000000000 + Math.floor(Math.random() * 900000000)";
           break;
         case 'tile':
-          $key_vals['tile'] = 0;
+          $key_vals['tile'] = variable_get('dart_special_tile_init', '0');
           break;
       }
     }
