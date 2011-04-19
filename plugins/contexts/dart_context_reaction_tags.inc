@@ -22,7 +22,7 @@ class dart_context_reaction_tags extends context_reaction {
       '#description'    => t('The following DART tags will not be displayed.'),
       '#type'           => 'checkboxes',
       '#options'        => $options,
-      '#default_value'  => isset($values['tags']) ? $values['tags'] : array(),
+      '#default_value'  => isset($values) ? $values : array(),
     );
 
     return $form;
@@ -38,7 +38,7 @@ class dart_context_reaction_tags extends context_reaction {
     // Check each currently set context to see if the DART tag specified by
     // machinename should be displayed or not.
     foreach ($this->get_contexts() as $context_name => $context) {
-      if (isset($context->reactions['dart_tags']) && !in_array($machinename, $context->reactions['dart_tags'], TRUE)) {
+      if (isset($context->reactions['dart_tags']) && in_array($machinename, $context->reactions['dart_tags'], TRUE)) {
         $show = FALSE;
         break;
       }
