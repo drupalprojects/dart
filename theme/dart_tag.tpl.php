@@ -22,5 +22,5 @@
   <?php if ($show_script_tag) { ?>
   <script type="text/javascript">Drupal.DART.tag('<?php print $json_tag; ?>');</script>
   <?php } ?>
-  <?php print $noscript; ?>
+  <?php print $noscript_tag; ?>
 </div>
