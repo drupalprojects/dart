@@ -73,7 +73,7 @@ function dart_taxonomy_form_alter(&$form, &$form_state, $form_id) {
         '#type'           => 'select',
         '#options'        => _dart_taxonomy_callbacks(),
         '#title'          => t('Default taxonomy value'),
-        '#default_value'  => variable_get('dart_taxonomy_default_value_callback', '_dart_taxonomy_callback_tid'),
+        '#default_value'  => variable_get('dart_taxonomy_default_callback', '_dart_taxonomy_callback_tid'),
         '#required'       => TRUE,
         '#description'    => t('How should the taxonomy terms be displayed when included in a DART tag.'),
       );
