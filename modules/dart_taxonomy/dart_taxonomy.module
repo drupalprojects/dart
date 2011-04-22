@@ -286,8 +286,13 @@ function dart_taxonomy_map_save($tid, $data) {
  *   array of dart map information
  */
 function dart_taxonomy_map_get($tid) {
-  $map = db_fetch_array(db_query('SELECT * FROM {dart_taxonomy_map} WHERE tid = %d', $tid));
-  return $map;
+  static $maps = array();
+
+  if (!isset($maps[$tid])) {
+    $maps[$tid] = db_fetch_array(db_query('SELECT * FROM {dart_taxonomy_map} WHERE tid = %d', $tid));
+  }
+
+  return $maps[$tid];
 }
 
 /**
