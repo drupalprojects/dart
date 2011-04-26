@@ -244,11 +244,11 @@ function dart_tag_prepare(&$tags) {
     }
     $tag->slug = ($tag->slug != '<none>' ? $tag->slug : '');
 
-    // Build data for the noscript tag.
-    $tag->noscript = dart_tag_prepare_noscript($tag);
-
     // Give other modules the opportunity to add information to this tag.
     drupal_alter('dart_tag', $tag);
+
+    // Build data for the noscript tag.
+    $tag->noscript = dart_tag_prepare_noscript($tag);
 
     // Check if tags should be displayed using test values for prefix.site/zone().
     dart_tag_adtest($tag);
