@@ -19,9 +19,8 @@ Drupal.DART.tag = function(tag) {
   ad += this.keyVals(tag.key_vals);
 
   // Allow other modules to include js that can manipulate each key|val.
-  ad = $(document).triggerHandler('dart_tag_render', [ad]);
-
-  ad += '"></' + tagname + '>';
+  rendered_ad = $(document).triggerHandler('dart_tag_render', [ad]);
+  ad = rendered_ad != undefined ? rendered_ad : ad; ad += '"></' + tagname + '>';
 
   document.write(ad);
   // console.log('-----------------'+tag.pos+'------------------');
