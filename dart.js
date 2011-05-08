@@ -5,6 +5,13 @@
 Drupal.DART = {};
 
 /**
+ * Overridable settings.
+ */
+Drupal.DART.settings = {
+  "writeTags": true
+};
+
+/**
  * Using document.write, add a DART tag to the page
  */
 Drupal.DART.tag = function(tag) {
@@ -22,9 +29,14 @@ Drupal.DART.tag = function(tag) {
   rendered_ad = $(document).triggerHandler('dart_tag_render', [ad]);
   ad = rendered_ad != undefined ? rendered_ad : ad; ad += '"></' + tagname + '>';
 
-  document.write(ad);
+  if (Drupal.DART.settings.writeTags) {
+    document.write(ad);
+  }
+
   // console.log('-----------------'+tag.pos+'------------------');
   // console.log(tag);
+
+  return ad;
 }
 
 /**
