@@ -1,0 +1,233 @@
+
+*************************
+Pre-processing the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart
+*************************
+Calling hook_upgrade_begin_alter
+Completed hook_upgrade_begin_alter
+
+*************************
+Converting the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart
+*************************
+
+*************************
+Converting the file => dart.admin.inc
+*************************
+Calling hook_upgrade_regex_alter
+Completed hook_upgrade_regex_alter
+Calling hook_upgrade_call_alter
+Completed hook_upgrade_call_alter
+Calling hook_upgrade_hook_alter
+Completed hook_upgrade_hook_alter
+Calling hook_upgrade_file_alter
+Completed hook_upgrade_file_alter
+Replaced the file
+
+*************************
+Converting the file => dart.info
+*************************
+Calling hook_upgrade_regex_info_alter
+Completed hook_upgrade_regex_info_alter
+Replaced the file
+
+*************************
+Converting the file => dart.install
+*************************
+Calling hook_upgrade_regex_install_alter
+Completed hook_upgrade_regex_install_alter
+Calling hook_upgrade_regex_alter
+Completed hook_upgrade_regex_alter
+Calling hook_upgrade_call_alter
+ERROR: could not parse sql SELECT statement.
+Completed hook_upgrade_call_alter
+Calling hook_upgrade_hook_alter
+Ignoring function '_dart_rename_variables' as its name does not begin with the module name or 'theme_'
+Ignoring function '_dart_machinename' as its name does not begin with the module name or 'theme_'
+Ignoring function '_dart_convert_old_key_vals' as its name does not begin with the module name or 'theme_'
+Completed hook_upgrade_hook_alter
+Calling hook_upgrade_file_alter
+Completed hook_upgrade_file_alter
+Calling hook_upgrade_parser_install_alter
+Completed hook_upgrade_parser_install_alter
+Replaced the file
+
+*************************
+Converting the file => dart.module
+*************************
+Calling hook_upgrade_regex_alter
+Completed hook_upgrade_regex_alter
+Calling hook_upgrade_call_alter
+Completed hook_upgrade_call_alter
+Calling hook_upgrade_hook_alter
+Ignoring function '_dart_tag_settings_data_structure' as its name does not begin with the module name or 'theme_'
+Ignoring function '_dart_block_tags' as its name does not begin with the module name or 'theme_'
+Ignoring function '_dart_add_key_val' as its name does not begin with the module name or 'theme_'
+Ignoring function '_dart_get_special_key_vals' as its name does not begin with the module name or 'theme_'
+Ignoring function '_dart_get_page_key_vals' as its name does not begin with the module name or 'theme_'
+Ignoring function 'template_preprocess_dart_tag' as its name does not begin with the module name or 'theme_'
+Completed hook_upgrade_hook_alter
+Calling hook_upgrade_file_alter
+Completed hook_upgrade_file_alter
+Replaced the file
+
+*************************
+Converting the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart/modules
+*************************
+
+*************************
+Converting the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart/modules/dart_scheduler
+*************************
+
+*************************
+Converting the file => dart_scheduler.info
+*************************
+Calling hook_upgrade_regex_info_alter
+Completed hook_upgrade_regex_info_alter
+Replaced the file
+
+*************************
+Converting the file => dart_scheduler.install
+*************************
+Calling hook_upgrade_regex_install_alter
+Completed hook_upgrade_regex_install_alter
+Calling hook_upgrade_regex_alter
+Completed hook_upgrade_regex_alter
+Calling hook_upgrade_call_alter
+Completed hook_upgrade_call_alter
+Calling hook_upgrade_hook_alter
+Completed hook_upgrade_hook_alter
+Calling hook_upgrade_file_alter
+Completed hook_upgrade_file_alter
+Calling hook_upgrade_parser_install_alter
+Completed hook_upgrade_parser_install_alter
+Replaced the file
+
+*************************
+Converting the file => dart_scheduler.module
+*************************
+Calling hook_upgrade_regex_alter
+Completed hook_upgrade_regex_alter
+Calling hook_upgrade_call_alter
+Completed hook_upgrade_call_alter
+Calling hook_upgrade_hook_alter
+Ignoring function '_dart_scheduler_add_form' as its name does not begin with the module name or 'theme_'
+Completed hook_upgrade_hook_alter
+Calling hook_upgrade_file_alter
+Completed hook_upgrade_file_alter
+Replaced the file
+
+*************************
+Converting the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart/modules/dart_taxonomy
+*************************
+
+*************************
+Converting the file => dart_taxonomy.info
+*************************
+Calling hook_upgrade_regex_info_alter
+Completed hook_upgrade_regex_info_alter
+Replaced the file
+
+*************************
+Converting the file => dart_taxonomy.install
+*************************
+Calling hook_upgrade_regex_install_alter
+Completed hook_upgrade_regex_install_alter
+Calling hook_upgrade_regex_alter
+Completed hook_upgrade_regex_alter
+Calling hook_upgrade_call_alter
+ERROR: could not parse sql SELECT statement.
+Completed hook_upgrade_call_alter
+Calling hook_upgrade_hook_alter
+Completed hook_upgrade_hook_alter
+Calling hook_upgrade_file_alter
+Completed hook_upgrade_file_alter
+Calling hook_upgrade_parser_install_alter
+Completed hook_upgrade_parser_install_alter
+Replaced the file
+
+*************************
+Converting the file => dart_taxonomy.module
+*************************
+Calling hook_upgrade_regex_alter
+Completed hook_upgrade_regex_alter
+Calling hook_upgrade_call_alter
+ERROR: could not parse sql INSERT statement.
+ERROR: Could not parse the SQL string
+ERROR: could not parse sql UPDATE statement.
+ERROR: Could not parse the SQL string
+Completed hook_upgrade_call_alter
+Calling hook_upgrade_hook_alter
+Ignoring function '_dart_taxonomy_callbacks' as its name does not begin with the module name or 'theme_'
+Ignoring function '_dart_taxonomy_callback_tid' as its name does not begin with the module name or 'theme_'
+Ignoring function '_dart_taxonomy_callback_truncated' as its name does not begin with the module name or 'theme_'
+Ignoring function '_dart_taxonomy_callback_full' as its name does not begin with the module name or 'theme_'
+TODO: Should this theme dart_taxonomy_tree_elements be declared in hook_theme()?
+Completed hook_upgrade_hook_alter
+Calling hook_upgrade_file_alter
+Completed hook_upgrade_file_alter
+Replaced the file
+
+*************************
+Converting the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart/modules/dart_taxonomy/images
+*************************
+
+*************************
+Converting the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart/modules/dart_taxonomy/theme
+*************************
+
+*************************
+Converting the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart/plugins
+*************************
+
+*************************
+Converting the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart/plugins/contexts
+*************************
+
+*************************
+Converting the file => dart_context_reaction_tags.inc
+*************************
+Calling hook_upgrade_regex_alter
+Completed hook_upgrade_regex_alter
+Calling hook_upgrade_call_alter
+Completed hook_upgrade_call_alter
+Calling hook_upgrade_hook_alter
+Ignoring function 'options_form' as its name does not begin with the module name or 'theme_'
+Ignoring function 'execute' as its name does not begin with the module name or 'theme_'
+Completed hook_upgrade_hook_alter
+Calling hook_upgrade_file_alter
+Completed hook_upgrade_file_alter
+Replaced the file
+
+*************************
+Converting the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart/plugins/export_ui
+*************************
+
+*************************
+Converting the file => dart_ctools_export_ui.inc
+*************************
+Calling hook_upgrade_regex_alter
+Completed hook_upgrade_regex_alter
+Calling hook_upgrade_call_alter
+Completed hook_upgrade_call_alter
+Calling hook_upgrade_hook_alter
+Ignoring function 'dart_tag_form' as its name does not begin with the module name or 'theme_'
+Ignoring function 'dart_tag_form_validate' as its name does not begin with the module name or 'theme_'
+Ignoring function 'dart_tag_form_submit' as its name does not begin with the module name or 'theme_'
+Completed hook_upgrade_hook_alter
+Calling hook_upgrade_file_alter
+Completed hook_upgrade_file_alter
+Replaced the file
+
+*************************
+Converting the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart/theme
+*************************
+
+*************************
+Post-processing the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/new/dart
+*************************
+Calling hook_upgrade_end_alter
+Completed hook_upgrade_end_alter
+
+*************************
+Creating a patch file for the directory => /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart
+*************************
+Making patch file: diff -up -r /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/old/dart /Users/rickvugteveen/MAMPServer/dennis_distro/sites/default/files/coder_upgrade/new/dart > sites/default/files/coder_upgrade/patch/dart.patch

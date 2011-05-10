@@ -6,30 +6,36 @@
  */
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function dart_install() {
   // Create tables.
-  drupal_install_schema('dart');
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  // drupal_install_schema('dart')
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function dart_uninstall() {
   // Remove tables.
-  drupal_uninstall_schema('dart');
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  // drupal_uninstall_schema('dart')
 
   // Remove any blocks created by DART.
-  db_query("DELETE FROM {blocks} WHERE module='dart'");
+  // TODO Please review the conversion of this statement to the D7 database API syntax.
+  /* db_query("DELETE FROM {block} WHERE module='dart'") */
+  db_delete('block')
+  ->condition('module', 'dart')
+  ->execute();
 }
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function dart_schema() {
   $schema['dart_tags'] = array(
-    'description' => t('Stores information about DART tags.'),
+    'description' => 'Stores information about DART tags.',
     'export' => array(
       'key' => 'machinename',
       'identifier' => 'tag', // Exports will be available as $tag
@@ -92,21 +98,28 @@ function dart_schema() {
 }
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function dart_update_6200() {
   $ret = array();
 
   // Make changes to the dart_tag table.
-  db_add_field($ret, 'dart_tags', 'machinename', array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => '', 'description' => "The tag's unique name."));
-  db_change_field($ret, 'dart_tags', 'name', 'name', array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => '', 'description' => "The tag's human-readible name."));
+  db_add_field('dart_tags', 'machinename', array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => '', 'description' => "The tag's unique name."));
+  db_change_field('dart_tags', 'name', 'name', array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => '', 'description' => "The tag's human-readible name."));
 
   // Make changes to the existing tags.
   $tags = db_query("SELECT * FROM {dart_tags}");
   while ($tag = db_fetch_object($tags)) {
     // Create a machinename.
     $machinename = _dart_machinename($tag->name);
-    db_query("UPDATE {dart_tags} SET machinename = '%s' WHERE dtid = %d", $machinename, $tag->dtid);
+    // TODO Please review the conversion of this statement to the D7 database API syntax.
+    /* db_query("UPDATE {dart_tags} SET machinename = '%s' WHERE dtid = %d", $machinename, $tag->dtid) */
+    db_update('dart_tags')
+  ->fields(array(
+      'machinename' => $machinename,
+    ))
+  ->condition('dtid', $tag->dtid)
+  ->execute();
     drupal_set_message(t('The DART tag with id @dtid now uses @machinename as its identifier.', array('@dtid' => $tag->dtid, '@machinename' => $machinename)));
 
     // Alter the tag's settings.
@@ -115,18 +128,40 @@ function dart_update_6200() {
     $tag->settings['overrides'] = array(
       'site' => $tag->settings['site'],
       'zone' => $tag->settings['zone'],
-      'slug' => $tag->settings['slug']
+      'slug' => $tag->settings['slug'],
     );
     if (isset($tag->settings['options']['keyvals'])) {
       $tag->settings['key_vals'] = _dart_convert_old_key_vals($tag->settings['options']['keyvals']);
     }
     $tag->settings['scheduler'] = array();
     unset($tag->settings['site'], $tag->settings['zone'], $tag->settings['slug'], $tag->settings['options']['keyvals'], $tag->settings['options']['rules']);
-    db_query("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = %d", serialize($tag->settings), $tag->dtid);
+    // TODO Please review the conversion of this statement to the D7 database API syntax.
+    /* db_query("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = %d", serialize($tag->settings), $tag->dtid) */
+    db_update('dart_tags')
+  ->fields(array(
+      'settings' => serialize($tag->settings),
+    ))
+  ->condition('dtid', $tag->dtid)
+  ->execute();
 
     // Update any blocks that were created for this tag.
-    db_query("UPDATE {blocks} SET delta = 'dart-tag-%s' WHERE module = 'dart' AND delta = 'dart-tag-%s'", $machinename, $tag->dtid);
-    db_query("UPDATE {blocks_roles} SET delta = 'dart-tag-%s' WHERE delta = 'dart-tag-%s'", $machinename, $tag->dtid);
+    // TODO Please review the conversion of this statement to the D7 database API syntax.
+    /* db_query("UPDATE {block} SET delta = 'dart-tag-%s' WHERE module = 'dart' AND delta = 'dart-tag-%s'", $machinename, $tag->dtid) */
+    db_update('block')
+  ->fields(array(
+      'delta' => $machinename,
+    ))
+  ->condition('module', 'dart')
+  ->condition('delta', $tag->dtid)
+  ->execute();
+    // TODO Please review the conversion of this statement to the D7 database API syntax.
+    /* db_query("UPDATE {block_role} SET delta = 'dart-tag-%s' WHERE delta = 'dart-tag-%s'", $machinename, $tag->dtid) */
+    db_update('block_role')
+  ->fields(array(
+      'delta' => $machinename,
+    ))
+  ->condition('delta', $tag->dtid)
+  ->execute();
     drupal_set_message(t('All DART tag blocks with a "delta" of @old has had its "delta" changed to @new', array('old' => 'dart-tag-' . $tag->dtid, 'new' => 'dart-tag-' . machinename)));
   }
 
@@ -140,10 +175,10 @@ function dart_update_6200() {
   drupal_set_message(t('The @old variable has been renamed @new', array('@old' => 'dart_sitezone', '@new' => 'dart_site & dart_zone')));
 
   $variables = array(
-    'dart_prefix'       => 'dart_global_prefix',
-    'dart_kvs'          => 'dart_key_vals',
-    'dart_slug'         => 'dart_global_slug',
-    'dart_special_kvs'  => 'dart_special_key_vals',
+    'dart_prefix' => 'dart_global_prefix',
+    'dart_kvs' => 'dart_key_vals',
+    'dart_slug' => 'dart_global_slug',
+    'dart_special_kvs' => 'dart_special_key_vals',
   );
   _dart_rename_variables($variables);
 
@@ -153,10 +188,13 @@ function dart_update_6200() {
   variable_del('dart_display_rule_admin');
 
   // Now that each tag has a machinename change the primary key.
-  db_drop_field($ret, 'dart_tags', 'dtid');
-  db_add_primary_key($ret, 'dart_tags', array('machinename'));
+  db_drop_field('dart_tags', 'dtid');
+  db_add_primary_key('dart_tags', array('machinename'));
 
-  return $ret;
+  // hook_update_N() no longer returns a $ret array. Instead, return
+  // nothing or a translated string indicating the update ran successfully.
+  // See http://drupal.org/node/224333#update_sql.
+  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
 }
 
 /**
@@ -187,10 +225,10 @@ function _dart_machinename($name) {
   $machinename = '';
   $i = 0;
 
-  while(empty($machinename)) {
+  while (empty($machinename)) {
     $candidate = strtolower(ereg_replace("[^A-Za-z0-9]", "", $name));
     $candidate = $i ? $candidate . $i : $candidate;
-    $taken = db_result(db_query("SELECT machinename FROM {dart_tags} WHERE machinename = '%s'", $candidate));
+    $taken = db_query("SELECT machinename FROM {dart_tags} WHERE machinename = :machinename", array(':machinename' => $candidate))->fetchField();
     if (!$taken) {
       $machinename = $candidate;
     }

@@ -11,32 +11,28 @@
 $plugin = array(
   'schema' => 'dart_tags',
   'access' => 'administer DART tags',
-
   // Define the menu item.
   'menu' => array(
-    'menu item'         => 'dart_tags',
-    'menu prefix'       => 'admin/build',
-    'menu title'        => 'DART Tags',
-    'menu description'  => 'Administer DART tags.',
+    'menu item' => 'dart_tags',
+    'menu prefix' => 'admin/structure',
+    'menu title' => 'DART Tags',
+    'menu description' => 'Administer DART tags.',
   ),
-
   // Define user interface texts.
-  'title singular'        => t('tag'),
-  'title plural'          => t('tags'),
+  'title singular' => t('tag'),
+  'title plural' => t('tags'),
   'title singular proper' => t('DART tag'),
-  'title plural proper'   => t('DART tags'),
-
+  'title plural proper' => t('DART tags'),
   // Define the class to use as a handler for DART tags.
   'handler' => array(
-    'class'   => 'dart_tag_ui',
-    'parent'  => 'ctools_export_ui',
+    'class' => 'dart_tag_ui',
+    'parent' => 'ctools_export_ui',
   ),
-
   // Define the names of the functions that provide the add/edit forms.
   'form' => array(
-    'settings'  => 'dart_tag_form',
-    'submit'    => 'dart_tag_form_submit',
-    'validate'  => 'dart_tag_form_validate',
+    'settings' => 'dart_tag_form',
+    'submit' => 'dart_tag_form_submit',
+    'validate' => 'dart_tag_form_validate',
   ),
 );
 
@@ -47,107 +43,110 @@ function dart_tag_form(&$form, &$form_state) {
   $tag = $form_state['item'];
 
   $form['active'] = array(
-    '#type'           => 'checkbox',
-    '#title'          => t('Make this tag active.'),
-    '#default_value'  => $tag->active,
+    '#type' => 'checkbox',
+    '#title' => t('Make this tag active.'),
+    '#default_value' => $tag->active,
   );
 
   // Tag settings.
   $form['tag_settings'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Tag Settings'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
+    '#type' => 'fieldset',
+    '#title' => t('Tag Settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
   );
   $form['tag_settings']['name'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Name'),
-    '#description'    => t('A human readable name for this ad tag.'),
-    '#required'       => TRUE,
-    '#maxlength'      => 128,
-    '#default_value'  => $tag->name,
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#description' => t('A human readable name for this ad tag.'),
+    '#required' => TRUE,
+    '#maxlength' => 128,
+    '#default_value' => $tag->name,
   );
   $form['tag_settings']['machinename'] = $form['info']['machinename'];
   $form['tag_settings']['machinename']['#title'] = t('Machine Name');
   unset($form['info']);
   $form['tag_settings']['pos'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Position (pos)'),
-    '#description'    => t('Example: rt_rail_box1'),
-    '#required'       => TRUE,
-    '#maxlength'      => 32,
-    '#default_value'  => $tag->pos,
+    '#type' => 'textfield',
+    '#title' => t('Position (pos)'),
+    '#description' => t('Example: rt_rail_box1'),
+    '#required' => TRUE,
+    '#maxlength' => 32,
+    '#default_value' => $tag->pos,
   );
   $form['tag_settings']['sz'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Size (sz)'),
-    '#description'    => t('Example: 300x600,300x250'),
-    '#required'       => TRUE,
-    '#maxlength'      => 64,
-    '#default_value'  => $tag->sz,
+    '#type' => 'textfield',
+    '#title' => t('Size (sz)'),
+    '#description' => t('Example: 300x600,300x250'),
+    '#required' => TRUE,
+    '#maxlength' => 64,
+    '#default_value' => $tag->sz,
   );
 
   // Tag settings overrides.
   $form['tag_settings']['overrides'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Default DART Setting Overrides'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => TRUE,
-    '#description'  => t('Override the !settings for this ad tag.', array('!settings' => l(t('default settings'), 'admin/configure/dart'))),
+    '#type' => 'fieldset',
+    '#title' => t('Default DART Setting Overrides'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#description' => t('Override the !settings for this ad tag.', array('!settings' => l(t('default settings'), 'admin/configure/dart'))),
   );
   $default_site = variable_get('dart_global_site', '');
   $form['tag_settings']['overrides']['site'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Site'),
-    '#description'    => t('In rare circumstances you may want to override the !settings: %default', array('!settings' => l(t('default DART site'), 'admin/configure/dart'), '%default' => empty($default_site) ? t('No default value has been set.') : $default_site)),
-    '#required'       => FALSE,
-    '#maxlength'      => 32,
-    '#default_value'  => $tag->settings['overrides']['site'],
+    '#type' => 'textfield',
+    '#title' => t('Site'),
+    '#description' => t('In rare circumstances you may want to override the !settings: %default', array('!settings' => l(t('default DART site'), 'admin/configure/dart'), '%default' => empty($default_site) ? t('No default value has been set.') : $default_site)),
+    '#required' => FALSE,
+    '#maxlength' => 32,
+    '#default_value' => $tag->settings['overrides']['site'],
   );
   $default_zone = variable_get('dart_global_zone', '');
   $form['tag_settings']['overrides']['zone'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Zone'),
-    '#description'    => t('In rare circumstances you may want to override the !settings: %default', array('!settings' => l(t('default DART zone'), 'admin/configure/dart'), '%default' => empty($default_zone) ? t('No default value has been set.') : $default_zone)),
-    '#required'       => FALSE,
-    '#maxlength'      => 32,
-    '#default_value'  => $tag->settings['overrides']['zone'],
+    '#type' => 'textfield',
+    '#title' => t('Zone'),
+    '#description' => t('In rare circumstances you may want to override the !settings: %default', array('!settings' => l(t('default DART zone'), 'admin/configure/dart'), '%default' => empty($default_zone) ? t('No default value has been set.') : $default_zone)),
+    '#required' => FALSE,
+    '#maxlength' => 32,
+    '#default_value' => $tag->settings['overrides']['zone'],
   );
   $form['tag_settings']['overrides']['slug'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Slug'),
-    '#description'    => t('Override the default slug for this ad tag. Use !none for no slug. Leave this field empty to use the default slug. Example: Advertisement', array('!none' => check_plain('<none>'))),
-    '#required'       => FALSE,
-    '#maxlength'      => 64,
-    '#default_value'  => $tag->settings['overrides']['slug'],
+    '#type' => 'textfield',
+    '#title' => t('Slug'),
+    '#description' => t('Override the default slug for this ad tag. Use !none for no slug. Leave this field empty to use the default slug. Example: Advertisement', array('!none' => check_plain('<none>'))),
+    '#required' => FALSE,
+    '#maxlength' => 64,
+    '#default_value' => $tag->settings['overrides']['slug'],
   );
 
   // Display options.
   $form['display_options'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Display Options'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
+    '#type' => 'fieldset',
+    '#title' => t('Display Options'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
   );
   $form['display_options']['block'] = array(
-    '#type'           => 'checkbox',
-    '#title'          => t('Create a block for this tag'),
-    '#description'    => t('Create a block (configurable at admin/build/block) in which this ad tag is displayed.'),
-    '#default_value'  => $tag->block,
+    '#type' => 'checkbox',
+    '#title' => t('Create a block for this tag'),
+    '#description' => t('Create a block (configurable at admin/build/block) in which this ad tag is displayed.'),
+    '#default_value' => $tag->block,
   );
   $form['display_options']['scriptless'] = array(
-    '#type'           => 'checkbox',
-    '#title'          => t('Render this tag without javascript'),
-    '#description'    => t('Use this option for DART tags included in emails.'),
-    '#default_value'  => $tag->settings['options']['scriptless'],
+    '#type' => 'checkbox',
+    '#title' => t('Render this tag without javascript'),
+    '#description' => t('Use this option for DART tags included in emails.'),
+    '#default_value' => $tag->settings['options']['scriptless'],
   );
   $form['display_options']['method'] = array(
-    '#type'           => 'radios',
-    '#title'          => t('Output Method'),
-    '#description'    => t('If you are unsure, use "adj" and/or contact doubleclick.'),
-    '#options'        => array('adj' => t('&lt;script&gt; (adj)'), 'adi' => t('&lt;iframe&gt; (adi)')),
-    '#default_value'  => !empty($tag->settings['options']['method']) ? $tag->settings['options']['method'] : 'adj',
-    '#weight'         => -1,
+    '#type' => 'radios',
+    '#title' => t('Output Method'),
+    '#description' => t('If you are unsure, use "adj" and/or contact doubleclick.'),
+    '#options' => array(
+      'adj' => t('&lt;script&gt; (adj)'),
+      'adi' => t('&lt;iframe&gt; (adi)'),
+    ),
+    '#default_value' => !empty($tag->settings['options']['method']) ? $tag->settings['options']['method'] : 'adj',
+    '#weight' => -1,
   );
 
   // Key/val pairs.
@@ -155,19 +154,19 @@ function dart_tag_form(&$form, &$form_state) {
   $key_val_count = max(DART_MAX_KEY_VALS, count($tag->settings['key_vals']) + 5);
 
   $form['key_vals_group'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Key|Value Pairs'),
-    '#attributes'   => array('#id' => 'key_vals'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
+    '#type' => 'fieldset',
+    '#title' => t('Key|Value Pairs'),
+    '#attributes' => array('#id' => 'key_vals'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
   );
   $form['key_vals_group']['key_vals_form_count'] = array(
-    '#type'   => 'hidden',
-    '#value'  => $key_val_count,
+    '#type' => 'hidden',
+    '#value' => $key_val_count,
   );
   // Container for the key_value forms.
   $form['key_vals_group']['key_vals'] = array(
-    '#theme'  => 'dart_key_vals_form',
+    '#theme' => 'dart_key_vals_form',
   );
   for ($i = 0; $i < $key_val_count; $i++) {
     $form['key_vals_group']['key_vals'][$i] = _dart_key_val_form($i, $tag->settings['key_vals'][$i]);
@@ -202,23 +201,23 @@ function _dart_key_val_form($delta, $defaults = array()) {
   );
 
   $form['key'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Key'),
-    '#default_value'  => $defaults['key'],
-    '#parents'        => array('key_vals', $delta, 'key'),
+    '#type' => 'textfield',
+    '#title' => t('Key'),
+    '#default_value' => $defaults['key'],
+    '#parents' => array('key_vals', $delta, 'key'),
   );
 
   $form['val'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Value'),
-    '#default_value'  => $defaults['val'],
-    '#parents'        => array('key_vals', $delta, 'val'),
+    '#type' => 'textfield',
+    '#title' => t('Value'),
+    '#default_value' => $defaults['val'],
+    '#parents' => array('key_vals', $delta, 'val'),
   );
   $form['eval'] = array(
-    '#type'           => 'checkbox',
-    '#title'          => t('Evaluate as javascript'),
-    '#default_value'  => $defaults['eval'],
-    '#parents'        => array('key_vals', $delta, 'eval'),
+    '#type' => 'checkbox',
+    '#title' => t('Evaluate as javascript'),
+    '#default_value' => $defaults['eval'],
+    '#parents' => array('key_vals', $delta, 'eval'),
   );
 
   return $form;
@@ -251,12 +250,13 @@ function _dart_key_val_form_validate($form, &$form_state) {
 /**
  * Theme the dart tag form for key value pairs.
  */
-function theme_dart_key_vals_form($form) {
+function theme_dart_key_vals_form($variables) {
+  $form = $variables['0'];
   $rows = array();
   $headers = array(
     t('Key'),
     t('Value'),
-    t('Evaluate as javascript')
+    t('Evaluate as javascript'),
   );
 
   foreach (element_children($form) as $key) {
@@ -266,9 +266,19 @@ function theme_dart_key_vals_form($form) {
     // Build the table row.
     $row = array(
       'data' => array(
-        array('data' => drupal_render($form[$key]['key']), 'class' => 'key_vals-key'),
-        array('data' => drupal_render($form[$key]['val']), 'class' => 'key_vals-val'),
-        array('data' => drupal_render($form[$key]['eval']), 'class' => 'key_vals-eval', 'style' => 'text-align: center'),
+        array(
+          'data' => drupal_render($form[$key]['key']),
+          'class' => 'key_vals-key',
+        ),
+        array(
+          'data' => drupal_render($form[$key]['val']),
+          'class' => 'key_vals-val',
+        ),
+        array(
+          'data' => drupal_render($form[$key]['eval']),
+          'class' => 'key_vals-eval',
+          'style' => 'text-align: center',
+        ),
       ),
     );
 
@@ -279,7 +289,7 @@ function theme_dart_key_vals_form($form) {
     $rows[] = $row;
   }
 
-  $output = theme('table', $headers, $rows);
-  $output .= drupal_render($form);
+  $output = theme('table', array('header' => $headers, 'rows' => $rows));
+  $output .= drupal_render_children($form);
   return $output;
 }

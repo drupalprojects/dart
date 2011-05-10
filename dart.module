@@ -11,100 +11,118 @@ define('DART_URL', 'http://ad.doubleclick.net');
 define('DART_MAX_KEY_VALS', 10);
 
 /**
- * Implementation of hook_help().
+ * Implements hook_help().
  */
 function dart_help($path, $arg) {
   switch ($path) {
     case 'admin/help#dart':
-      $output = '<p>'. t('The DART module allows you to integrate Doubleclick ad tags onto your site.') . '</p>';
-      $output .= '<p>'. t('This module provides you with a general settings form as well as the ability to create a tag (with all its associated data) in the database. You can then add a simple bit of php to your tpl.php file(s) within your theme to indicate where specific tags should be displayed.') . '</p>';
-      $output .= '<p>'. t('In addition, you can tell this module about specific javascript variables that exist on your pages in order to include them in your ad tags. For example, you can include a variable called "channel" with a value of "sports".') . '</p>';
+      $output = '<p>' . t('The DART module allows you to integrate Doubleclick ad tags onto your site.') . '</p>';
+      $output .= '<p>' . t('This module provides you with a general settings form as well as the ability to create a tag (with all its associated data) in the database. You can then add a simple bit of php to your tpl.php file(s) within your theme to indicate where specific tags should be displayed.') . '</p>';
+      $output .= '<p>' . t('In addition, you can tell this module about specific javascript variables that exist on your pages in order to include them in your ad tags. For example, you can include a variable called "channel" with a value of "sports".') . '</p>';
       return $output;
   }
 }
 
 /**
- * Implementation of hook_perm().
+ * Implements hook_permission().
  */
-function dart_perm() {
-  return array('administer DART tags');
+function dart_permission() {
+  return array(
+    'administer DART tags' => array(
+      'title' => t('administer DART tags'),
+      'description' => t('TODO Add a description for \'administer DART tags\''),
+    ),
+  );
 }
 
 /**
- * Implementation of hook_theme().
+ * Implements hook_theme().
  */
 function dart_theme() {
   return array(
     'dart_key_vals_form' => array(
-      'arguments' => array('form'),
-      'file'      => 'plugins/export_ui/dart_ctools_export_ui.inc',
+      'variables' => array('form'),
+      'file' => 'plugins/export_ui/dart_ctools_export_ui.inc',
     ),
     'dart_global_defaults_form' => array(
-      'arguments' => array('form'),
-      'file'      => 'dart.admin.inc',
+      'variables' => array('form'),
+      'file' => 'dart.admin.inc',
     ),
     'dart_tag' => array(
-      'arguments' => array('tag' => NULL),
-      'template'  => 'theme/dart_tag',
+      'variables' => array('tag' => NULL),
+      'template' => 'theme/dart_tag',
     ),
   );
 }
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function dart_menu() {
   $items = array();
 
-  $items['admin/build/dart_tags/settings'] = array(
-    'title'             => 'Global DART Settings',
-    'type'              => MENU_LOCAL_TASK,
-    'description'       => "Configure your site-wide DART settings.",
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('dart_admin_settings'),
-    'access arguments'  => array('administer DART tags'),
-    'file'              => 'dart.admin.inc',
-    'weight'            => 50,
+  $items['admin/structure/dart_tags/settings'] = array(
+    'title' => 'Global DART Settings',
+    'type' => MENU_LOCAL_TASK,
+    'description' => "Configure your site-wide DART settings.",
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dart_admin_settings'),
+    'access arguments' => array('administer DART tags'),
+    'file' => 'dart.admin.inc',
+    'weight' => 50,
   );
-  $items['admin/build/dart_tags/test_page'] = array(
-    'title'             => 'DART Test Page',
-    'type'              => MENU_LOCAL_TASK,
-    'description'       => "View all your DART tags",
-    'page callback'     => 'dart_test_page',
-    'access arguments'  => array('administer DART tags'),
-    'weight'            => 55,
+  $items['admin/structure/dart_tags/test_page'] = array(
+    'title' => 'DART Test Page',
+    'type' => MENU_LOCAL_TASK,
+    'description' => "View all your DART tags",
+    'page callback' => 'dart_test_page',
+    'access arguments' => array('administer DART tags'),
+    'weight' => 55,
   );
 
   return $items;
 }
 
 /**
- * Implementation of hook_block().
+ * Implements hook_block_info().
  */
-function dart_block($op = 'list', $delta = 0, $edit = array()) {
-  switch ($op) {
-    case 'list':
-      $tags = _dart_block_tags();
-      foreach ($tags as $tag) {
-        $block['dart-tag-'. $tag->machinename]['info'] = t('DART tag: !tagname', array('!tagname' => $tag->name));
-      }
-      break;
-    case 'configure':
-      break;
-    case 'save':
-      break;
-    case 'view':
-      $machinename = str_replace('dart-tag-', '', $delta);
-      $block['content'] = dart_tag($machinename);
-      break;
+function dart_block_info() {
+  $tags = _dart_block_tags();
+  foreach ($tags as $tag) {
+    $block['dart-tag-' . $tag->machinename]['info'] = t('DART tag: !tagname', array('!tagname' => $tag->name));
   }
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function dart_block_configure($delta) { }
+
+/**
+ * Implements hook_block_save().
+ */
+function dart_block_save($delta, $edit) { }
+
+/**
+ * Implements hook_block_view().
+ */
+function dart_block_view($delta) {
+  $machinename = str_replace('dart-tag-', '', $delta);
+  $block['content'] = dart_tag($machinename);
+}
+
+/**
+ * Implements hook_block().
+ */
+function dart_block_OLD($op = 'list', $delta = 0, $edit = array()) {
+  // TODO Remaining code in this function needs to be moved to the appropriate new hook function.
   if (isset($block)) {
     return $block;
   }
 }
 
 /**
- * Implementation of hook_ctools_plugin_directory().
+ * Implements hook_ctools_plugin_directory().
  */
 function dart_ctools_plugin_directory($module, $type) {
   // Load the export_ui plugin.
@@ -114,13 +132,13 @@ function dart_ctools_plugin_directory($module, $type) {
 }
 
 /**
- * Implementation of hook_context_plugins().
+ * Implements hook_context_plugins().
  */
 function dart_context_plugins() {
   $plugins = array();
   $plugins['dart_context_reaction_tags'] = array(
     'handler' => array(
-      'path' => drupal_get_path('module', 'dart') .'/plugins/contexts',
+      'path' => drupal_get_path('module', 'dart') . '/plugins/contexts',
       'file' => 'dart_context_reaction_tags.inc',
       'class' => 'dart_context_reaction_tags',
       'parent' => 'context_reaction',
@@ -130,7 +148,7 @@ function dart_context_plugins() {
 }
 
 /**
- * Implementation of hook_context_registry().
+ * Implements hook_context_registry().
  */
 function dart_context_registry() {
   return array(
@@ -165,7 +183,7 @@ function dart_tag($machinename) {
   if ($tag->active && $show_tag) {
     // Build the tag based on its display options.
     // $output = dart_tag_build($tag);
-    $output = theme('dart_tag', $tag);
+    $output = theme('dart_tag', array('tag' => $tag));
   }
 
   return $output;
@@ -185,7 +203,7 @@ function dart_tag($machinename) {
 function dart_tag_load($machinename = '') {
   ctools_include('export');
 
-  // Grab an array of all DART tags or the specificed DART tag. 
+  // Grab an array of all DART tags or the specificed DART tag.
   if (empty($machinename)) {
     $tags = ctools_export_load_object('dart_tags');
   }
@@ -211,7 +229,15 @@ function dart_tag_prepare(&$tags) {
     // Build an exhaustive key_vals array to use for display purposes that
     // incorporates global, special & tag-specific key|value pairs.
     $tag->key_vals = array();
-    $pos_sz_key_vals = array(array('key' => 'pos', 'val' => $tag->pos, 'eval' => FALSE), array('key' => 'sz', 'val' => $tag->sz, 'eval' => FALSE));
+    $pos_sz_key_vals = array(array(
+        'key' => 'pos',
+        'val' => $tag->pos,
+        'eval' => FALSE,
+      ), array(
+        'key' => 'sz',
+        'val' => $tag->sz,
+        'eval' => FALSE,
+      ));
     $global_key_vals = variable_get('dart_key_vals', array());
     $tag_key_vals = isset($tag->settings['key_vals']) ? $tag->settings['key_vals'] : array();
     $contrib_key_vals = module_invoke_all('dart_key_vals', $tag);
@@ -239,7 +265,7 @@ function dart_tag_prepare(&$tags) {
 
     // Set the prefix.site/zone and slug for this tag.
     $variables = array('prefix', 'site', 'zone', 'slug');
-    foreach ($variables as $var){
+    foreach ($variables as $var) {
       $tag->{$var} = empty($tag->settings['overrides'][$var]) ? variable_get('dart_global_' . $var, '') : $tag->settings['overrides'][$var];
     }
     $tag->slug = ($tag->slug != '<none>' ? $tag->slug : '');
@@ -278,7 +304,7 @@ function dart_tag_prepare_noscript($tag) {
   $src  = DART_URL . '/ad/' . $tag->prefix . '.' . $tag->site . '/' . $tag->zone . ';pos=' . $tag->pos . ';sz=' . $tag->sz . ';';
 
   // Add global & tag-specific key|value pairs.
-  foreach ($tag->key_vals as $key=>$vals) {
+  foreach ($tag->key_vals as $key => $vals) {
     foreach ($vals as $val) {
       // Only add key|value pairs that do not require javacript and are not
       // "special" key|value pairs.
@@ -289,12 +315,12 @@ function dart_tag_prepare_noscript($tag) {
   }
 
   // Now add the "special" key|value pairs.
-  $src .= $tile ? 'tile=' . $tile .';' : '';
+  $src .= $tile ? 'tile=' . $tile . ';' : '';
   $src .= $ord ? 'ord=' . $ord : '';
 
   return array(
-    'src'   => $src,
-    'href'  => str_ireplace('/ad/', '/jump/', $src),
+    'src' => $src,
+    'href' => str_ireplace('/ad/', '/jump/', $src),
   );
 }
 
@@ -302,7 +328,14 @@ function dart_tag_prepare_noscript($tag) {
  * Change the current active/inactive status for the given tag.
  */
 function dart_tag_set_status($tag, $status) {
-  db_query("UPDATE {dart_tags} SET active = %d WHERE machinename = '%s'", $status, $tag->machinename);
+  // TODO Please review the conversion of this statement to the D7 database API syntax.
+  /* db_query("UPDATE {dart_tags} SET active = %d WHERE machinename = '%s'", $status, $tag->machinename) */
+  db_update('dart_tags')
+  ->fields(array(
+    'active' => $status,
+  ))
+  ->condition('machinename', $tag->machinename)
+  ->execute();
 }
 
 /**
@@ -311,7 +344,7 @@ function dart_tag_set_status($tag, $status) {
 function dart_preprocess_page(&$variables) {
   // Inject any user-defined javascript.
   $inline_js = variable_get('dart_js', '') . "\n";
-  
+
   // Add page key|value pairs to the drupal.settings.dart javascript variable.
   $key_vals = _dart_get_page_key_vals();
 
@@ -320,7 +353,7 @@ function dart_preprocess_page(&$variables) {
   }
 
   // Include the inline js & dart.js file.
-  drupal_add_js(trim($inline_js, "\n"), 'inline');
+  drupal_add_js(trim($inline_js, "\n"), array('type' => 'inline', 'scope' => JS_DEFAULT));
   drupal_add_js(drupal_get_path('module', 'dart') . '/dart.js');
 
   // Regenerate scripts variable to incorporate newly added scripts.
@@ -339,7 +372,7 @@ function dart_test_page() {
     $tag->site = isset($_GET['site']) ? $_GET['site'] : $tag->site;
     $tag->zone = isset($_GET['zone']) ? $_GET['zone'] : $tag->zone;
 
-    $tag_markup = theme('dart_tag', $tag);
+    $tag_markup = theme('dart_tag', array('tag' => $tag));
 
     $output .= '<div class="ad_wrap">';
     $output .= '<h2>' . $tag->name . '</h2>';
@@ -355,21 +388,21 @@ function dart_test_page() {
 /**
  * Form function for the override settings at the top of the test page.
  */
-function dart_test_page_form(&$form_state, $edit=array()) {
+function dart_test_page_form($form, &$form_state, $edit = array()) {
   $form['#method'] = 'get';
   $form['site'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Site'),
-    '#default_value'  => $_GET['site'],
+    '#type' => 'textfield',
+    '#title' => t('Site'),
+    '#default_value' => $_GET['site'],
   );
   $form['zone'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Zone'),
-    '#default_value'  => $_GET['zone'],
+    '#type' => 'textfield',
+    '#title' => t('Zone'),
+    '#default_value' => $_GET['zone'],
   );
   $form['submit'] = array(
-    '#type'           => 'submit',
-    '#value'          => t('Override'),
+    '#type' => 'submit',
+    '#value' => t('Override'),
   );
 
   return $form;
@@ -393,8 +426,8 @@ function dart_tag_adtest(&$tag) {
 function _dart_tag_settings_data_structure() {
   $structure = array(
     'overrides' => array('site', 'zone', 'slug'),
-    'options'   => array('scriptless', 'method'),
-    'key_vals'  => array(),
+    'options' => array('scriptless', 'method'),
+    'key_vals' => array(),
   );
 
   drupal_alter('dart_tag_settings_data_structure', $structure);
@@ -424,7 +457,10 @@ function _dart_block_tags() {
  */
 function _dart_add_key_val(&$tag, $key, $val = NULL, $eval = FALSE) {
   if (!empty($val)) {
-    $tag->key_vals[$key][] = array('val' => $val, 'eval' => $eval);
+    $tag->key_vals[$key][] = array(
+      'val' => $val,
+      'eval' => $eval,
+    );
   }
 }
 
@@ -437,7 +473,7 @@ function _dart_get_special_key_vals() {
   $special_key_vals = variable_get('dart_special_key_vals', array());
   foreach ($special_key_vals as $key => $val) {
     if (!empty($val)) {
-      switch($key) {
+      switch ($key) {
         case 'ord':
           $key_vals[] = array(
             'key' => $key,
@@ -492,18 +528,18 @@ function template_preprocess_dart_tag(&$variables) {
   $tag = $variables['tag'];
 
   $variables['attributes']  = array('class' => 'dart-tag');
-  $variables['json_tag']    = drupal_to_js($tag);
+  $variables['json_tag']    = drupal_json_encode($tag);
 
   if ($tag->mode == 'test') {
     $variables['show_script_tag']   = TRUE;
-    $variables['show_noscript_tag'] = TRUE;  
+    $variables['show_noscript_tag'] = TRUE;
   }
   else {
     $variables['show_script_tag']   = !$tag->settings['options']['scriptless'];
     $variables['show_noscript_tag'] = variable_get('dart_noscript', 1);
   }
-  
-  $variables['noscript_tag']      = $variables['show_noscript_tag'] ? '<noscript>' . l(theme('image', $tag->noscript['src']), $tag->noscript['href'], array('html' => TRUE)) . '</noscript>' : '';
+
+  $variables['noscript_tag']      = $variables['show_noscript_tag'] ? '<noscript>' . l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE)) . '</noscript>' : '';
 
   $variables['tag'] = $tag;
 }

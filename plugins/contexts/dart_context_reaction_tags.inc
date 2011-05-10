@@ -18,11 +18,11 @@ class dart_context_reaction_tags extends context_reaction {
     }
 
     $form = array(
-      '#title'          => t('Hide these DART tags'),
-      '#description'    => t('The following DART tags will not be displayed.'),
-      '#type'           => 'checkboxes',
-      '#options'        => $options,
-      '#default_value'  => isset($values) ? $values : array(),
+      '#title' => t('Hide these DART tags'),
+      '#description' => t('The following DART tags will not be displayed.'),
+      '#type' => 'checkboxes',
+      '#options' => $options,
+      '#default_value' => isset($values) ? $values : array(),
     );
 
     return $form;

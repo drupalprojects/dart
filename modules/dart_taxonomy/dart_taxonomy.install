@@ -6,52 +6,54 @@
  */
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function dart_taxonomy_install() {
   // Create tables.
-  drupal_install_schema('dart_taxonomy');
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  // drupal_install_schema('dart_taxonomy')
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function dart_taxonomy_uninstall() {
   // Remove tables.
-  drupal_uninstall_schema('dart_taxonomy');
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  // drupal_uninstall_schema('dart_taxonomy')
 }
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function dart_taxonomy_schema() {
   $schema['dart_taxonomy_map'] = array(
     'description' => 'Stores information about how taxonomy terms should be displayed in DART tags.',
     'fields' => array(
       'tid' => array(
-        'type'        => 'int',
-        'unsigned'    => TRUE,
-        'not NULL'    => TRUE,
-        'description' => "Unique taxonomy term ID."
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not NULL' => TRUE,
+        'description' => "Unique taxonomy term ID.",
       ),
       'key' => array(
-        'type'        => 'varchar',
-        'length'      => 32,
-        'not NULL'    => TRUE,
-        'default'     => '',
+        'type' => 'varchar',
+        'length' => 32,
+        'not NULL' => TRUE,
+        'default' => '',
         'description' => "The key to be used for this term within a DART tag.",
       ),
       'val' => array(
-        'type'        => 'varchar',
-        'length'      => 128,
-        'not NULL'    => TRUE,
-        'default'     => '',
+        'type' => 'varchar',
+        'length' => 128,
+        'not NULL' => TRUE,
+        'default' => '',
         'description' => "The value to be used for this term within a DART tag.",
       ),
       'exclude' => array(
-        'type'        => 'int',
-        'not NULL'    => TRUE,
-        'default'     => '0',
+        'type' => 'int',
+        'not NULL' => TRUE,
+        'default' => '0',
         'description' => "Boolean. True if the term should be excluded from DART tags.",
       ),
     ),
@@ -62,7 +64,7 @@ function dart_taxonomy_schema() {
 }
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function dart_taxonomy_update_6200() {
   $ret = array();
@@ -84,13 +86,30 @@ function dart_taxonomy_update_6200() {
       unset($tag->settings['options']['terms']);
 
       if ($mode == 6.1) {
-        db_query("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = %d", serialize($tag->settings), $tag->dtid);
+        // TODO Please review the conversion of this statement to the D7 database API syntax.
+        /* db_query("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = %d", serialize($tag->settings), $tag->dtid) */
+        db_update('dart_tags')
+  ->fields(array(
+    'settings' => serialize($tag->settings),
+  ))
+  ->condition('dtid', $tag->dtid)
+  ->execute();
       }
       else {
-        db_query("UPDATE {dart_tags} SET settings = '%s' WHERE machinename = '%s'", serialize($tag->settings), $tag->machinename);
+        // TODO Please review the conversion of this statement to the D7 database API syntax.
+        /* db_query("UPDATE {dart_tags} SET settings = '%s' WHERE machinename = '%s'", serialize($tag->settings), $tag->machinename) */
+        db_update('dart_tags')
+  ->fields(array(
+    'settings' => serialize($tag->settings),
+  ))
+  ->condition('machinename', $tag->machinename)
+  ->execute();
       }
     }
   }
 
-  return $ret;
+  // hook_update_N() no longer returns a $ret array. Instead, return
+  // nothing or a translated string indicating the update ran successfully.
+  // See http://drupal.org/node/224333#update_sql.
+  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
 }
