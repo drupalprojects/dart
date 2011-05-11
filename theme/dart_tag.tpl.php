@@ -17,7 +17,7 @@
  */
 ?>
 
-<div <?php print drupal_attributes($attributes); ?>>
+<div<?php print $attributes; ?>>
   <?php if ($tag->slug) { ?><span class="slug"><?php print $tag->slug; ?></span><?php } ?>
   <?php if ($show_script_tag) { ?>
   <script type="text/javascript">Drupal.DART.tag('<?php print $json_tag; ?>');</script>

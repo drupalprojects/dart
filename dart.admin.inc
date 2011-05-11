@@ -10,10 +10,12 @@
  *
  * @ingroup forms
  */
-function dart_admin_settings($form, &$form_state) {
-  drupal_add_js(drupal_get_path('module', 'dart') . '/dart.admin.js');
+function dart_admin_settings() {
+  $form['#attached']['js'] = array(
+    drupal_get_path('module', 'dart') . '/dart.admin.js'
+  );
   $form['#validate'][] = 'dart_admin_settings_validate';
-
+  
   // Default tag settings.
   $form['default_tag_settings'] = array(
     '#theme' => 'dart_global_defaults_form',
@@ -181,7 +183,7 @@ function dart_admin_settings_validate($form, &$form_state) {
  * Theme the dart settings form for global prefix.site/zone.
  */
 function theme_dart_global_defaults_form($variables) {
-  $form = $variables['0'];
+  $form = &$variables['form'];
   // Specify which fields we are theming.
   switch ($form['#parents'][0]) {
     case 'default_tag_settings':
@@ -203,8 +205,7 @@ function theme_dart_global_defaults_form($variables) {
       );
       break;
   }
-
-  // Removie titles.
+  // Remove titles.
   unset($form[$fields['prefix']]['#title'], $form[$fields['site']]['#title'], $form[$fields['zone']]['#title']);
   // Set widths.
   $form[$fields['prefix']]['#attributes']['style'] = 'width: 60px;';
@@ -216,16 +217,16 @@ function theme_dart_global_defaults_form($variables) {
     '!site' => drupal_render($form[$fields['site']]),
     '!zone' => drupal_render($form[$fields['zone']]),
   );
+  
   $form[$element_name] = array(
-    '#type' => 'markup',
     '#prefix' => '<div class="form-item container-inline"><label>' . $mode . ' prefix . site / zone</label><br/>',
+    '#markup' => t('!prefix . !site / !zone', $replacements),
     "#suffix" => '<p class="description">' . $form['#description'] . '</p></div>',
-    '#value' => t('!prefix . !site / !zone', $replacements),
   );
 
   unset($form[$fields['prefix']]);
   unset($form[$fields['site']]);
   unset($form[$fields['zone']]);
 
-  return drupal_render_children($form);
+  return drupal_render($form[$element_name]);
 }

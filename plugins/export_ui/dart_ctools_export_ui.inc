@@ -251,7 +251,7 @@ function _dart_key_val_form_validate($form, &$form_state) {
  * Theme the dart tag form for key value pairs.
  */
 function theme_dart_key_vals_form($variables) {
-  $form = $variables['0'];
+  $form = &$variables['form'];
   $rows = array();
   $headers = array(
     t('Key'),

@@ -1,4 +1,3 @@
-
 name = DART Taxonomy
 description = Allows taxonomy terms to be included in DART tags.
 core = 7.x
@@ -6,9 +5,6 @@ dependencies[] = dart
 dependencies[] = taxonomy_manager
 package = Advertising
 
-; Information added by drupal.org packaging script on 2011-05-09
-version = "6.x-2.x-dev"
-core = 7.x
 project = "dart"
 datestamp = "1304899617"
 

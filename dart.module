@@ -41,11 +41,11 @@ function dart_permission() {
 function dart_theme() {
   return array(
     'dart_key_vals_form' => array(
-      'variables' => array('form'),
+      'render element' => 'form',
       'file' => 'plugins/export_ui/dart_ctools_export_ui.inc',
     ),
     'dart_global_defaults_form' => array(
-      'variables' => array('form'),
+      'render element' => 'form',
       'file' => 'dart.admin.inc',
     ),
     'dart_tag' => array(
@@ -88,9 +88,11 @@ function dart_menu() {
  */
 function dart_block_info() {
   $tags = _dart_block_tags();
+  $blocks = array();
   foreach ($tags as $tag) {
-    $block['dart-tag-' . $tag->machinename]['info'] = t('DART tag: !tagname', array('!tagname' => $tag->name));
+    $blocks['dart-tag-' . $tag->machinename]['info'] = t('DART tag: !tagname', array('!tagname' => $tag->name));
   }
+  return $blocks;
 }
 
 /**
@@ -109,16 +111,7 @@ function dart_block_save($delta, $edit) { }
 function dart_block_view($delta) {
   $machinename = str_replace('dart-tag-', '', $delta);
   $block['content'] = dart_tag($machinename);
-}
-
-/**
- * Implements hook_block().
- */
-function dart_block_OLD($op = 'list', $delta = 0, $edit = array()) {
-  // TODO Remaining code in this function needs to be moved to the appropriate new hook function.
-  if (isset($block)) {
-    return $block;
-  }
+  return $block;
 }
 
 /**
@@ -527,19 +520,19 @@ function _dart_get_page_key_vals() {
 function template_preprocess_dart_tag(&$variables) {
   $tag = $variables['tag'];
 
-  $variables['attributes']  = array('class' => 'dart-tag');
-  $variables['json_tag']    = drupal_json_encode($tag);
+  $variables['attributes_array']['class'] = 'dart-tag';
+  $variables['json_tag'] = drupal_json_encode($tag);
 
   if ($tag->mode == 'test') {
-    $variables['show_script_tag']   = TRUE;
+    $variables['show_script_tag'] = TRUE;
     $variables['show_noscript_tag'] = TRUE;
   }
   else {
-    $variables['show_script_tag']   = !$tag->settings['options']['scriptless'];
+    $variables['show_script_tag'] = !$tag->settings['options']['scriptless'];
     $variables['show_noscript_tag'] = variable_get('dart_noscript', 1);
   }
 
-  $variables['noscript_tag']      = $variables['show_noscript_tag'] ? '<noscript>' . l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE)) . '</noscript>' : '';
+  $variables['noscript_tag'] = $variables['show_noscript_tag'] ? '<noscript>' . l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE)) . '</noscript>' : '';
 
   $variables['tag'] = $tag;
 }

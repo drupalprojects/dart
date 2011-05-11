@@ -1,16 +1,10 @@
-
 name = DART Scheduler
 description = Allows DART tags to be scheduled to appear or not.
 core = 7.x
 dependencies[] = dart
 package = Advertising
-
-; Information added by drupal.org packaging script on 2011-05-09
-version = "6.x-2.x-dev"
-core = 7.x
 project = "dart"
 datestamp = "1304899617"
-
 
 files[] = dart_scheduler.install
 files[] = dart_scheduler.module

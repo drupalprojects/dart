@@ -71,18 +71,18 @@ class dart_tag_ui extends ctools_export_ui {
     }
 
     $this->rows[$name]['data'] = array();
-    $this->rows[$name]['class'] = !empty($item->disabled) ? 'ctools-export-ui-disabled' : 'ctools-export-ui-enabled';
+    $this->rows[$name]['class'] = !empty($item->disabled) ? array('ctools-export-ui-disabled') : array('ctools-export-ui-enabled');
 
     // If we have an admin title, make it the first row.
     if (!empty($this->plugin['export']['admin_title'])) {
-      $this->rows[$name]['data'][] = array('data' => check_plain($item->{$this->plugin['export']['admin_title']}), 'class' => 'ctools-export-ui-title');
+      $this->rows[$name]['data'][] = array('data' => check_plain($item->{$this->plugin['export']['admin_title']}), 'class' => array('ctools-export-ui-title'));
     }
-    $this->rows[$name]['data'][] = array('data' => check_plain($name), 'class' => 'ctools-export-ui-name');
-    $this->rows[$name]['data'][] = array('data' => $item->active ? t('Yes') : t('No'), 'class' => 'ctools-export-ui-active');
-    $this->rows[$name]['data'][] = array('data' => check_plain($item->pos), 'class' => 'ctools-export-ui-pos');
-    $this->rows[$name]['data'][] = array('data' => check_plain($item->sz), 'class' => 'ctools-export-ui-sz');
-    $this->rows[$name]['data'][] = array('data' => check_plain($item->type), 'class' => 'ctools-export-ui-storage');
-    $this->rows[$name]['data'][] = array('data' => theme('links', $operations), 'class' => 'ctools-export-ui-operations');
+    $this->rows[$name]['data'][] = array('data' => check_plain($name), 'class' => array('ctools-export-ui-name'));
+    $this->rows[$name]['data'][] = array('data' => $item->active ? t('Yes') : t('No'), 'class' => array('ctools-export-ui-active'));
+    $this->rows[$name]['data'][] = array('data' => check_plain($item->pos), 'class' => array('ctools-export-ui-pos'));
+    $this->rows[$name]['data'][] = array('data' => check_plain($item->sz), 'class' => array('ctools-export-ui-sz'));
+    $this->rows[$name]['data'][] = array('data' => check_plain($item->type), 'class' => array('ctools-export-ui-storage'));
+    $this->rows[$name]['data'][] = array('data' => theme('links', array('links' => $operations)), 'class' => array('ctools-export-ui-operations'));
 
     // Add an automatic mouseover of the description if one exists.
     if (!empty($this->plugin['export']['admin_description'])) {
@@ -99,15 +99,15 @@ class dart_tag_ui extends ctools_export_ui {
   function list_table_header() {
     $header = array();
     if (!empty($this->plugin['export']['admin_title'])) {
-      $header[] = array('data' => t('Title'), 'class' => 'ctools-export-ui-title');
+      $header[] = array('data' => t('Title'), 'class' => array('ctools-export-ui-title'));
     }
 
-    $header[] = array('data' => t('Name'), 'class' => 'ctools-export-ui-name');
-    $header[] = array('data' => t('Active'), 'class' => 'ctools-export-ui-active');
-    $header[] = array('data' => t('Pos'), 'class' => 'ctools-export-ui-pos');
-    $header[] = array('data' => t('Size'), 'class' => 'ctools-export-ui-sz');
-    $header[] = array('data' => t('Storage'), 'class' => 'ctools-export-ui-storage');
-    $header[] = array('data' => t('Operations'), 'class' => 'ctools-export-ui-operations');
+    $header[] = array('data' => t('Name'), 'class' => array('ctools-export-ui-name'));
+    $header[] = array('data' => t('Active'), 'class' => array('ctools-export-ui-active'));
+    $header[] = array('data' => t('Pos'), 'class' => array('ctools-export-ui-pos'));
+    $header[] = array('data' => t('Size'), 'class' => array('ctools-export-ui-sz'));
+    $header[] = array('data' => t('Storage'), 'class' => array('ctools-export-ui-storage'));
+    $header[] = array('data' => t('Operations'), 'class' => array('ctools-export-ui-operations'));
 
     return $header;
   }

@@ -12,7 +12,7 @@ define('DART_MAX_EVENTS', 10);
 function dart_scheduler_theme() {
   return array(
     'dart_scheduler_add_form' => array(
-      'variables' => array('form'),
+      'render element' => 'form',
     ),
   );
 }
@@ -117,7 +117,7 @@ function _dart_scheduler_add_form($delta, $defaults = array()) {
  * Theme function for the DART scheduler add event form.
  */
 function theme_dart_scheduler_add_form($variables) {
-  $form = $variables['0'];
+  $form = &$variables['form'];
   $rows = array();
   $headers = array(
     t('Status to be applied'),
@@ -133,11 +133,11 @@ function theme_dart_scheduler_add_form($variables) {
       'data' => array(
         array(
           'data' => drupal_render($form[$key]['status']),
-          'class' => 'scheduler-status',
+          'class' => array('scheduler-status'),
         ),
         array(
           'data' => drupal_render($form[$key]['date']),
-          'class' => 'scheduler-date',
+          'class' => array('scheduler-date'),
         ),
       ),
     );

@@ -5,3 +5,11 @@ package = Advertising
 dependencies[] = ctools
 version = "7.x-2.x"
 project = "dart"
+
+files[] = dart.admin.inc
+files[] = dart.install
+files[] = dart.module
+files[] = contexts/dart_context_reaction_tags.inc
+files[] = export_ui/dart_ctools_export_ui.inc
+files[] = export_ui/dart_tag_ui.class.php
+files[] = theme/dart_tag.tpl.php
