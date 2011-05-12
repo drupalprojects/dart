@@ -163,8 +163,9 @@ function dart_tag($machinename) {
 
   // Check if the tag should be hidden based on the current context.
   if (function_exists('context_get_plugin')) {
-    $plugin = context_get_plugin('reaction', 'dart_tags');
-    $show_tag = $plugin->execute($machinename);
+    if ($plugin = context_get_plugin('reaction', 'dart_tags')) {
+      $show_tag = $plugin->execute($machinename);
+    }
   }
 
   // Make sure this is a real tag.
