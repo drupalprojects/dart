@@ -86,24 +86,20 @@ function dart_taxonomy_update_6200() {
       unset($tag->settings['options']['terms']);
 
       if ($mode == 6.1) {
-        // TODO Please review the conversion of this statement to the D7 database API syntax.
-        /* db_query("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = %d", serialize($tag->settings), $tag->dtid) */
         db_update('dart_tags')
-  ->fields(array(
-    'settings' => serialize($tag->settings),
-  ))
-  ->condition('dtid', $tag->dtid)
-  ->execute();
+          ->fields(array(
+            'settings' => serialize($tag->settings),
+          ))
+          ->condition('dtid', $tag->dtid)
+          ->execute();
       }
       else {
-        // TODO Please review the conversion of this statement to the D7 database API syntax.
-        /* db_query("UPDATE {dart_tags} SET settings = '%s' WHERE machinename = '%s'", serialize($tag->settings), $tag->machinename) */
         db_update('dart_tags')
-  ->fields(array(
-    'settings' => serialize($tag->settings),
-  ))
-  ->condition('machinename', $tag->machinename)
-  ->execute();
+          ->fields(array(
+            'settings' => serialize($tag->settings),
+          ))
+          ->condition('machinename', $tag->machinename)
+          ->execute();
       }
     }
   }

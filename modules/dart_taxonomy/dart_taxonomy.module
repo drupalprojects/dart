@@ -270,25 +270,33 @@ function dart_taxonomy_map_save($tid, $data) {
 
   if (empty($map) && !$empty_map) {
     // This is a new mapping;
-    // TODO Please convert this statement to the D7 database API syntax.
-    /* db_query("INSERT INTO {dart_taxonomy_map} VALUES (%d,'%s', '%s',%d)", $tid, $key, $val, $exclude) */
-    NULL;
+    db_insert('dart_taxonomy_map')
+      ->fields(array(
+        'tid' => $tid,
+        'key' => $key,
+        'val' => $val,
+        'exclude' => $exclude,
+      ))
+      ->execute();
   }
   else {
     // This is an existing mapping;
     if (empty($key) && empty($val) && empty($exclude)) {
       // This mapping should be deleted.
-      // TODO Please review the conversion of this statement to the D7 database API syntax.
-      /* db_query("DELETE FROM {dart_taxonomy_map} WHERE tid = %d", $tid) */
       db_delete('dart_taxonomy_map')
-  ->condition('tid', $tid)
-  ->execute();
+        ->condition('tid', $tid)
+        ->execute();
     }
     else {
       // This mapping should be updated.
-      // TODO Please convert this statement to the D7 database API syntax.
-      /* db_query("UPDATE {dart_taxonomy_map} AS dtm SET dtm.key='%s', dtm.val='%s', dtm.exclude=%d WHERE dtm.tid=%d", $key, $val, $exclude, $tid) */
-      NULL;
+      db_update('dart_taxonomy_map')
+        ->fields(array(
+          'key' => $key,
+          'val' => $val,
+          'exclude' => $exclude,
+        ))
+        ->condition('tid', $tid)
+        ->exclude();
     }
   }
 }
@@ -305,7 +313,7 @@ function dart_taxonomy_map_get($tid) {
   static $maps = array();
 
   if (!isset($maps[$tid])) {
-    $maps[$tid] = db_fetch_array(db_query('SELECT * FROM {dart_taxonomy_map} WHERE tid = :tid', array(':tid' => $tid)));
+    $maps[$tid] = db_query('SELECT * FROM {dart_taxonomy_map} WHERE tid = :tid', array(':tid' => $tid))->fetchAssoc();
   }
 
   return $maps[$tid];

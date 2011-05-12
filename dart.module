@@ -322,14 +322,12 @@ function dart_tag_prepare_noscript($tag) {
  * Change the current active/inactive status for the given tag.
  */
 function dart_tag_set_status($tag, $status) {
-  // TODO Please review the conversion of this statement to the D7 database API syntax.
-  /* db_query("UPDATE {dart_tags} SET active = %d WHERE machinename = '%s'", $status, $tag->machinename) */
   db_update('dart_tags')
-  ->fields(array(
-    'active' => $status,
-  ))
-  ->condition('machinename', $tag->machinename)
-  ->execute();
+    ->fields(array(
+      'active' => $status,
+    ))
+    ->condition('machinename', $tag->machinename)
+    ->execute();
 }
 
 /**

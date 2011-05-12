@@ -23,11 +23,9 @@ function dart_uninstall() {
   // drupal_uninstall_schema('dart')
 
   // Remove any blocks created by DART.
-  // TODO Please review the conversion of this statement to the D7 database API syntax.
-  /* db_query("DELETE FROM {block} WHERE module='dart'") */
   db_delete('block')
-  ->condition('module', 'dart')
-  ->execute();
+    ->condition('module', 'dart')
+    ->execute();
 }
 
 /**
@@ -112,14 +110,12 @@ function dart_update_6200() {
   while ($tag = db_fetch_object($tags)) {
     // Create a machinename.
     $machinename = _dart_machinename($tag->name);
-    // TODO Please review the conversion of this statement to the D7 database API syntax.
-    /* db_query("UPDATE {dart_tags} SET machinename = '%s' WHERE dtid = %d", $machinename, $tag->dtid) */
     db_update('dart_tags')
-  ->fields(array(
-      'machinename' => $machinename,
-    ))
-  ->condition('dtid', $tag->dtid)
-  ->execute();
+      ->fields(array(
+        'machinename' => $machinename,
+      ))
+      ->condition('dtid', $tag->dtid)
+      ->execute();
     drupal_set_message(t('The DART tag with id @dtid now uses @machinename as its identifier.', array('@dtid' => $tag->dtid, '@machinename' => $machinename)));
 
     // Alter the tag's settings.
@@ -135,33 +131,27 @@ function dart_update_6200() {
     }
     $tag->settings['scheduler'] = array();
     unset($tag->settings['site'], $tag->settings['zone'], $tag->settings['slug'], $tag->settings['options']['keyvals'], $tag->settings['options']['rules']);
-    // TODO Please review the conversion of this statement to the D7 database API syntax.
-    /* db_query("UPDATE {dart_tags} SET settings = '%s' WHERE dtid = %d", serialize($tag->settings), $tag->dtid) */
     db_update('dart_tags')
-  ->fields(array(
-      'settings' => serialize($tag->settings),
-    ))
-  ->condition('dtid', $tag->dtid)
-  ->execute();
+      ->fields(array(
+        'settings' => serialize($tag->settings),
+      ))
+      ->condition('dtid', $tag->dtid)
+      ->execute();
 
     // Update any blocks that were created for this tag.
-    // TODO Please review the conversion of this statement to the D7 database API syntax.
-    /* db_query("UPDATE {block} SET delta = 'dart-tag-%s' WHERE module = 'dart' AND delta = 'dart-tag-%s'", $machinename, $tag->dtid) */
     db_update('block')
-  ->fields(array(
-      'delta' => $machinename,
-    ))
-  ->condition('module', 'dart')
-  ->condition('delta', $tag->dtid)
-  ->execute();
-    // TODO Please review the conversion of this statement to the D7 database API syntax.
-    /* db_query("UPDATE {block_role} SET delta = 'dart-tag-%s' WHERE delta = 'dart-tag-%s'", $machinename, $tag->dtid) */
+      ->fields(array(
+        'delta' => 'dart-tag-' . $machinename,
+      ))
+      ->condition('module', 'dart')
+      ->condition('delta', 'dart-tag-' . $tag->dtid)
+      ->execute();
     db_update('block_role')
-  ->fields(array(
-      'delta' => $machinename,
-    ))
-  ->condition('delta', $tag->dtid)
-  ->execute();
+      ->fields(array(
+        'delta' => 'dart-tag-' . $machinename,
+      ))
+      ->condition('delta', 'dart-tag-' . $tag->dtid)
+      ->execute();
     drupal_set_message(t('All DART tag blocks with a "delta" of @old has had its "delta" changed to @new', array('old' => 'dart-tag-' . $tag->dtid, 'new' => 'dart-tag-' . machinename)));
   }
 
