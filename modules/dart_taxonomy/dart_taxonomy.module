@@ -211,13 +211,17 @@ function dart_taxonomy_dart_key_vals($tag) {
     $terms = array();
 
     // If this is a node, grab the taxonomy terms.
+    // Drupal 7 doesn't have $node->taxonomy so use the default field_tags field
+    // TODO find all taxonomy fields for node and build array of terms from that
     if (arg(0) == 'node' && is_numeric(arg(1))) {
       $node = node_load(arg(1));
-      $terms = $node->taxonomy;
+      foreach (field_get_items('node', $node, 'field_tags') as $term_array) {
+        $terms[] = $term_array['taxonomy_term'];
+      }
     }
     // If this is a term page, grab the term.
     if (arg(0) == 'taxonomy' && is_numeric(arg(2))) {
-      $terms = array(taxonomy_term_load(arg(2)));
+      $terms[] = taxonomy_term_load(arg(2));
     }
 
     // Check each term for overrides & exclusions.
