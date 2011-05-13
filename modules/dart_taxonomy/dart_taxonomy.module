@@ -207,7 +207,7 @@ function dart_taxonomy_dart_key_vals($tag) {
   $default_val_func = variable_get('dart_taxonomy_default_callback', '_dart_taxonomy_callback_tid');
 
   // First check if this tag should have terms at all.
-  if ($tag->settings['options']['include_terms']) {
+  if (isset($tag->settings['options']['include_terms']) && $tag->settings['options']['include_terms']) {
     $terms = array();
 
     // If this is a node, grab the taxonomy terms.
@@ -217,7 +217,7 @@ function dart_taxonomy_dart_key_vals($tag) {
     }
     // If this is a term page, grab the term.
     if (arg(0) == 'taxonomy' && is_numeric(arg(2))) {
-      $terms = taxonomy_term_load(arg(2));
+      $terms = array(taxonomy_term_load(arg(2)));
     }
 
     // Check each term for overrides & exclusions.
@@ -313,7 +313,11 @@ function dart_taxonomy_map_get($tid) {
   static $maps = array();
 
   if (!isset($maps[$tid])) {
-    $maps[$tid] = db_query('SELECT * FROM {dart_taxonomy_map} WHERE tid = :tid', array(':tid' => $tid))->fetchAssoc();
+     $maps[$tid] = db_select('dart_taxonomy_map', 'd')
+      ->fields('d')
+      ->condition('tid', $tid)
+      ->execute()
+      ->fetchAssoc();
   }
 
   return $maps[$tid];

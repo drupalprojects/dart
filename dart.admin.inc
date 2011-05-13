@@ -103,7 +103,7 @@ function dart_admin_settings() {
     '#theme' => 'dart_key_vals_form',
   );
   for ($i = 0; $i < $key_val_count; $i++) {
-    $form['global_key_vals']['dart_kvs'][$i] = _dart_key_val_form($i, $key_vals[$i]);
+    $form['global_key_vals']['dart_kvs'][$i] = _dart_key_val_form($i, isset($key_vals[$i]) ? $key_vals[$i] : null);
   }
 
   // Javascript.

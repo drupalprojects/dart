@@ -169,7 +169,7 @@ function dart_tag_form(&$form, &$form_state) {
     '#theme' => 'dart_key_vals_form',
   );
   for ($i = 0; $i < $key_val_count; $i++) {
-    $form['key_vals_group']['key_vals'][$i] = _dart_key_val_form($i, $tag->settings['key_vals'][$i]);
+    $form['key_vals_group']['key_vals'][$i] = _dart_key_val_form($i, isset($tag->settings['key_vals'][$i]) ? $tag->settings['key_vals'][$i] : null);
   }
 
   // Add vertical tabs display if available.

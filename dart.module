@@ -287,10 +287,10 @@ function dart_tag_prepare_noscript($tag) {
 
   // Add the special key|value pairs to the noscript tag.
   $special_key_vals  = _dart_get_special_key_vals();
-  if ($special_key_vals['tile']) {
+  if (isset($special_key_vals['tile'])) {
     $tile++;
   }
-  if ($special_key_vals['ord']) {
+  if (isset($special_key_vals['ord'])) {
     $ord = $ord == 0 ? rand(1000000000, 9999999999) . '?' : $ord;
   }
 
@@ -522,7 +522,7 @@ function template_preprocess_dart_tag(&$variables) {
   $variables['attributes_array']['class'] = 'dart-tag';
   $variables['json_tag'] = drupal_json_encode($tag);
 
-  if ($tag->mode == 'test') {
+  if (isset($tag->mode) && $tag->mode == 'test') {
     $variables['show_script_tag'] = TRUE;
     $variables['show_noscript_tag'] = TRUE;
   }
