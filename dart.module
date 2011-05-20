@@ -30,7 +30,7 @@ function dart_permission() {
   return array(
     'administer DART tags' => array(
       'title' => t('administer DART tags'),
-      'description' => t('TODO Add a description for \'administer DART tags\''),
+      'description' => t('Users can create, edit and delete DART tags as well as configure how and when DART tags should be displayed.'),
     ),
   );
 }
