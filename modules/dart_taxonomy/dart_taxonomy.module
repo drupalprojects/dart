@@ -393,7 +393,6 @@ function _dart_taxonomy_callback_full($term) {
  * function for theme_taxonomy_manager_tree_elements.
  */
 function theme_dart_taxonomy_tree_elements($elements) {
-  // TODO: Should this theme dart_taxonomy_tree_elements be declared in hook_theme()?
   foreach ($elements as $elem) {
     $tid = $elem['tid']['#value'];
     if (db_query('SELECT tid FROM {dart_taxonomy_map} WHERE tid = :tid', array(':tid' => $tid))->fetchField()) {
