@@ -6,22 +6,9 @@
  */
 
 /**
- * Implements hook_install().
- */
-function dart_install() {
-  // Create tables.
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.
-  // drupal_install_schema('dart')
-}
-
-/**
  * Implements hook_uninstall().
  */
 function dart_uninstall() {
-  // Remove tables.
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.
-  // drupal_uninstall_schema('dart')
-
   // Remove any blocks created by DART.
   db_delete('block')
     ->condition('module', 'dart')
