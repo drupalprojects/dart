@@ -11,6 +11,9 @@
 $plugin = array(
   'schema' => 'dart_tags',
   'access' => 'administer DART tags',
+  'create access' => 'administer DART tags',
+  'delete access' => 'administer DART tags',
+
   // Define the menu item.
   'menu' => array(
     'menu item' => 'dart_tags',
