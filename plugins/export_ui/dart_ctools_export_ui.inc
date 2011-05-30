@@ -206,20 +206,20 @@ function _dart_key_val_form($delta, $defaults = array()) {
   $form['key'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Key'),
-    '#default_value'  => $defaults['key'],
+    '#default_value'  => isset($defaults['key']) ? $defaults['key'] : '',
     '#parents'        => array('key_vals', $delta, 'key'),
   );
 
   $form['val'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Value'),
-    '#default_value'  => $defaults['val'],
+    '#default_value'  => isset($defaults['val']) ? $defaults['val'] : '',
     '#parents'        => array('key_vals', $delta, 'val'),
   );
   $form['eval'] = array(
     '#type'           => 'checkbox',
     '#title'          => t('Evaluate as javascript'),
-    '#default_value'  => $defaults['eval'],
+    '#default_value'  => isset($defaults['eval']) ? $defaults['eval'] : '',
     '#parents'        => array('key_vals', $delta, 'eval'),
   );
 
