@@ -6,24 +6,6 @@
  */
 
 /**
- * Implements hook_install().
- */
-function dart_taxonomy_install() {
-  // Create tables.
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.
-  // drupal_install_schema('dart_taxonomy')
-}
-
-/**
- * Implements hook_uninstall().
- */
-function dart_taxonomy_uninstall() {
-  // Remove tables.
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.
-  // drupal_uninstall_schema('dart_taxonomy')
-}
-
-/**
  * Implements hook_schema().
  */
 function dart_taxonomy_schema() {
@@ -104,8 +86,5 @@ function dart_taxonomy_update_6200() {
     }
   }
 
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
+  return t('DART Taxonomy settings have been updated.') /* $ret */;
 }
