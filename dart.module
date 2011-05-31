@@ -502,7 +502,7 @@ function template_preprocess_dart_tag(&$variables) {
     $variables['show_script_tag']   = !$tag->settings['options']['scriptless'];
     $variables['show_noscript_tag'] = variable_get('dart_noscript', 1);
   }
-  $variables['noscript_tag']      = $variables['show_noscript_tag'] ? '<noscript>' . l(theme('image', $tag->noscript['src']), $tag->noscript['href'], array('html' => TRUE)) . '</noscript>' : '';
+  $variables['noscript_tag']      = $variables['show_noscript_tag'] ? '<noscript>' . l(theme('image', $tag->noscript['src'], '', '', NULL, FALSE), $tag->noscript['href'], array('html' => TRUE)) . '</noscript>' : '';
 
   $variables['tag'] = $tag;
 }
