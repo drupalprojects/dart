@@ -531,7 +531,8 @@ function template_preprocess_dart_tag(&$variables) {
     $variables['show_noscript_tag'] = variable_get('dart_noscript', 1);
   }
 
-  $variables['noscript_tag'] = $variables['show_noscript_tag'] ? '<noscript>' . l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE)) . '</noscript>' : '';
+  $variables['static_tag'] = l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE));
+  $variables['noscript_tag'] = $variables['show_noscript_tag'] ? '<noscript>' . $variables['static_tag'] . '</noscript>' : '';
 
   $variables['tag'] = $tag;
 }

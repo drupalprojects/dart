@@ -6,21 +6,29 @@
  *
  * Variables available:
  * - $tag: The full tag object or NULL. If it's NULL, all other
- *        vars listed below will be NULL as well
+ *         vars listed below will be NULL as well
  * - $json_tag: a js version of $tag.
  * - $attributes: any attributes that should be displayed on teh outer-most div.
  * - $show_script_tag: boolean.
  * - $show_noscript_tag: boolean.
- * - $noscript: the <noscript> tag for this DART tag, or empty string.
+ * - $noscript_tag: the <noscript> tag for this DART tag, or empty string.
+ * - $static_tag: use this for DART tags that appear in emails.
  *
  * @see template_preprocess_dart_tag()
  */
 ?>
 
-<div<?php print $attributes; ?>>
-  <?php if ($tag->slug) { ?><span class="slug"><?php print $tag->slug; ?></span><?php } ?>
-  <?php if ($show_script_tag) { ?>
-  <script type="text/javascript">Drupal.DART.tag('<?php print $json_tag; ?>');</script>
-  <?php } ?>
-  <?php print $noscript_tag; ?>
+<div <?php print drupal_attributes($attributes); ?>>
+  <?php 
+    if ($tag->slug) {
+      ?><span class="slug"><?php print $tag->slug; ?></span><?php
+    }
+    if ($show_script_tag) {
+      ?><script type="text/javascript">Drupal.DART.tag('<?php print $json_tag; ?>');</script><?php 
+      print $noscript_tag;
+    }
+    else {
+      print $static_tag;
+    }
+  ?>
 </div>
