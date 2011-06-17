@@ -139,7 +139,7 @@ function dart_update_6200() {
       ))
       ->condition('delta', 'dart-tag-' . $tag->dtid)
       ->execute();
-    drupal_set_message(t('All DART tag blocks with a "delta" of @old has had its "delta" changed to @new', array('old' => 'dart-tag-' . $tag->dtid, 'new' => 'dart-tag-' . machinename)));
+    drupal_set_message(t('All DART tag blocks with a "delta" of @old has had its "delta" changed to @new', array('old' => 'dart-tag-' . $tag->dtid, 'new' => 'dart-tag-' . $machinename)));
   }
 
   // Rename variables.
