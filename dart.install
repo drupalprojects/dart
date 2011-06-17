@@ -127,7 +127,7 @@ function dart_update_6200() {
     // Update any blocks that were created for this tag.
     db_query("UPDATE {blocks} SET delta = 'dart-tag-%s' WHERE module = 'dart' AND delta = 'dart-tag-%s'", $machinename, $tag->dtid);
     db_query("UPDATE {blocks_roles} SET delta = 'dart-tag-%s' WHERE delta = 'dart-tag-%s'", $machinename, $tag->dtid);
-    drupal_set_message(t('All DART tag blocks with a "delta" of @old has had its "delta" changed to @new', array('old' => 'dart-tag-' . $tag->dtid, 'new' => 'dart-tag-' . machinename)));
+    drupal_set_message(t('All DART tag blocks with a "delta" of @old has had its "delta" changed to @new', array('old' => 'dart-tag-' . $tag->dtid, 'new' => 'dart-tag-' . $machinename)));
   }
 
   // Rename variables.
