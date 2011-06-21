@@ -234,7 +234,7 @@ function dart_tag_prepare(&$tags) {
     $key_vals = array_values($unique_key_vals);
 
     foreach ($key_vals as $pair) {
-      _dart_add_key_val($tag, $pair['key'], $pair['val'], $pair['eval']);
+      _dart_add_key_val($tag, $pair['key'], $pair['val'], isset($pair['eval']) ? $pair['eval'] : FALSE);
     }
 
     // Set the prefix.site/zone and slug for this tag.
