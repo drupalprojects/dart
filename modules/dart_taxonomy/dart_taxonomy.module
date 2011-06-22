@@ -213,7 +213,7 @@ function dart_taxonomy_dart_key_vals($tag) {
     }
     // If this is a term page, grab the term.
     if (arg(0) == 'taxonomy' && is_numeric(arg(2))) {
-      $terms = array(taxonomy_get_term(arg(2)));
+      $terms[] = taxonomy_get_term(arg(2));
     }
 
     // Check each term for overrides & exclusions.
