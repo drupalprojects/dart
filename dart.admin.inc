@@ -15,37 +15,19 @@ function dart_admin_settings() {
     drupal_get_path('module', 'dart') . '/dart.admin.js'
   );
   $form['#validate'][] = 'dart_admin_settings_validate';
-  
+
+  $form['settings'] = array(
+    '#type' => 'vertical_tabs',
+  );
+
   // Default tag settings.
-  $form['default_tag_settings'] = array(
-    '#theme' => 'dart_global_defaults_form',
-    '#description' => 'Enter the global values that DART tags should use for prefix, site & zone. For example, groups.drupal.org might use gdo.group/general; drupal.org might use drupal.default (notice there is no zone); ',
+  $form['settings']['tag_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Global Tag Settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
   );
-  $form['default_tag_settings']['dart_global_prefix'] = array(
-    '#type' => 'textfield',
-    '#title' => t('DART prefix'),
-    '#default_value' => variable_get('dart_global_prefix', ''),
-    '#required' => TRUE,
-    '#description' => t('Typically this is a short version of your organization\'s name (provided by Doubleclick).'),
-    '#maxlength' => 32,
-  );
-  $form['default_tag_settings']['dart_global_site'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Default DART site'),
-    '#default_value' => variable_get('dart_global_site', ''),
-    '#required' => TRUE,
-    '#description' => t('The value to use when no "site" is specified on a given page.'),
-    '#maxlength' => 32,
-  );
-  $form['default_tag_settings']['dart_global_zone'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Default DART zone'),
-    '#default_value' => variable_get('dart_global_zone', ''),
-    '#required' => TRUE,
-    '#description' => t('The value to use when no "zone" is specified on a given page.'),
-    '#maxlength' => 32,
-  );
-  $form['default_tag_settings']['dart_global_network_id'] = array(
+  $form['settings']['tag_settings']['dart_global_network_id'] = array(
     '#type' => 'textfield',
     '#title' => t('Network ID'),
     '#default_value' => variable_get('dart_global_network_id', ''),
@@ -53,23 +35,51 @@ function dart_admin_settings() {
     '#description' => t('The Network ID to use on all tags. This is required for networks that upgraded from DART to DoubleClick. If you were not provided a network ID from DoubleClick leave this blank.'),
     '#maxlength' => 32,
   );
-  $form['dart_global_slug'] = array(
+  $form['settings']['tag_settings']['default_tag_settings'] = array(
+    '#theme' => 'dart_global_defaults_form',
+    '#description' => 'Enter the global values that DART tags should use for prefix, site & zone. Example: groups.drupal.org might use gdo.group/general; drupal.org might use drupal.default (notice there is no zone); ',
+  );
+  $form['settings']['tag_settings']['default_tag_settings']['dart_global_prefix'] = array(
+    '#type' => 'textfield',
+    '#title' => t('DART prefix'),
+    '#default_value' => variable_get('dart_global_prefix', ''),
+    '#required' => TRUE,
+    '#description' => t('Typically this is a short version of your organization\'s name (provided by Doubleclick).'),
+    '#maxlength' => 32,
+  );
+  $form['settings']['tag_settings']['default_tag_settings']['dart_global_site'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default DART site'),
+    '#default_value' => variable_get('dart_global_site', ''),
+    '#required' => TRUE,
+    '#description' => t('The value to use when no "site" is specified on a given page.'),
+    '#maxlength' => 32,
+  );
+  $form['settings']['tag_settings']['default_tag_settings']['dart_global_zone'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default DART zone'),
+    '#default_value' => variable_get('dart_global_zone', ''),
+    '#required' => FALSE,
+    '#description' => t('The value to use when no "zone" is specified on a given page.'),
+    '#maxlength' => 32,
+  );
+  $form['settings']['tag_settings']['dart_global_slug'] = array(
     '#type' => 'textfield',
     '#title' => t('Global Slug'),
     '#default_value' => variable_get('dart_global_slug', '<none>'),
     '#required' => FALSE,
-    '#description' => t('Slug all ad tags with the following with this label. Use @tag for no slug. Example: Advertisement', array('@tag' => '<none>')),
+    '#description' => t('Slug all ad tags with this label. Use @tag for no slug. Example: Advertisement', array('@tag' => '<none>')),
     '#maxlength' => 64,
   );
 
   // Global display options.
-  $form['display_options'] = array(
+  $form['settings']['display_options'] = array(
     '#type' => 'fieldset',
     '#title' => t('Global Display Options'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
-  $form['display_options']['dart_noscript'] = array(
+  $form['settings']['display_options']['dart_noscript'] = array(
     '#type' => 'checkbox',
     '#title' => t('display @tag tags', array('@tag' => '<noscript>')),
     '#default_value' => variable_get('dart_noscript', '1'),
@@ -77,13 +87,13 @@ function dart_admin_settings() {
   );
 
   // Gloabal key/val pairs
-  $form['global_key_vals'] = array(
+  $form['settings']['global_key_vals'] = array(
     '#type' => 'fieldset',
     '#title' => t('Global Key|Value Pairs'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
-  $form['global_key_vals']['dart_special_key_vals'] = array(
+  $form['settings']['global_key_vals']['dart_special_key_vals'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Special key|val pairs'),
     '#default_value' => variable_get('dart_special_key_vals', array('tile' => 'tile', 'ord' => 'ord')),
@@ -94,7 +104,7 @@ function dart_admin_settings() {
     '#description' => t('Include these special values in all of your ad tags.'),
     '#weight' => -10,
   );
-  $form['global_key_vals']['dart_special_tile_init'] = array(
+  $form['settings']['global_key_vals']['dart_special_tile_init'] = array(
     '#type' => 'textfield',
     '#title' => t('Initial value of tile'),
     '#default_value' => variable_get('dart_special_tile_init', '0'),
@@ -107,22 +117,22 @@ function dart_admin_settings() {
   ctools_plugin_load_class('ctools', 'export_ui', 'dart_ctools_export_ui', 'handler');
   $key_vals = variable_get('dart_key_vals', array());
   $key_val_count = max(DART_MAX_KEY_VALS, count($key_vals) + 5);
-  $form['global_key_vals']['dart_kvs'] = array(
+  $form['settings']['global_key_vals']['dart_kvs'] = array(
     '#theme' => 'dart_key_vals_form',
   );
   for ($i = 0; $i < $key_val_count; $i++) {
-    $form['global_key_vals']['dart_kvs'][$i] = _dart_key_val_form($i, isset($key_vals[$i]) ? $key_vals[$i] : null);
+    $form['settings']['global_key_vals']['dart_kvs'][$i] = _dart_key_val_form($i, isset($key_vals[$i]) ? $key_vals[$i] : null);
   }
 
   // Javascript.
-  $form['javascript'] = array(
+  $form['settings']['javascript'] = array(
     '#type' => 'fieldset',
     '#title' => t('Inject Javascript'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#weight' => 20,
   );
-  $form['javascript']['dart_js'] = array(
+  $form['settings']['javascript']['dart_js'] = array(
     '#type' => 'textarea',
     '#title' => t('Inject javascript'),
     '#description' => t('Inject this javascript into the @tag on each page request. You do not need to add code to create a random number for use as the ORD if you checked "Include ord value" above. This javascript will be injected above the key|value pairs you enter in the field below, so you can declare variables here that you will include as part of a key|value pair there.', array('@tag' => '<head>')),
@@ -131,7 +141,7 @@ function dart_admin_settings() {
   );
 
   // Ad Test Settngs.
-  $form['default_ad_test_settings'] = array(
+  $form['settings']['default_ad_test_settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('Ad Test Settings'),
     '#collapsible' => TRUE,
@@ -139,11 +149,11 @@ function dart_admin_settings() {
     '#weight' => 50,
     '#description' => 'Enter the values that DART tags should use for prefix, site & zone when you add the ?adtest=true query string to any url. Additionally note that you can override these values at any time by adding ?adtest=true &amp;prefix=testprefix &amp;site=testsite &amp;zone=testzone to any url. <div><h3>Examples:</h3><ul><li>mysite.com?adtest=true</li><li>mysite.com?adtest=true&prefix=testprefix</li><li>mysite.com?adtest=true&prefix=testprefix&zone=testzone</li></ul></div>',
   );
-  $form['default_ad_test_settings']['default_test_tag_settings'] = array(
+  $form['settings']['default_ad_test_settings']['default_test_tag_settings'] = array(
     '#theme' => 'dart_global_defaults_form',
     '#description' => t('The default values to use when the query string ?adtest=true is present in the url.'),
   );
-  $form['default_ad_test_settings']['default_test_tag_settings']['dart_test_prefix'] = array(
+  $form['settings']['default_ad_test_settings']['default_test_tag_settings']['dart_test_prefix'] = array(
     '#type' => 'textfield',
     '#title' => t('Default test prefix'),
     '#default_value' => variable_get('dart_test_prefix', ''),
@@ -151,7 +161,7 @@ function dart_admin_settings() {
     '#required' => FALSE,
     '#maxlength' => 32,
   );
-  $form['default_ad_test_settings']['default_test_tag_settings']['dart_test_site'] = array(
+  $form['settings']['default_ad_test_settings']['default_test_tag_settings']['dart_test_site'] = array(
     '#type' => 'textfield',
     '#title' => t('Default test site'),
     '#default_value' => variable_get('dart_test_site', ''),
@@ -159,7 +169,7 @@ function dart_admin_settings() {
     '#required' => FALSE,
     '#maxlength' => 32,
   );
-  $form['default_ad_test_settings']['default_test_tag_settings']['dart_test_zone'] = array(
+  $form['settings']['default_ad_test_settings']['default_test_tag_settings']['dart_test_zone'] = array(
     '#type' => 'textfield',
     '#title' => t('Default test zone'),
     '#default_value' => variable_get('dart_test_zone', ''),
@@ -167,9 +177,6 @@ function dart_admin_settings() {
     '#required' => FALSE,
     '#maxlength' => 32,
   );
-
-  // Add vertical tabs display if available.
-  $form['#pre_render'][] = 'vertical_tabs_form_pre_render';
 
   return system_settings_form($form);
 }
@@ -192,6 +199,7 @@ function dart_admin_settings_validate($form, &$form_state) {
  */
 function theme_dart_global_defaults_form($variables) {
   $form = &$variables['form'];
+
   // Specify which fields we are theming.
   switch ($form['#parents'][0]) {
     case 'default_tag_settings':
@@ -213,12 +221,23 @@ function theme_dart_global_defaults_form($variables) {
       );
       break;
   }
-  // Remove titles.
-  unset($form[$fields['prefix']]['#title'], $form[$fields['site']]['#title'], $form[$fields['zone']]['#title']);
+
   // Set widths.
   $form[$fields['prefix']]['#attributes']['style'] = 'width: 60px;';
   $form[$fields['site']]['#attributes']['style'] = 'width: 200px;';
   $form[$fields['zone']]['#attributes']['style'] = 'width: 200px;';
+
+  // Store field descriptions so they can be displayed later.
+  $descriptions = array();
+  foreach ($fields as $name => $field) {
+    if (!empty($field['#description'])) {
+      $descriptions[] = ucwords($name) . ": " . $form[$field]['#description'];
+      unset($form[$field]['#description']);
+    }
+  }
+
+  // Remove titles.
+  unset($form[$fields['prefix']]['#title'], $form[$fields['site']]['#title'], $form[$fields['zone']]['#title']);
 
   $replacements = array(
     '!prefix' => drupal_render($form[$fields['prefix']]),
@@ -227,9 +246,9 @@ function theme_dart_global_defaults_form($variables) {
   );
   
   $form[$element_name] = array(
-    '#prefix' => '<div class="form-item container-inline"><label>' . $mode . ' prefix . site / zone</label><br/>',
-    '#markup' => t('!prefix . !site / !zone', $replacements),
-    "#suffix" => '<p class="description">' . $form['#description'] . '</p></div>',
+    '#prefix' => '<div class="form-item"><label>' . ucwords($mode) . ' prefix . site / zone</label>',
+    '#markup' => '<div class="container-inline">' . t('!prefix . !site / !zone', $replacements) . '</div>',
+    "#suffix" => '<div class="description">' . $form['#description'] . theme('item_list', array('items' => $descriptions)) . '</div></div>',
   );
 
   unset($form[$fields['prefix']]);

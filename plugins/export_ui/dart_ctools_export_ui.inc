@@ -205,6 +205,7 @@ function _dart_key_val_form($delta, $defaults = array()) {
 
   $form['key'] = array(
     '#type' => 'textfield',
+    '#size' => '35',
     '#title' => t('Key'),
     '#default_value' => isset($defaults['key']) ? $defaults['key'] : '',
     '#parents' => array('key_vals', $delta, 'key'),
@@ -212,6 +213,7 @@ function _dart_key_val_form($delta, $defaults = array()) {
 
   $form['val'] = array(
     '#type' => 'textfield',
+    '#size' => '35',
     '#title' => t('Value'),
     '#default_value' => isset($defaults['val']) ? $defaults['val'] : '',
     '#parents' => array('key_vals', $delta, 'val'),
