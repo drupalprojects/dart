@@ -238,7 +238,7 @@ function dart_tag_prepare(&$tags) {
     }
 
     // Set the prefix.site/zone and slug for this tag.
-    $variables = array('prefix', 'site', 'zone', 'slug');
+    $variables = array('prefix', 'site', 'zone', 'slug', 'network_id');
     foreach ($variables as $var){
       $tag->{$var} = empty($tag->settings['overrides'][$var]) ? variable_get('dart_global_' . $var, '') : $tag->settings['overrides'][$var];
     }
@@ -275,7 +275,7 @@ function dart_tag_prepare_noscript($tag) {
   }
 
   // Begin building the src for the noscript tag.
-  $src  = DART_URL . '/ad/' . $tag->prefix . '.' . $tag->site . '/' . $tag->zone . ';pos=' . $tag->pos . ';sz=' . $tag->sz . ';';
+  $src  = DART_URL . ($tag->network_id != '' ? '/' . $tag->network_id : '') . '/ad/' . $tag->prefix . '.' . $tag->site . '/' . $tag->zone . ';pos=' . $tag->pos . ';sz=' . $tag->sz . ';';
 
   // Add global & tag-specific key|value pairs.
   foreach ($tag->key_vals as $key=>$vals) {
