@@ -101,11 +101,11 @@ function dart_requirements() {
     $exists = file_exists($path . '/jquery.writeCapture.js');
   }
 
-  // In order to allow DART tags to be loaded ajaxically, we are using the 
-  // writeCaptire jquery plugin. 
+  // In order to allow DART tags to be loaded ajaxically, we are using the
+  // writeCaptire jquery plugin.
   if (!$exists) {
     $requirements['dart'] = array(
-      'title' => $t('WriteCapture jquery plugin'), 
+      'title' => $t('WriteCapture jquery plugin'),
       'value' => $t('Missing'),
       'description' => $t('This DART module requires !wc_link to be included using the !lib_link. Please download !wc_link and copy <code>plugin/writeCapture.js</code> file to <code>/sites/all/libraries/writecapture/jquery.writeCapture.js</code>', array('!wc_link' => l($t('WriteCapture jQuery plugin'), 'https://github.com/iamnoah/writeCapture'), '!lib_link' => l($t('Libraries module'), 'http://drupal.org/project/libraries'))),
       'severity' => REQUIREMENT_ERROR,
@@ -113,7 +113,7 @@ function dart_requirements() {
   }
   else {
     $requirements['dart'] = array(
-      'title' => $t('WriteCapture jquery plugin'), 
+      'title' => $t('WriteCapture jquery plugin'),
       'value' => $t('Exists'),
       'severity' => REQUIREMENT_OK,
     );

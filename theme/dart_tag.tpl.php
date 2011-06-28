@@ -30,7 +30,7 @@
         ?><script type="text/javascript">Drupal.DART.settings.loadLastTags['<?php print $tag->machinename; ?>'] = '<?php print $json_tag; ?>';</script><?php
       }
       else {
-        ?><script type="text/javascript">Drupal.DART.tag('<?php print $json_tag; ?>');</script><?php 
+        ?><script type="text/javascript">Drupal.DART.tag('<?php print $json_tag; ?>');</script><?php
         print $noscript_tag;
       }
     }
