@@ -320,6 +320,9 @@ function dart_preprocess_page(&$variables) {
 
   // Add settings for loading ads last.
   if (variable_get('dart_load_last', '0')) {
+    if ($path = libraries_get_path('writecapture')) {
+      drupal_add_js($path . '/jquery.writeCapture.js');
+    }
     $inline_js .= 'Drupal.DART.settings.writeTags = false;' . "\n";
     $inline_js .= 'Drupal.DART.settings.loadLastTags = {};' . "\n";
   }

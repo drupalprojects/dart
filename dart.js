@@ -12,10 +12,15 @@ Drupal.DART.settings = {
 };
 
 /**
- * Drupal behaviors run on document ready.
+ * If there are tags in the loadLastTags, then load them where they belong.
  */
 Drupal.behaviors.DART = function() {
-  
+  if (typeof(Drupal.DART.settings.loadLastTags) == 'object') {
+    for (var machinename in Drupal.DART.settings.loadLastTags) {
+      scripttag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[machinename]);
+      $('#block-dart-dart-tag-' + machinename +':visible').writeCapture().html(scripttag);
+    }
+  }
 }
 
 /**
