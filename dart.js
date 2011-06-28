@@ -8,9 +8,15 @@ Drupal.DART = {};
  * Overridable settings.
  */
 Drupal.DART.settings = {
-  "writeTags": true,
-  "loadLastTags": [],
+  "writeTags": true
 };
+
+/**
+ * Drupal behaviors run on document ready.
+ */
+Drupal.behaviors.DART = function() {
+  
+}
 
 /**
  * Using document.write, add a DART tag to the page
