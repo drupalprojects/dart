@@ -20,13 +20,19 @@
 ?>
 
 <div <?php print drupal_attributes($attributes); ?>>
-  <?php 
+  <?php
     if ($tag->slug) {
       ?><span class="slug"><?php print $tag->slug; ?></span><?php
     }
+    
     if ($show_script_tag) {
-      ?><script type="text/javascript">Drupal.DART.tag('<?php print $json_tag; ?>');</script><?php 
-      print $noscript_tag;
+      if ($load_last) {
+        ?><script type="text/javascript">Drupal.DART.settings.loadLastTags[] = '<?php print $json_tag; ?>';</script><?php
+      }
+      else {
+        ?><script type="text/javascript">Drupal.DART.tag('<?php print $json_tag; ?>');</script><?php 
+        print $noscript_tag;
+      }
     }
     else {
       print $static_tag;

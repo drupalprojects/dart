@@ -8,7 +8,8 @@ Drupal.DART = {};
  * Overridable settings.
  */
 Drupal.DART.settings = {
-  "writeTags": true
+  "writeTags": true,
+  "loadLastTags": [],
 };
 
 /**
