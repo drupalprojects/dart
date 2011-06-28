@@ -63,14 +63,6 @@ function dart_admin_settings() {
     '#description' => t('The value to use when no "zone" is specified on a given page.'),
     '#maxlength' => 32,
   );
-  $form['settings']['tag_settings']['dart_global_slug'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Global Slug'),
-    '#default_value' => variable_get('dart_global_slug', '<none>'),
-    '#required' => FALSE,
-    '#description' => t('Slug all ad tags with this label. Use @tag for no slug. Example: Advertisement', array('@tag' => '<none>')),
-    '#maxlength' => 64,
-  );
 
   // Global display options.
   $form['settings']['display_options'] = array(
@@ -78,6 +70,14 @@ function dart_admin_settings() {
     '#title' => t('Global Display Options'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
+  );
+  $form['settings']['display_options']['dart_global_slug'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Global Slug'),
+    '#default_value' => variable_get('dart_global_slug', '<none>'),
+    '#required' => FALSE,
+    '#description' => t('Slug all ad tags with this label. Use @tag for no slug. Example: Advertisement', array('@tag' => '<none>')),
+    '#maxlength' => 64,
   );
   $form['settings']['display_options']['dart_noscript'] = array(
     '#type' => 'checkbox',
