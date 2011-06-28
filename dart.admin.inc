@@ -51,14 +51,6 @@ function dart_admin_settings() {
     '#description'    => t('The Network ID to use on all tags. This is required for networks that upgraded from DART to DoubleClick. If you were not provided a network ID from DoubleClick leave this blank.'),
     '#maxlength'      => 32,
   );
-  $form['dart_global_slug'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Global Slug'),
-    '#default_value'  => variable_get('dart_global_slug', '<none>'),
-    '#required'       => FALSE,
-    '#description'    => t('Slug all ad tags with the following with this label. Use @tag for no slug. Example: Advertisement', array('@tag' => '<none>')),
-    '#maxlength'      => 64,
-  );
 
   // Global display options.
   $form['display_options'] = array(
@@ -66,6 +58,14 @@ function dart_admin_settings() {
     '#title'        => t('Global Display Options'),
     '#collapsible'  => TRUE,
     '#collapsed'    => FALSE,
+  );
+  $form['display_options']['dart_global_slug'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Global Slug'),
+    '#default_value'  => variable_get('dart_global_slug', '<none>'),
+    '#required'       => FALSE,
+    '#description'    => t('Slug all ad tags with the following with this label. Use @tag for no slug. Example: Advertisement', array('@tag' => '<none>')),
+    '#maxlength'      => 64,
   );
   $form['display_options']['dart_noscript'] = array(
     '#type'           => 'checkbox',
