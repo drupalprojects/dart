@@ -4,3 +4,4 @@ description = Integrates DART ads onto a site.
 core = 6.x
 package = Advertising
 dependencies[] = ctools
+dependencies[] = libraries
