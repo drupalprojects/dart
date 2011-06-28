@@ -15,6 +15,14 @@ function dart_admin_settings() {
   $form['#validate'][] = 'dart_admin_settings_validate';
   
   // Default tag settings.
+  $form['dart_global_network_id'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Network ID'),
+    '#default_value'  => variable_get('dart_global_network_id', ''),
+    '#required'       => FALSE,
+    '#description'    => t('The Network ID to use on all tags. This is required for networks that upgraded from DART to DoubleClick. If you were not provided a network ID from DoubleClick leave this blank.'),
+    '#maxlength'      => 32,
+  );
   $form['default_tag_settings'] = array(
     '#theme'        => 'dart_global_defaults_form',
     '#description'  => 'Enter the global values that DART tags should use for prefix, site & zone. For example, groups.drupal.org might use gdo.group/general; drupal.org might use drupal.default (notice there is no zone); '
@@ -43,13 +51,11 @@ function dart_admin_settings() {
     '#description'    => t('The value to use when no "zone" is specified on a given page.'),
     '#maxlength'      => 32,
   );
-  $form['default_tag_settings']['dart_global_network_id'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Network ID'),
-    '#default_value'  => variable_get('dart_global_network_id', ''),
-    '#required'       => FALSE,
-    '#description'    => t('The Network ID to use on all tags. This is required for networks that upgraded from DART to DoubleClick. If you were not provided a network ID from DoubleClick leave this blank.'),
-    '#maxlength'      => 32,
+  $form['dart_load_last'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Load ads last'),
+    '#default_value'  => variable_get('dart_load_last', '0'),
+    '#description'    => t('Wait until the entire page has loaded before loading ads. This will allow your pages to load faster but may cause empty spaces to appear on your pages before the ads load.'),
   );
 
   // Global display options.
