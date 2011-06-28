@@ -493,6 +493,7 @@ function template_preprocess_dart_tag(&$variables) {
 
   $variables['attributes']  = array('class' => 'dart-tag');
   $variables['json_tag']    = drupal_to_js($tag);
+  $variables['load_last']   = variable_get('dart_load_last', '0');
 
   if (isset($tag->mode) && $tag->mode == 'test') {
     $variables['show_script_tag']   = TRUE;

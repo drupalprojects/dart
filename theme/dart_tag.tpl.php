@@ -8,11 +8,12 @@
  * - $tag: The full tag object or NULL. If it's NULL, all other
  *         vars listed below will be NULL as well
  * - $json_tag: a js version of $tag.
- * - $attributes: any attributes that should be displayed on teh outer-most div.
+ * - $attributes: any attributes that should be displayed on the outer-most div.
  * - $show_script_tag: boolean.
  * - $show_noscript_tag: boolean.
  * - $noscript_tag: the <noscript> tag for this DART tag, or empty string.
  * - $static_tag: use this for DART tags that appear in emails.
+ * - $load_last: boolean.
  *
  * @see template_preprocess_dart_tag()
  */
