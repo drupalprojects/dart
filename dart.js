@@ -12,6 +12,18 @@ Drupal.DART.settings = {
 };
 
 /**
+ * If there are tags in the loadLastTags, then load them where they belong.
+ */
+Drupal.behaviors.DART = function() {
+  if (typeof(Drupal.DART.settings.loadLastTags) == 'object') {
+    for (var machinename in Drupal.DART.settings.loadLastTags) {
+      scripttag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[machinename]);
+      $('#block-dart-dart-tag-' + machinename +':visible').writeCapture().append(scripttag);
+    }
+  }
+}
+
+/**
  * Using document.write, add a DART tag to the page
  */
 Drupal.DART.tag = function(tag) {
