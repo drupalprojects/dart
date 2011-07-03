@@ -55,7 +55,7 @@ function dart_admin_settings() {
     '#type'           => 'checkbox',
     '#title'          => t('Load ads last'),
     '#default_value'  => variable_get('dart_load_last', '0'),
-    '#description'    => t('Wait until the entire page has loaded before loading ads. This will allow your pages to load faster but may cause empty spaces to appear on your pages before the ads load.'),
+    '#description'    => t('Wait until the entire page has loaded before loading ads. This will allow your pages to load faster but may cause empty spaces to appear on your pages before the ads load. <strong>You must use this option if you are loading ad tags asyncronously.</strong>'),
   );
 
   // Global display options.
