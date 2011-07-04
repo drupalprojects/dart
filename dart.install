@@ -97,6 +97,7 @@ function dart_schema() {
 function dart_requirements() {
   $t = get_t();
 
+  module_load_include('module', 'libraries');
   if ($path = libraries_get_path('writecapture')) {
     $exists = file_exists($path . '/jquery.writeCapture.js');
   }
