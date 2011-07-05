@@ -1,4 +1,4 @@
-mple Make file to demonstrate how to automatically fetch writeCapture.
+; Example Make file to demonstrate how to automatically fetch writeCapture.
 ; See http://davehall.com.au/blog/dave/2011/05/17/drush-make-and-module-dependencies#comment-2261
 ; as to why this file ends with .example rather than .make.
 libraries[writecapture][download][type] = "get"
