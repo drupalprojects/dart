@@ -366,23 +366,39 @@ function dart_preprocess_page(&$variables) {
 function dart_test_page() {
   $tags = dart_tag_load();
 
-  $output  = drupal_get_form('dart_test_page_form');
+  $content = array();
+  $content['test_page_form'] = drupal_get_form('dart_test_page_form');
+  $content['ads'] = array();
+
   foreach ($tags as $tag) {
     $tag->mode = 'test';
     $tag->site = isset($_GET['site']) ? $_GET['site'] : $tag->site;
     $tag->zone = isset($_GET['zone']) ? $_GET['zone'] : $tag->zone;
 
-    $tag_markup = theme('dart_tag', array('tag' => $tag));
-
-    $output .= '<div class="ad_wrap">';
-    $output .= '<h2>' . $tag->name . '</h2>';
-    $output .= $tag_markup;
-    if (module_exists('devel')) {
-      $output .= kpr($tag, TRUE);
-    }
-    $output .= '</div>';
+    $content['ads'][$tag->machinename] = array(
+      '#type'   => 'markup',
+      '#prefix' => '<div class="ad_wrap">',
+      '#suffix' => '</div>',
+      'title'   => array(
+        '#type'   => 'markup',
+        '#prefix' => '<h2>',
+        '#suffix' => '</h2>',
+        '#markup' => $tag->name,
+      ),
+      'tag'     => array(
+        '#type'   => 'markup',
+        '#theme'  => 'dart_tag',
+        '#tag'    => $tag,
+      ),
+      'krumo'   => array(
+        '#type'   => 'markup',
+        '#markup' => module_exists('devel') ? kpr($tag, TRUE) : '',
+      ),
+      '#sorted' => TRUE,
+    );    
   }
-  return $output;
+
+  return $content;
 }
 
 /**
@@ -393,12 +409,12 @@ function dart_test_page_form($form, &$form_state, $edit = array()) {
   $form['site'] = array(
     '#type' => 'textfield',
     '#title' => t('Site'),
-    '#default_value' => $_GET['site'],
+    '#default_value' => isset($_GET['site']) ? $_GET['site'] : '',
   );
   $form['zone'] = array(
     '#type' => 'textfield',
     '#title' => t('Zone'),
-    '#default_value' => $_GET['zone'],
+    '#default_value' => isset($_GET['zone']) ? $_GET['zone'] : '',
   );
   $form['submit'] = array(
     '#type' => 'submit',
