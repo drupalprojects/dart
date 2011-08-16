@@ -136,7 +136,7 @@ function dart_taxonomy_form_alter(&$form, &$form_state, $form_id) {
         '#theme'      => 'no_submit_button',
       );
   
-      if (empty($form_state)) {
+      if (!empty($form['term_data']['tid']['#value'])) {
         $term             = taxonomy_get_term($form['term_data']['tid']['#value']);
         $map              = dart_taxonomy_map_get($term->tid);
         $default_key      = variable_get('dart_taxonomy_default_key', 'term');
