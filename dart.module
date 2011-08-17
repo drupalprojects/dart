@@ -137,6 +137,14 @@ function dart_context_plugins() {
       'parent' => 'context_reaction',
     ),
   );
+  $plugins['dart_context_reaction_settings'] = array(
+    'handler' => array(
+      'path' => drupal_get_path('module', 'dart') . '/plugins/contexts',
+      'file' => 'dart_context_reaction_settings.inc',
+      'class' => 'dart_context_reaction_settings',
+      'parent' => 'context_reaction',
+    ),
+  );
   return $plugins;
 }
 
@@ -150,6 +158,10 @@ function dart_context_registry() {
         'title' => t('DART tags'),
         'plugin' => 'dart_context_reaction_tags',
       ),
+      'dart_settings' => array(
+        'title' => t('DART settings'),
+        'plugin' => 'dart_context_reaction_settings',
+      ),
     ),
   );
 }
@@ -159,14 +171,6 @@ function dart_context_registry() {
  */
 function dart_tag($machinename) {
   $output = '';
-  $show_tag = TRUE;
-
-  // Check if the tag should be hidden based on the current context.
-  if (function_exists('context_get_plugin')) {
-    if ($plugin = context_get_plugin('reaction', 'dart_tags')) {
-      $show_tag = $plugin->execute($machinename);
-    }
-  }
 
   // Make sure this is a real tag.
   if (!$tag = dart_tag_load($machinename)) {
@@ -174,7 +178,18 @@ function dart_tag($machinename) {
     return;
   }
 
-  if ($tag->active && $show_tag) {
+  if (module_exists('context')) {
+    // Hide the tag based on the current context.
+    if ($plugin = context_get_plugin('reaction', 'dart_tags')) {
+      $plugin->execute($tag);
+    }
+    // Override the tag's settings based on the current context.
+    if ($plugin = context_get_plugin('reaction', 'dart_settings')) {
+      $plugin->execute($tag);
+    }
+  }
+
+  if ($tag->active) {
     // Build the tag based on its display options.
     // $output = dart_tag_build($tag);
     $output = theme('dart_tag', array('tag' => $tag));
