@@ -295,7 +295,7 @@ function dart_tag_prepare_noscript($tag) {
   }
 
   // Begin building the src for the noscript tag.
-  $src  = DART_URL . ($tag->network_id != '' ? '/' . $tag->network_id : '') . '/ad/' . $tag->prefix . '.' . $tag->site . '/' . $tag->zone . ';pos=' . $tag->pos . ';sz=' . $tag->sz . ';';
+  $src  = DART_URL . ($tag->network_id != '' ? '/' . $tag->network_id : '') . '/ad/' . $tag->prefix . '.' . $tag->site . '/' . $tag->zone . ';';
 
   // Add global & tag-specific key|value pairs.
   foreach ($tag->key_vals as $key => $vals) {
