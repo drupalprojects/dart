@@ -46,7 +46,7 @@ function dart_taxonomy_form_alter(&$form, &$form_state, $form_id) {
         $form['display_options']['include_terms'] = array(
           '#type' => 'checkbox',
           '#title' => t('Include taxonomy terms as key|value pairs'),
-          '#default_value' => $tag->settings['options']['include_terms'],
+          '#default_value' => (isset($tag->settings['options']['include_terms']) ? $tag->settings['options']['include_terms'] : '0'),
         );
       }
       break;
@@ -210,15 +210,27 @@ function dart_taxonomy_dart_key_vals($tag) {
   if (isset($tag->settings['options']['include_terms']) && $tag->settings['options']['include_terms']) {
     $terms = array();
 
-    // If this is a node, grab the taxonomy terms.
-    // Drupal 7 doesn't have $node->taxonomy so use the default field_tags field
-    // TODO find all taxonomy fields for node and build array of terms from that
+    // For nodes grab the taxonomy terms from all term reference fields.
     if (arg(0) == 'node' && is_numeric(arg(1))) {
       $node = node_load(arg(1));
-      foreach (field_get_items('node', $node, 'field_tags') as $term_array) {
-        $terms[] = $term_array['taxonomy_term'];
+      $node_fields = field_info_instances('node', $node->type);
+
+      // Iterate over the node fields to find any term reference fields.
+      foreach ($node_fields as $field_name => $field_instance) {
+        $field_info = field_info_field($field_name);
+        $field_items = field_get_items('node', $node, $field_name);
+
+        // Only check term reference fields that have data.
+        if ($field_info['type'] === 'taxonomy_term_reference' && !empty($field_items) && is_array($field_items)) {
+          foreach ($field_items as $item) {
+            if (!isset($terms[$item['tid']])) {
+              $terms[$item['tid']] = isset($item['taxonomy_term']) ? $item['taxonomy_term'] : taxonomy_term_load($item['tid']);
+            }
+          }
+        }
       }
     }
+
     // If this is a term page, grab the term.
     if (arg(0) == 'taxonomy' && is_numeric(arg(2))) {
       $terms[] = taxonomy_term_load(arg(2));
