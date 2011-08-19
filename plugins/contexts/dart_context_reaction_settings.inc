@@ -36,8 +36,8 @@ class dart_context_reaction_settings extends context_reaction {
     foreach ($this->get_contexts() as $context_name => $context) {
       if (!empty($context->reactions['dart_settings'])) {
         $settings = $context->reactions['dart_settings'];
-        $tag->site = !empty($settings['dart_site']) ? $settings['dart_site'] : $tag->site;
-        $tag->zone = !empty($settings['dart_zone']) ? $settings['dart_zone'] : $tag->zone;
+        $tag->site = !empty($settings['dart_site']) ? check_plain($settings['dart_site']) : $tag->site;
+        $tag->zone = !empty($settings['dart_zone']) ? check_plain($settings['dart_zone']) : $tag->zone;
       }
     }
   }
