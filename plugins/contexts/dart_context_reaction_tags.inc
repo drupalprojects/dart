@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Expose themes as context reactions.
+ * Expose DART tags as context reactions.
  */
 class dart_context_reaction_tags extends context_reaction {
   /**
@@ -32,18 +32,14 @@ class dart_context_reaction_tags extends context_reaction {
    * Return TRUE as long as no contexts have the machinename-specified tag
    * marked as "hidden".
    */
-  function execute($machinename) {
-    $show = TRUE;
-
+  function execute(&$tag) {
     // Check each currently set context to see if the DART tag specified by
     // machinename should be displayed or not.
     foreach ($this->get_contexts() as $context_name => $context) {
-      if (isset($context->reactions['dart_tags']) && in_array($machinename, $context->reactions['dart_tags'], TRUE)) {
-        $show = FALSE;
+      if (isset($context->reactions['dart_tags']) && in_array($tag->machinename, $context->reactions['dart_tags'], TRUE)) {
+        $tag->active = FALSE;
         break;
       }
     }
-
-    return $show;
   }
 }
