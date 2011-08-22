@@ -19,22 +19,18 @@
 ?>
 
 <div <?php print $attributes; ?>>
-  <?php
-    if ($tag->slug) {
-      ?><span class="slug"><?php print $tag->slug; ?></span><?php
-    }
+  <?php if ($tag->slug): ?>
+    <span class="slug"><?php print $tag->slug; ?></span>
+  <?php endif; ?>
 
-    if ($show_script_tag) {
-      if ($load_last) {
-        ?><script type="text/javascript">Drupal.DART.settings.loadLastTags['<?php print $tag->machinename; ?>'] = '<?php print $json_tag; ?>';</script><?php
-      }
-      else {
-        ?><script type="text/javascript">Drupal.DART.tag('<?php print $json_tag; ?>');</script><?php
-        print $noscript_tag;
-      }
-    }
-    else {
-      print $static_tag;
-    }
-  ?>
+  <?php if ($show_script_tag): ?>
+    <?php if ($load_last): ?>
+      <script type="text/javascript">Drupal.DART.settings.loadLastTags['<?php print $tag->machinename; ?>'] = '<?php print $json_tag; ?>';</script>
+    <?php else: ?>
+      <script type="text/javascript">Drupal.DART.tag('<?php print $json_tag; ?>');</script>
+      <?php print $noscript_tag; ?>
+    <?php endif; ?>
+  <?php else: ?>
+    <?php print $static_tag; ?>
+  <?php endif; ?>
 </div>
