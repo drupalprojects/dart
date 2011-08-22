@@ -297,16 +297,20 @@ function dart_tag_prepare_noscript($tag) {
   static $tile = NULL;
   static $ord = 0;
 
-  // Set an initial value for tile.
-  $tile = is_null($tile) ? variable_get('dart_special_tile_init', '0') : $tile;
+  // Set an initial value for tile. We subtract 1 since we immediately add 1.
+  $tile = is_null($tile) ? variable_get('dart_special_tile_init', '0') -1 : $tile;
 
   // Add the special key|value pairs to the noscript tag.
   $special_key_vals  = _dart_get_special_key_vals();
-  if (isset($special_key_vals['tile'])) {
-    $tile++;
-  }
-  if (isset($special_key_vals['ord'])) {
-    $ord = $ord == 0 ? rand(1000000000, 9999999999) . '?' : $ord;
+  foreach ($special_key_vals as $key_val) {
+    switch ($key_val['key']) {
+      case 'tile':
+        $tile++;
+        break;
+      case 'ord':
+        $ord = $ord == 0 ? rand(1000000000, 9999999999) . '?' : $ord;
+        break;
+    }
   }
 
   // Begin building the src for the noscript tag.
@@ -332,6 +336,7 @@ function dart_tag_prepare_noscript($tag) {
     'href' => str_ireplace('/ad/', '/jump/', $src),
   );
 }
+
 
 /**
  * Change the current active/inactive status for the given tag.
