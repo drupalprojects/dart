@@ -514,7 +514,7 @@ function _dart_get_page_key_vals() {
 function template_preprocess_dart_tag(&$variables) {
   $tag = $variables['tag'];
 
-  $variables['attributes']  = array('class' => 'dart-tag');
+  $variables['attributes']  = array('class' => 'dart-tag dart-name-' . $variables['tag']->machinename);
   $variables['json_tag']    = drupal_to_js($tag);
   $variables['load_last']   = variable_get('dart_load_last', '0');
 
