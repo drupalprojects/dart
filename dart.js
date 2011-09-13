@@ -16,10 +16,15 @@ Drupal.DART.settings = {
  */
 Drupal.behaviors.DART = function() {
   if (typeof(Drupal.DART.settings.loadLastTags) == 'object') {
-    for (var machinename in Drupal.DART.settings.loadLastTags) {
-      scripttag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[machinename]);
-      $('#block-dart-dart-tag-' + machinename +':visible').writeCapture().append(scripttag);
-    }
+    $('.dart-tag:visible').each( function() {
+      if(!$(this).hasClass('dart-processed')) {
+        var regex = /dart-name-(\w+)$/;
+        var result = regex.exec($(this).attr('class'));
+        var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[result[1]]);
+
+        $(this).writeCapture().append(scriptTag).addClass('dart-processed');
+      }
+    });
   }
 }
 
