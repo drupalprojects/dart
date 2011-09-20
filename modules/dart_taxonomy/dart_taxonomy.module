@@ -238,7 +238,7 @@ function dart_taxonomy_dart_key_vals($tag) {
 
     // Check each term for overrides & exclusions.
     foreach ($terms as $term) {
-      if ($map = dart_taxonomy_map_get($term->tid);) {
+      if ($map = dart_taxonomy_map_get($term->tid)) {
         if ($map['exclude']) {
           continue;
         }
