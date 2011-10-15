@@ -17,7 +17,7 @@ Drupal.DART.settings = {
 Drupal.behaviors.DART = function() {
   if (typeof(Drupal.DART.settings.loadLastTags) == 'object') {
     $('.dart-tag:visible').each( function() {
-      if(!$(this).hasClass('dart-processed')) {
+      if (!$(this).hasClass('dart-processed')) {
         var regex = /dart-name-(\w+)$/;
         var result = regex.exec($(this).attr('class'));
         var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[result[1]]);
@@ -70,7 +70,7 @@ Drupal.DART.keyVal = function(key, val, useEval) {
 
 /**
  * Loop through an object and create kay|val pairs.
- * 
+ *
  * @param vals
  *   an object in this form:
  *   {
