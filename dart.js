@@ -71,7 +71,7 @@ Drupal.DART.keyVal = function(key, val, useEval) {
 
 /**
  * Loop through an object and create kay|val pairs.
- * 
+ *
  * @param vals
  *   an object in this form:
  *   {
