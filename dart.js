@@ -1,3 +1,4 @@
+(function($) {
 
 /**
  * Create a DART object to handle tagging functionality
@@ -10,23 +11,6 @@ Drupal.DART = {};
 Drupal.DART.settings = {
   "writeTags": true
 };
-
-/**
- * If there are tags in the loadLastTags, then load them where they belong.
- */
-Drupal.behaviors.DART = function() {
-  if (typeof(Drupal.DART.settings.loadLastTags) == 'object') {
-    $('.dart-tag:visible').each( function() {
-      if(!$(this).hasClass('dart-processed')) {
-        var regex = /dart-name-(\w+)$/;
-        var result = regex.exec($(this).attr('class'));
-        var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[result[1]]);
-
-        $(this).writeCapture().append(scriptTag).addClass('dart-processed');
-      }
-    });
-  }
-}
 
 /**
  * Using document.write, add a DART tag to the page
@@ -70,7 +54,7 @@ Drupal.DART.keyVal = function(key, val, useEval) {
 
 /**
  * Loop through an object and create kay|val pairs.
- * 
+ *
  * @param vals
  *   an object in this form:
  *   {
@@ -90,3 +74,20 @@ Drupal.DART.keyVals = function(vals) {
   }
   return ad;
 }
+
+/**
+ * If there are tags in the loadLastTags, then load them where they belong.
+ */
+Drupal.behaviors.DART = {attach: function(context) {
+  console.log('here');
+  if (typeof(Drupal.DART.settings.loadLastTags) == 'object') {
+    $('.dart-tag:visible').not('.dart-processed').each( function() {
+      var regex = /dart-name-(\w+)$/;
+      var result = regex.exec($(this).attr('class'));
+      var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[result[1]]);
+
+      $(this).writeCapture().append(scriptTag).addClass('dart-processed');
+    });
+  }
+}};
+})(jQuery);
