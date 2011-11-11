@@ -23,14 +23,14 @@ Drupal.DART.tag = function(tag) {
 
   ad = '<' + tagname + ' ' + options + ' src="';
   ad += dart_url + "/";
-  ad += tag.network_id != '' ? tag.network_id + "/" : "";
+  ad += tag.network_id !== '' ? tag.network_id + "/" : "";
   ad += tag.settings.options.method + "/";
   ad += tag.prefix + '.' + tag.site + "/" + tag.zone + ";";
   ad += this.keyVals(tag.key_vals);
 
   // Allow other modules to include js that can manipulate each key|val.
-  rendered_ad = ($ != undefined) ? $(document).triggerHandler('dart_tag_render', [ad]) : undefined;
-  ad = rendered_ad != undefined ? rendered_ad : ad; ad += '"></' + tagname + '>';
+  rendered_ad = ($ !== undefined) ? $(document).triggerHandler('dart_tag_render', [ad]) : undefined;
+  ad = rendered_ad !== undefined ? rendered_ad : ad; ad += '"></' + tagname + '>';
 
   if (Drupal.DART.settings.writeTags) {
     document.write(ad);
@@ -78,16 +78,17 @@ Drupal.DART.keyVals = function(vals) {
 /**
  * If there are tags in the loadLastTags, then load them where they belong.
  */
-Drupal.behaviors.DART = {attach: function(context) {
-  console.log('here');
-  if (typeof(Drupal.DART.settings.loadLastTags) == 'object') {
-    $('.dart-tag:visible').not('.dart-processed').each( function() {
-      var regex = /dart-name-(\w+)$/;
-      var result = regex.exec($(this).attr('class'));
-      var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[result[1]]);
-
-      $(this).writeCapture().append(scriptTag).addClass('dart-processed');
-    });
+Drupal.behaviors.DART = {
+  attach: function(context) {
+    if (typeof(Drupal.DART.settings.loadLastTags) == 'object') {
+      $('.dart-tag:visible').not('.dart-processed').each(function() {
+        var regex = /dart-name-(\w+)$/;
+        var result = regex.exec($(this).attr('class'));
+        var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[result[1]]);
+        $(this).writeCapture().append(scriptTag).addClass('dart-processed');
+      });
+    }
   }
-}};
+};
+
 })(jQuery);
