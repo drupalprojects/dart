@@ -43,17 +43,17 @@ function dart_scheduler_form_alter(&$form, &$form_state, $form_id) {
 
     $form['#validate'][] = 'dart_scheduler_form_validate';
 
-    $form['scheduler'] = array(
+    $form['settings']['scheduler'] = array(
       '#type' => 'fieldset',
       '#title' => t('Schedule'),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     );
-    $form['scheduler']['add'] = array(
+    $form['settings']['scheduler']['add'] = array(
       '#theme' => 'dart_scheduler_add_form',
     );
     for ($i = 0; $i < $event_count; $i++) {
-      $form['scheduler']['add'][$i] = _dart_scheduler_add_form($i, $tag->settings['scheduler'][$i]);
+      $form['settings']['scheduler']['add'][$i] = _dart_scheduler_add_form($i, $tag->settings['scheduler'][$i]);
     }
   }
 }
