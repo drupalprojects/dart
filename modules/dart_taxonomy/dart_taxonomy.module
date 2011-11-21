@@ -43,7 +43,7 @@ function dart_taxonomy_form_alter(&$form, &$form_state, $form_id) {
       if ($form_state['plugin']['schema'] == 'dart_tags') {
         $tag = $form_state['item'];
 
-        $form['display_options']['include_terms'] = array(
+        $form['settings']['display_options']['include_terms'] = array(
           '#type' => 'checkbox',
           '#title' => t('Include taxonomy terms as key|value pairs'),
           '#default_value' => (isset($tag->settings['options']['include_terms']) ? $tag->settings['options']['include_terms'] : '0'),
