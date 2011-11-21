@@ -39,7 +39,7 @@ function dart_scheduler_cron() {
 function dart_scheduler_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == "ctools_export_ui_edit_item_form" && $form_state['plugin']['schema'] == 'dart_tags') {
     $tag = $form_state['item'];
-    $event_count = max(DART_MAX_EVENTS, count($tag->settings['schedluer']) + 5);
+    $event_count = max(DART_MAX_EVENTS, count($tag->settings['scheduler']) + 5);
 
     $form['#validate'][] = 'dart_scheduler_form_validate';
 
