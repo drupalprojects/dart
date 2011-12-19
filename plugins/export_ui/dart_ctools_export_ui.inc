@@ -92,15 +92,15 @@ function dart_tag_form(&$form, &$form_state) {
   );
 
   // Tag settings overrides.
-  $form['settings']['tag_settings']['overrides'] = array(
+  $form['settings']['overrides'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Default DART Setting Overrides'),
+    '#title' => t('Global DART Setting Overrides'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-    '#description' => t('Override the !settings for this ad tag.', array('!settings' => l(t('default settings'), 'admin/configure/dart'))),
+    '#description' => t('Override the !settings for this ad tag.', array('!settings' => l(t('global dart settings'), 'admin/configure/dart'))),
   );
   $default_site = variable_get('dart_global_site', '');
-  $form['settings']['tag_settings']['overrides']['site'] = array(
+  $form['settings']['overrides']['site'] = array(
     '#type' => 'textfield',
     '#title' => t('Site'),
     '#description' => t('In rare circumstances you may want to override the !settings: %default', array('!settings' => l(t('default DART site'), 'admin/configure/dart'), '%default' => empty($default_site) ? t('No default value has been set.') : $default_site)),
@@ -109,7 +109,7 @@ function dart_tag_form(&$form, &$form_state) {
     '#default_value' => $tag->settings['overrides']['site'],
   );
   $default_zone = variable_get('dart_global_zone', '');
-  $form['settings']['tag_settings']['overrides']['zone'] = array(
+  $form['settings']['overrides']['zone'] = array(
     '#type' => 'textfield',
     '#title' => t('Zone'),
     '#description' => t('In rare circumstances you may want to override the !settings: %default', array('!settings' => l(t('default DART zone'), 'admin/configure/dart'), '%default' => empty($default_zone) ? t('No default value has been set.') : $default_zone)),
@@ -117,7 +117,7 @@ function dart_tag_form(&$form, &$form_state) {
     '#maxlength' => 32,
     '#default_value' => $tag->settings['overrides']['zone'],
   );
-  $form['settings']['tag_settings']['overrides']['slug'] = array(
+  $form['settings']['overrides']['slug'] = array(
     '#type' => 'textfield',
     '#title' => t('Slug'),
     '#description' => t('Override the default slug for this ad tag. Use !none for no slug. Leave this field empty to use the default slug. Example: Advertisement', array('!none' => check_plain('<none>'))),
