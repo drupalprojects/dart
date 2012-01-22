@@ -33,7 +33,6 @@ function dart_admin_settings() {
     '#default_value' => variable_get('dart_global_network_id', ''),
     '#required' => FALSE,
     '#description' => t('The Network ID to use on all tags. This is required for networks that upgraded from DART to DoubleClick. If you were not provided a network ID from DoubleClick leave this blank.'),
-    '#maxlength' => 32,
   );
   $form['settings']['tag_settings']['default_tag_settings'] = array(
     '#theme' => 'dart_global_defaults_form',
@@ -45,7 +44,6 @@ function dart_admin_settings() {
     '#default_value' => variable_get('dart_global_prefix', ''),
     '#required' => TRUE,
     '#description' => t('Typically this is a short version of your organization\'s name (provided by Doubleclick).'),
-    '#maxlength' => 32,
   );
   $form['settings']['tag_settings']['default_tag_settings']['dart_global_site'] = array(
     '#type' => 'textfield',
@@ -53,7 +51,6 @@ function dart_admin_settings() {
     '#default_value' => variable_get('dart_global_site', ''),
     '#required' => TRUE,
     '#description' => t('The value to use when no "site" is specified on a given page.'),
-    '#maxlength' => 32,
   );
   $form['settings']['tag_settings']['default_tag_settings']['dart_global_zone'] = array(
     '#type' => 'textfield',
@@ -61,7 +58,6 @@ function dart_admin_settings() {
     '#default_value' => variable_get('dart_global_zone', ''),
     '#required' => FALSE,
     '#description' => t('The value to use when no "zone" is specified on a given page.'),
-    '#maxlength' => 32,
   );
   $form['settings']['tag_settings']['dart_load_last'] = array(
     '#type'           => 'checkbox',
@@ -83,7 +79,6 @@ function dart_admin_settings() {
     '#default_value' => variable_get('dart_global_slug', '<none>'),
     '#required' => FALSE,
     '#description' => t('Slug all ad tags with this label. Use @tag for no slug. Example: Advertisement', array('@tag' => '<none>')),
-    '#maxlength' => 64,
   );
   $form['settings']['display_options']['dart_noscript'] = array(
     '#type' => 'checkbox',
@@ -165,7 +160,6 @@ function dart_admin_settings() {
     '#default_value' => variable_get('dart_test_prefix', ''),
     '#description' => t('The prefix to use when the query string ?adtest=true is present.'),
     '#required' => FALSE,
-    '#maxlength' => 32,
   );
   $form['settings']['default_ad_test_settings']['default_test_tag_settings']['dart_test_site'] = array(
     '#type' => 'textfield',
@@ -173,7 +167,6 @@ function dart_admin_settings() {
     '#default_value' => variable_get('dart_test_site', ''),
     '#description' => t('The site to use when the query string ?adtest=true is present.'),
     '#required' => FALSE,
-    '#maxlength' => 32,
   );
   $form['settings']['default_ad_test_settings']['default_test_tag_settings']['dart_test_zone'] = array(
     '#type' => 'textfield',
@@ -181,7 +174,6 @@ function dart_admin_settings() {
     '#default_value' => variable_get('dart_test_zone', ''),
     '#description' => t('The zone to use when the query string ?adtest=true is present.'),
     '#required' => FALSE,
-    '#maxlength' => 32,
   );
 
   return system_settings_form($form);
