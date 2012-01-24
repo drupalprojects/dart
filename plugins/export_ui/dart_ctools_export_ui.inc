@@ -73,6 +73,7 @@ function dart_tag_form(&$form, &$form_state) {
   );
   $form['settings']['tag_settings']['machinename'] = $form['info']['machinename'];
   $form['settings']['tag_settings']['machinename']['#title'] = t('Machine Name');
+  $form['settings']['tag_settings']['machinename']['#maxlength'] = 32;
   unset($form['info']);
   $form['settings']['tag_settings']['pos'] = array(
     '#type' => 'textfield',
