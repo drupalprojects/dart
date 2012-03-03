@@ -216,15 +216,21 @@ function dart_taxonomy_dart_key_vals($tag) {
       $node_fields = field_info_instances('node', $node->type);
 
       // Iterate over the node fields to find any term reference fields.
+      // @todo There must be a better way to get terms for an entity.
       foreach ($node_fields as $field_name => $field_instance) {
         $field_info = field_info_field($field_name);
         $field_items = field_get_items('node', $node, $field_name);
 
         // Only check term reference fields that have data.
-        if ($field_info['type'] === 'taxonomy_term_reference' && !empty($field_items) && is_array($field_items)) {
+        if ($field_info['type'] === 'taxonomy_term_reference' && is_array($field_items)) {
           foreach ($field_items as $item) {
             if (!isset($terms[$item['tid']])) {
-              $terms[$item['tid']] = isset($item['taxonomy_term']) ? $item['taxonomy_term'] : taxonomy_term_load($item['tid']);
+              // It's possible that a term has been deleted but the tid is still
+              // referenced by a node so we have to check for that.
+              $term = taxonomy_term_load($item['tid']);
+              if (is_object($term)) {
+                $terms[$item['tid']] = $term;
+              }
             }
           }
         }
