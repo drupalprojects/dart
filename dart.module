@@ -91,6 +91,7 @@ function dart_block_info() {
   $blocks = array();
   foreach ($tags as $tag) {
     $blocks['dart-tag-' . $tag->machinename]['info'] = t('DART tag: !tagname', array('!tagname' => $tag->name));
+    $blocks['dart-tag-' . $tag->machinename]['cache'] = DRUPAL_CACHE_PER_PAGE;
   }
   return $blocks;
 }
