@@ -87,6 +87,7 @@ function dart_block($op = 'list', $delta = 0, $edit = array()) {
       $tags = _dart_block_tags();
       foreach ($tags as $tag) {
         $block['dart-tag-'. $tag->machinename]['info'] = t('DART tag: !tagname', array('!tagname' => $tag->name));
+        $block['dart-tag-'. $tag->machinename]['cache'] = BLOCK_CACHE_PER_PAGE;
       }
       break;
     case 'configure':
