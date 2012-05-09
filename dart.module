@@ -3,7 +3,7 @@
 /**
  * The doublclick URL.
  */
-define('DART_URL', 'http://ad.doubleclick.net');
+define('DART_URL', ($GLOBALS['is_https'] ? 'https://ad.doubleclick.net' : 'http://ad.doubleclick.net'));
 
 /**
  * The maximum number of key|value pair fields to show on forms by defaut.
