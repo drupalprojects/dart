@@ -97,8 +97,8 @@ function _dart_scheduler_add_form($delta, $defaults = array()) {
     '#type' => 'select',
     '#title' => t('Status'),
     '#options' => array(
-      1 => t('Active'),
-      0 => t('Inactive'),
+      0 => t('Enabled'),
+      1 => t('Disabled'),
     ),
     '#parents' => array('scheduler', $delta, 'status'),
     '#default_value' => isset($defaults['status']) ? $defaults['status'] : 1,

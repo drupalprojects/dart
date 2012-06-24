@@ -190,7 +190,7 @@ function dart_tag($machinename) {
     }
   }
 
-  if ($tag->active) {
+  if (empty($tag->disabled)) {
     // Build the tag based on its display options.
     // $output = dart_tag_build($tag);
     $output = theme('dart_tag', array('tag' => $tag));
@@ -343,12 +343,7 @@ function dart_tag_prepare_noscript($tag) {
  * Change the current active/inactive status for the given tag.
  */
 function dart_tag_set_status($tag, $status) {
-  db_update('dart_tags')
-    ->fields(array(
-      'active' => $status,
-    ))
-    ->condition('machinename', $tag->machinename)
-    ->execute();
+  ctools_export_crud_set_status('dart_tags', $tag->machinename, $status);
 }
 
 /**

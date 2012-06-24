@@ -45,13 +45,6 @@ $plugin = array(
 function dart_tag_form(&$form, &$form_state) {
   $tag = $form_state['item'];
 
-
-  $form['active'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Make this tag active.'),
-    '#default_value' => $tag->active,
-  );
-
   $form['settings'] = array(
     '#type' => 'vertical_tabs',
   );

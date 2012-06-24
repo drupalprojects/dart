@@ -61,11 +61,6 @@ function dart_schema() {
         'default' => '',
         'description' => "The tag's size (sz) value.",
       ),
-      'active' => array(
-        'type' => 'int',
-        'default' => 1,
-        'description' => "If true the tag can be displayed.",
-      ),
       'block' => array(
         'type' => 'int',
         'default' => 0,
@@ -204,6 +199,29 @@ function dart_update_6200() {
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
   return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
+}
+
+/**
+ * Convert DART tags to use ctools "disabled" instead of the custom "active"
+ * state.
+ */
+function dart_update_7200() {
+  $t = get_t();
+
+  module_load_include('module', 'dart', 'dart');
+
+  // Set any DART tags that are currently marked inactive to disabled.
+  $tags = dart_tag_load();
+  foreach ($tags as $tag) {
+    if (!$tag->active) {
+      dart_tag_set_status($tag, TRUE);
+    }
+  }
+
+  // Remove the "active" field from the database table.
+  db_drop_field('dart_tags', 'active');
+
+  return t('The active field has successfully been converted to the ctools standard.');
 }
 
 /**
