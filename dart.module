@@ -560,7 +560,7 @@ function _dart_get_page_key_vals() {
 function template_preprocess_dart_tag(&$variables) {
   $tag = $variables['tag'];
 
-  $variables['attributes_array']['class'] = 'dart-tag dart-name-' . $tag->machinename;
+  $variables['attr']['class'] = 'dart-tag dart-name-' . $tag->machinename;
   $variables['json_tag'] = drupal_json_encode($tag);
   $variables['load_last']   = variable_get('dart_load_last', '0');
 
@@ -575,6 +575,6 @@ function template_preprocess_dart_tag(&$variables) {
 
   $variables['static_tag'] = l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE));
   $variables['noscript_tag'] = $variables['show_noscript_tag'] ? '<noscript>' . $variables['static_tag'] . '</noscript>' : '';
-
+  $variables['foo'] = 'AHHHHHH';
   $variables['tag'] = $tag;
 }
