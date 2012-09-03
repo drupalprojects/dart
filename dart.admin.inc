@@ -14,6 +14,7 @@ function dart_admin_settings() {
   $form['#attached']['js'] = array(
     drupal_get_path('module', 'dart') . '/dart.admin.js'
   );
+  $form['#submit'][] = 'dart_admin_settings_submit';
   $form['#validate'][] = 'dart_admin_settings_validate';
 
   $form['settings'] = array(
@@ -85,6 +86,50 @@ function dart_admin_settings() {
     '#title' => t('display @tag tags', array('@tag' => '<noscript>')),
     '#default_value' => variable_get('dart_noscript', '1'),
     '#description' => t('Display @tag tags along with the standard javascript DART tags.', array('@tag' => '<noscript>')),
+  );
+
+  // Global display options.
+  $form['settings']['taxnomy_options'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Taxonomy Options'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+  $form['settings']['taxnomy_options']['dart_include_taxonomy_terms'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Where possible include taxonomy terms in DART tags as key|val pairs'),
+    '#default_value' => variable_get('dart_include_taxonomy_terms', 0),
+  );
+  $form['settings']['taxnomy_options']['dart_enable_ad_categories'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable DFP Ad Categories'),
+    '#default_value' => variable_get('dart_enable_ad_categories', 0),
+    '#description' => t('Example: if you have an "animals" vocabulary and you want to target the same ads to "dogs", "cats" and "hamsters" you can edit each of those terms and set the DFP Ad Category to "pets". Whenever the taxonomy terms are included as targeting values, anything tagged "cats" will target "pets" instead.'),
+  );
+  if (!module_exists('taxonomy')) {
+    $form['settings']['taxnomy_options']['dart_enable_ad_categories']['disabled'] = TRUE;
+    $form['settings']['taxnomy_options']['dart_enable_ad_categories']['#default_value'] = 0;
+    $form['settings']['taxnomy_options']['dart_enable_ad_categories']['#description'] .= t('This requires the taxonomy module which is currently disabled.');
+  }
+  $bundles = field_info_bundles('taxonomy_term');
+  $options = array();
+  foreach ($bundles as $key => $value) {
+    if ($key != 'dart_ad_categories') {
+      $options[$key] = $value['label'];
+    }
+  }
+  $form['settings']['taxnomy_options']['dart_enable_ad_categories_bundles'] = array(
+    '#type' => 'checkboxes',
+    '#options' => $options,
+    '#prefix' => '<div style="margin-left: 20px">',
+    '#suffix' => '</div>',
+    '#default_value' => variable_get('dart_enable_ad_categories_bundles', array()),
+    '#description' => t('Select the vocabularies on which DART Ad Categories should be enabled.'),
+    '#states' => array(
+      'visible' => array(
+        'input[name="dart_enable_ad_categories"]' => array('checked' => TRUE),
+      ),
+    ),
   );
 
   // Gloabal key/val pairs
@@ -180,8 +225,7 @@ function dart_admin_settings() {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Form validation function.
  */
 function dart_admin_settings_validate($form, &$form_state) {
   // Validate "key_vals" before its name is changed.
@@ -190,6 +234,36 @@ function dart_admin_settings_validate($form, &$form_state) {
   // Rename the key_vals value to dart_key_vals to avoid namespace conflicts.
   $form_state['values']['dart_key_vals'] = $form_state['values']['key_vals'];
   unset($form_state['values']['key_vals']);
+}
+
+/**
+ * Form submit function.
+ */
+function dart_admin_settings_submit($form, &$form_state) {
+  // Attach (or delete) an instance of the dfp_ad_categories term_reference
+  // field for each vocabulary that should (or should not) have DFP Ad
+  // Categories enabled.
+  foreach ($form_state['values']['dart_enable_ad_categories_bundles'] as $bundle => $enable) {
+    $existing_instance = field_read_instance('taxonomy_term', 'field_dart_ad_categories', $bundle);
+    $enable = $enable && !$existing_instance && $form_state['values']['dart_enable_ad_categories'];
+    if ($enable) {
+      $instance = array(
+        'field_name' => 'field_dart_ad_categories',
+        'entity_type' => 'taxonomy_term',
+        'label' => t('DART Ad Category'),
+        'bundle' => $bundle,
+        'required' => FALSE,
+        'widget' => array(
+          'type' => 'options_select'
+        ),
+      );
+      field_create_instance($instance);
+    }
+    elseif (!$enable && $existing_instance) {
+      // Delete this field instance, but be certain not to delete the field.
+      field_delete_instance($existing_instance, FALSE);
+    }
+  }
 }
 
 /**

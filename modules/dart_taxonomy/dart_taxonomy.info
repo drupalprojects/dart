@@ -1,12 +1,11 @@
-name = DART Taxonomy
-description = Allows taxonomy terms to be included in DART tags.
+name = DART Taxonomy (Deprecated)
+description = Allows taxonomy terms to be included in DART tags. Deprecated: Use the DART Ad Categories settings that now come with the DART module.
 core = 7.x
 dependencies[] = dart
 package = Advertising
 
 project = "dart"
 datestamp = "1304899617"
-
 
 files[] = dart_taxonomy.install
 files[] = dart_taxonomy.module

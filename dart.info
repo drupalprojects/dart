@@ -4,6 +4,7 @@ core = 7.x
 package = Advertising
 dependencies[] = ctools
 dependencies[] = libraries
+dependencies[] = taxonomy
 version = "7.x-2.x"
 project = "dart"
 
