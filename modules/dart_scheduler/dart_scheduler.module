@@ -64,7 +64,8 @@ function dart_scheduler_form_alter(&$form, &$form_state, $form_id) {
  * Form validation function for the DART scheduler form.
  */
 function dart_scheduler_form_validate($form, &$form_state) {
-  for ($i = 0; $event = $form_state['values']['scheduler'][$i]; $i++) {
+  for ($i = 0; $i < count($form_state['values']['scheduler']); $i++) {
+    $event = $form_state['values']['scheduler'][$i];
     if (empty($event['date'])) {
       unset($form_state['values']['scheduler'][$i]);
     }
