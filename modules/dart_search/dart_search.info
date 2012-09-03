@@ -1,0 +1,6 @@
+name = DART Search
+description = Allows search terms to be included in DART tags.
+core = 7.x
+dependencies[] = dart
+dependencies[] = search
+package = Advertising
