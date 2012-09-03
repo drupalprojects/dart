@@ -63,7 +63,7 @@ class dart_tag_ui extends ctools_export_ui {
         $this->sorts[$name] = $item->{$this->plugin['export']['admin_title']};
         break;
       case 'name':
-        $this->sorts[$name] = $name;
+	$this->sorts[$name] = $item->name;
         break;
       case 'storage':
         $this->sorts[$name] = $item->type . $name;
@@ -77,7 +77,7 @@ class dart_tag_ui extends ctools_export_ui {
     if (!empty($this->plugin['export']['admin_title'])) {
       $this->rows[$name]['data'][] = array('data' => check_plain($item->{$this->plugin['export']['admin_title']}), 'class' => array('ctools-export-ui-title'));
     }
-    $this->rows[$name]['data'][] = array('data' => check_plain($name), 'class' => array('ctools-export-ui-name'));
+    $this->rows[$name]['data'][] = array('data' => check_plain($item->name), 'class' => array('ctools-export-ui-name'));
     $this->rows[$name]['data'][] = array('data' => check_plain($item->pos), 'class' => array('ctools-export-ui-pos'));
     $this->rows[$name]['data'][] = array('data' => check_plain($item->sz), 'class' => array('ctools-export-ui-sz'));
     $this->rows[$name]['data'][] = array('data' => check_plain($item->type), 'class' => array('ctools-export-ui-storage'));
