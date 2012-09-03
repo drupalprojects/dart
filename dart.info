@@ -2,11 +2,17 @@ name = DART
 description = Integrates DART ads onto a site.
 core = 7.x
 package = Advertising
+
+;Those dependencies that have version requirements are listed twice because
+;testbot chokes on dependencies that have version requirements.
+dependencies[] = ctools (>= 7.x-1.0-rc2)
 dependencies[] = ctools
+dependencies[] = libraries (>= 7.x-2.0)
 dependencies[] = libraries
 dependencies[] = taxonomy
 
 files[] = contexts/dart_context_reaction_tags.inc
 files[] = export_ui/dart_ctools_export_ui.inc
 files[] = export_ui/dart_tag_ui.class.php
+files[] = tests/dart.test
 

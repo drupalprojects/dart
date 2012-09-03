@@ -84,6 +84,31 @@ function dart_menu() {
 }
 
 /**
+ * Implements hook_libraries_info().
+ */
+function dart_libraries_info() {
+  $libraries['writecapture'] = array(
+    'title' => 'Write Capture jQuery Plugin',
+    'vendor_url' => 'https://github.com',
+    'download_url' => 'https://github.com/downloads/iamnoah/writeCapture/jquery.writeCapture-1.0.5-min.js',
+    'files' => array(
+      'js' => array(
+        'jquery.writeCapture.js' => array(
+          'every_page' => TRUE,
+          'group' => JS_LIBRARY,
+          'preprocess' => 0,
+          'scope' => 'header',
+          'type' => 'file',
+          'weight' => -999,
+        ),
+      ),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
  * Implements hook_block_info().
  */
 function dart_block_info() {

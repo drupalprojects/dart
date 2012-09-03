@@ -67,6 +67,12 @@ function dart_admin_settings() {
     '#description'    => t('Wait until the entire page has loaded before loading ads. This will allow your pages to load faster but may cause empty spaces to appear on your pages before the ads load. <strong>You must use this option if you are loading ad tags asyncronously.</strong>'),
   );
 
+  if (!module_exists('libraries') || (module_exists('libraries') && !libraries_detect('writecapture'))) {
+    $form['settings']['tag_settings']['dart_load_last']['#disabled'] = TRUE;
+    $form['settings']['tag_settings']['dart_load_last']['#default_value'] = 0;
+    $form['settings']['tag_settings']['dart_load_last']['#prefix'] = '<p><strong>' . t('This option requires <a href="https://github.com/iamnoah/writeCapture">WriteCapture jQuery plugin</a> to be included using the <a href="http://drupal.org/project/libraries">Libraries module (&gt;= 7.x-2.0)</a>. Please download <a href="https://github.com/iamnoah/writeCapture">WriteCapture jQuery plugin</a> and copy <code>plugin/writeCapture.js</code> file to <code>/sites/all/libraries/writecapture/jquery.writeCapture.js</code>') . '</strong></p>';
+  }
+
   // Global display options.
   $form['settings']['display_options'] = array(
     '#type' => 'fieldset',
