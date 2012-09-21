@@ -28,13 +28,6 @@ function dart_admin_settings() {
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
-  $form['settings']['tag_settings']['dart_global_network_id'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Network ID'),
-    '#default_value' => variable_get('dart_global_network_id', ''),
-    '#required' => FALSE,
-    '#description' => t('The Network ID to use on all tags. This is required for networks that upgraded from DART to DoubleClick. If you were not provided a network ID from DoubleClick leave this blank.'),
-  );
   $form['settings']['tag_settings']['default_tag_settings'] = array(
     '#theme' => 'dart_global_defaults_form',
     '#description' => 'Enter the global values that DART tags should use for prefix, site & zone. Example: groups.drupal.org might use gdo.group/general; drupal.org might use drupal.default (notice there is no zone); ',

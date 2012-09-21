@@ -257,6 +257,13 @@ function dart_update_7201() {
 }
 
 /**
+ * Remove the dart_global_network_id variable.
+ */
+function dart_update_7202() {
+  variable_del('dart_global_network_id');
+}
+
+/**
  * Helper function to rename variables in the variables table.
  *
  * @param $variables
