@@ -44,7 +44,7 @@ function dart_theme() {
       'render element' => 'form',
       'file' => 'plugins/export_ui/dart_ctools_export_ui.inc',
     ),
-    'dart_global_defaults_form' => array(
+    'dart_prefix_site_zone_form' => array(
       'render element' => 'form',
       'file' => 'dart.admin.inc',
     ),
