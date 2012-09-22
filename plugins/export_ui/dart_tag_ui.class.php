@@ -110,4 +110,18 @@ class dart_tag_ui extends ctools_export_ui {
     return $header;
   }
 
+  /**
+   * Deletes exportable items from the database and deltes any blocks.
+   */
+  function delete_page($js, $input, $item) {
+    if ($item->block) {
+      db_delete('block')
+        ->condition('module', 'dart')
+        ->condition('delta', 'dart-tag-' . $item->machinename)
+        ->execute();
+    }
+
+    return parent::delete_page($js, $input, $item);
+  }
+
 }

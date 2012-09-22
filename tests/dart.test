@@ -152,13 +152,13 @@ class dartBaseTest extends DrupalWebTestCase {
   }
 }
 
-class dartDisplayTagTest extends dartBaseTest {
+class dartTagCRUDTest extends dartBaseTest {
   /**
    * Implements getInfo().
    */
   public static function getInfo() {
     return array(
-      'name' => t('Displaying DART Tags'),
+      'name' => t('DART Tag CRUD Operations'),
       'description' => t('Tests for displaying DART tags.'),
       'group' => t('DART'),
     );
@@ -178,5 +178,14 @@ class dartDisplayTagTest extends dartBaseTest {
     // $tag = $this->createTag($edit);
     // $this->assertRaw('googletag.defineSlot("' . variable_get('dfp_network_id', '') . '/' . $tag->adunit . '", ' . dfp_format_size($tag->size) . ', "' . $tag->placeholder_id . '")', 'The ad slot with a very long machine name has been correctly defined in javascript.');
 
+  }
+
+  function testDeleteTag() {
+    // Create a simple tag as a block and then delete it.
+    $tag = $this->createTag();
+    $this->drupalPost('admin/structure/dart_tags/list/' . $tag->machinename . '/delete', array(), t('Delete'));
+    $this->assertNoText(t('%machinename is not a valid DART tag.', array('%machinename' => $tag->machinename)), 'The deleted tag is not attempting to display as a block.');
+    $this->drupalGet('admin/structure/dart_tags/list');
+    $this->assertNoText($tag->name, 'The deleted tag does not appear in teh list of tags.');
   }
 }
