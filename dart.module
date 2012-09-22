@@ -131,6 +131,24 @@ function dart_block_view($delta) {
 }
 
 /**
+ * Implements hook_contextual_links_view_alter().
+ */
+function dart_contextual_links_view_alter(&$element, &$items) {
+  // This hook is called for EVERY set of contextual links on a page.  We first
+  // want to check the $element to make sure we are adding a link to the correct
+  // list of contextual links. In this case we only want to add a link to blocks
+  // created by the "search" module. We just add links using the same array
+  // structure as is used by theme_links.
+  if (isset($element['#element']['#block']) && strpos($element['#element']['#block']->delta, 'dart-tag-') !== FALSE) {
+    $machinename = str_replace('dart-tag-', '', $element['#element']['#block']->delta);
+    $element['#links']['dart-tag'] = array(
+      'title' => t('Configure DART Tag'),
+      'href' => 'admin/structure/dart_tags/list/' . $machinename . '/edit',
+    );
+  }
+}
+
+/**
  * Implements hook_ctools_plugin_directory().
  */
 function dart_ctools_plugin_directory($module, $type) {

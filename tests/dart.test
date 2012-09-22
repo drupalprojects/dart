@@ -10,11 +10,11 @@ class dartBaseTest extends DrupalWebTestCase {
    */
   function setUp() {
     // Enable a couple modules.
-    parent::setUp('ctools', 'dart', 'libraries');
+    parent::setUp('ctools', 'dart', 'libraries', 'contextual');
     menu_rebuild();
 
     // Create an admin user with all the permissions needed to run tests.
-    $this->admin_user = $this->drupalCreateUser(array('administer DART tags', 'administer taxonomy', 'access administration pages', 'administer blocks', 'bypass node access', 'administer nodes', 'edit terms in 1'));
+    $this->admin_user = $this->drupalCreateUser(array('administer DART tags', 'administer taxonomy', 'access administration pages', 'administer blocks', 'bypass node access', 'administer nodes', 'edit terms in 1', 'access contextual links'));
     $this->drupalLogin($this->admin_user);
 
     // Setup the basic global settings for DART.
@@ -133,6 +133,9 @@ class dartBaseTest extends DrupalWebTestCase {
     $edit['blocks[' . $delta . '][region]'] = 'sidebar_first';
     $this->drupalPost('admin/structure/block', $edit, t('Save blocks'));
 
+    // Assert that contextual links were added.
+    $this->assertText(t('Configure DART Tag'), 'A contextual link was properly added to the block.');
+
     return $tag;
   }
 
@@ -168,7 +171,6 @@ class dartTagCRUDTest extends dartBaseTest {
     // Create a simple tag as a block.
     $tag = $this->createTag();
     $this->assertRaw('"machinename":"' . $tag->machinename . '"', 'The ad slot has been correctly defined in javascript.');
-
 
 // Drupal.DART.tag('{"machinename":"hyycie5v","name":"lnYRbkHB","pos":"liTnimME","sz":"160x600,300x100","block":"1","settings":{"overrides":{"site":"u4HWhtwv","zone":"qFxDjQOl","slug":"xdDkD9I5"},"options":{"scriptless":0,"method":"adj"},"key_vals":[{"key":"nMNBx4wy","val":"r03fL4ZK","eval":1},{"key":"zOGZ3vZO","val":"dlCFVqYk","eval":1},{"key":"h4w13YVQ","val":"tq2G3Ri1","eval":1}]},"table":"dart_tags","type":"Normal","export_type":1,"key_vals":{"pos":[{"val":"liTnimME","eval":false}],"sz":[{"val":"160x600,300x100","eval":false}],"nMNBx4wy":[{"val":"r03fL4ZK","eval":1}],"zOGZ3vZO":[{"val":"dlCFVqYk","eval":1}],"h4w13YVQ":[{"val":"tq2G3Ri1","eval":1}],"tile":[{"val":"tile++","eval":true}],"ord":[{"val":"ord","eval":true}]},"prefix":"ye3imbOb","site":"u4HWhtwv","zone":"qFxDjQOl","slug":"xdDkD9I5","network_id":"","noscript":{"src":"http:\/\/ad.doubleclick.net\/ad\/ye3imbOb.u4HWhtwv\/qFxDjQOl;pos=liTnimME;sz=160x600,300x100;tile=1;ord=5954265456?","href":"http:\/\/ad.doubleclick.net\/jump\/ye3imbOb.u4HWhtwv\/qFxDjQOl;pos=liTnimME;sz=160x600,300x100;tile=1;ord=5954265456?"}}'
 
