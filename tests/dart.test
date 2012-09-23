@@ -149,8 +149,9 @@ class dartBaseTest extends DrupalWebTestCase {
     }
 
     $this->drupalPost('admin/structure/dart_tags/list/' . $machinename . '/edit', $edit, t('Save'));
+    $this->drupalGet('admin/structure/dart_tags/list/' . $machinename . '/edit');
+    drupal_static_reset('ctools_export_load_object');
     $tag = dart_tag_load($machinename);
-
     return $tag;
   }
 
