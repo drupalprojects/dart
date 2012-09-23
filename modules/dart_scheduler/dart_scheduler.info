@@ -1,4 +1,4 @@
-name = DART Scheduler
+name = DART Scheduler (Deprecated)
 description = Allows DART tags to be scheduled to appear or not.
 core = 7.x
 dependencies[] = dart
