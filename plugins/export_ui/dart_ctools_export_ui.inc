@@ -275,6 +275,13 @@ function dart_tag_name_exists($machinename) {
  */
 function theme_dart_key_vals_form($variables) {
   $form = &$variables['form'];
+  $form['tokens'] = array(
+    '#theme' => 'token_tree',
+    '#token_types' => array('node', 'menu', 'term', 'user'),
+    '#global_types' => TRUE,
+    '#click_insert' => TRUE,
+  );
+
   $rows = array();
   $headers = array(
     t('Key'),
@@ -314,5 +321,6 @@ function theme_dart_key_vals_form($variables) {
 
   $output = theme('table', array('header' => $headers, 'rows' => $rows));
   $output .= drupal_render_children($form);
+
   return $output;
 }

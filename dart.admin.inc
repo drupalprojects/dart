@@ -286,6 +286,12 @@ function dart_prefix_site_zone_form($required, $default_values = array()) {
     '#attributes' => array('style' => 'width:auto'),
     '#description' => t('Typically this is hte subsection of your site.'),
   );
+  $form['tokens'] = array(
+    '#theme' => 'token_tree',
+    '#token_types' => array('node', 'menu', 'term', 'user'),
+    '#global_types' => TRUE,
+    '#click_insert' => TRUE,
+  );
 
   return $form;
 }
@@ -321,5 +327,5 @@ function theme_dart_prefix_site_zone_form($variables) {
     "#suffix" => '<div class="description">' . $form['#description'] . theme('item_list', array('items' => $descriptions)) . '</div></div>',
   );
 
-  return drupal_render($form['dart_prefix_site_zone']);
+  return drupal_render($form['dart_prefix_site_zone']) . drupal_render($form['tokens']);
 }

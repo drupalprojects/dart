@@ -339,6 +339,10 @@ function dart_tag_prepare(&$tags) {
     $variables = array('prefix', 'site', 'zone', 'slug');
     foreach ($variables as $var) {
       $tag->{$var} = empty($tag->settings['overrides'][$var]) ? variable_get('dart_global_' . $var, '') : $tag->settings['overrides'][$var];
+      $tag->{$var} = token_replace($tag->{$var}, _dart_get_token_context(), array(
+        'clear' => TRUE,
+        'sanitize' => TRUE,
+      ));
     }
     $tag->slug = ($tag->slug != '<none>' ? $tag->slug : '');
 
@@ -553,7 +557,10 @@ function _dart_block_tags() {
 function _dart_add_key_val(&$tag, $key, $val = NULL, $eval = FALSE) {
   if (!empty($val)) {
     $tag->key_vals[$key][] = array(
-      'val' => $val,
+      'val' => token_replace($val, _dart_get_token_context(), array(
+        'clear' => TRUE,
+        'sanitize' => TRUE,
+      )),
       'eval' => $eval,
     );
   }
@@ -663,6 +670,28 @@ function _dart_build_term_key_vals() {
   }
 
   return $key_vals;
+}
+
+/**
+ * Return an array of contexts to be used by token_replace().
+ * @return array
+ */
+function _dart_get_token_context() {
+  $context = &drupal_static(__FUNCTION__);
+  if (empty($context)) {
+    if (arg(0) == 'node' && is_numeric(arg(1))) {
+      $context['node'] = node_load(arg(1));
+    }
+    if (arg(0) == 'taxonomy' && is_numeric(arg(2))) {
+      $context['term'] = taxonomy_term_load(arg(2));
+    }
+    $context['menu'] = menu_load('main-menu');
+
+    // Allow other modules to alter the current token context.
+    drupal_alter('dart_token_context', $context);
+  }
+
+  return $context;
 }
 
 /**
