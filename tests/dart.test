@@ -149,7 +149,7 @@ class dartBaseTest extends DrupalWebTestCase {
     }
 
     $this->drupalPost('admin/structure/dart_tags/list/' . $machinename . '/edit', $edit, t('Save'));
-    $tag = dfp_tag_load($machinename);
+    $tag = dart_tag_load($machinename);
 
     return $tag;
   }
@@ -198,7 +198,7 @@ class dartTagCRUDTest extends dartBaseTest {
     // Create a simple tag.
     $tag = $this->createTag();
     $edit = $this->dartTagEditValues();
-    $this->editTag($tag->machinename, $edit);
+    $tag = $this->editTag($tag->machinename, $edit);
     $this->assertTag($tag);
   }
 
