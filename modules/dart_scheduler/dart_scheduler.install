@@ -5,6 +5,9 @@
  *
  */
 
+function dart_scheduler_install() {
+  dart_scheduler_update_7201();
+}
 
 /**
  * Implements hook_update_N().
@@ -36,4 +39,8 @@ function dart_scheduler_update_7200() {
       ctools_export_crud_save('dart_tags', $tag);
     }
   }
+}
+
+function dart_scheduler_update_7201() {
+  drupal_set_message(t('The DART Scheduler module has been deprecated in favor of the <a href="http://drupal.org/project/exportable_scheduler">Exportable Scheduler module</a>.', 'warning'), type = 'status', repeat = TRUE);
 }
