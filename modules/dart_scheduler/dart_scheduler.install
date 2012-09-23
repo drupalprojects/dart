@@ -50,3 +50,4 @@ function dart_scheduler_update_7200() {
 function dart_scheduler_update_7201() {
   drupal_set_message(t('The DART Scheduler module has been deprecated in favor of the <a href="http://drupal.org/project/exportable_scheduler">Exportable Scheduler module</a>.'), 'warning');
 }
+
