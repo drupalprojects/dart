@@ -153,6 +153,27 @@ class dartBaseTest extends DrupalWebTestCase {
 
     return $tag;
   }
+
+  /**
+   * Assert that the given tag is being displayed properly within the raw HTML
+   * of the page.
+   *
+   * @param  object $tag
+   */
+  function assertTag($tag) {
+    $tag = (array)$tag;
+
+    foreach ($tag as $key => $value) {
+      if (is_array($value)) {
+        $this->assertTag($tag[$key]);
+      }
+      elseif (is_string($value)) {
+        if ($key != 'src' && $key != 'href') { // @todo: this if statement is a hack because of slash issues.
+          $this->assertRaw('"' . $key . '":"' . $value . '"', "Tag: " . $key . " was properly included.");
+        }
+      }
+    }
+  }
 }
 
 class dartTagCRUDTest extends dartBaseTest {
@@ -170,16 +191,15 @@ class dartTagCRUDTest extends dartBaseTest {
   function testDisplayTag() {
     // Create a simple tag as a block.
     $tag = $this->createTag();
-    $this->assertRaw('"machinename":"' . $tag->machinename . '"', 'The ad slot has been correctly defined in javascript.');
+    $this->assertTag($tag);
+  }
 
-// Drupal.DART.tag('{"machinename":"hyycie5v","name":"lnYRbkHB","pos":"liTnimME","sz":"160x600,300x100","block":"1","settings":{"overrides":{"site":"u4HWhtwv","zone":"qFxDjQOl","slug":"xdDkD9I5"},"options":{"scriptless":0,"method":"adj"},"key_vals":[{"key":"nMNBx4wy","val":"r03fL4ZK","eval":1},{"key":"zOGZ3vZO","val":"dlCFVqYk","eval":1},{"key":"h4w13YVQ","val":"tq2G3Ri1","eval":1}]},"table":"dart_tags","type":"Normal","export_type":1,"key_vals":{"pos":[{"val":"liTnimME","eval":false}],"sz":[{"val":"160x600,300x100","eval":false}],"nMNBx4wy":[{"val":"r03fL4ZK","eval":1}],"zOGZ3vZO":[{"val":"dlCFVqYk","eval":1}],"h4w13YVQ":[{"val":"tq2G3Ri1","eval":1}],"tile":[{"val":"tile++","eval":true}],"ord":[{"val":"ord","eval":true}]},"prefix":"ye3imbOb","site":"u4HWhtwv","zone":"qFxDjQOl","slug":"xdDkD9I5","network_id":"","noscript":{"src":"http:\/\/ad.doubleclick.net\/ad\/ye3imbOb.u4HWhtwv\/qFxDjQOl;pos=liTnimME;sz=160x600,300x100;tile=1;ord=5954265456?","href":"http:\/\/ad.doubleclick.net\/jump\/ye3imbOb.u4HWhtwv\/qFxDjQOl;pos=liTnimME;sz=160x600,300x100;tile=1;ord=5954265456?"}}'
-
-
-    // // Create a tag with a machine name longer than 32 characters.
-    // $edit = array('machinename' => drupal_strtolower($this->randomName(64)));
-    // $tag = $this->createTag($edit);
-    // $this->assertRaw('googletag.defineSlot("' . variable_get('dfp_network_id', '') . '/' . $tag->adunit . '", ' . dfp_format_size($tag->size) . ', "' . $tag->placeholder_id . '")', 'The ad slot with a very long machine name has been correctly defined in javascript.');
-
+  function testUpdateTag() {
+    // Create a simple tag.
+    $tag = $this->createTag();
+    $edit = $this->dartTagEditValues();
+    $this->editTag($tag->machinename, $edit);
+    $this->assertTag($tag)
   }
 
   function testDeleteTag() {
@@ -188,6 +208,59 @@ class dartTagCRUDTest extends dartBaseTest {
     $this->drupalPost('admin/structure/dart_tags/list/' . $tag->machinename . '/delete', array(), t('Delete'));
     $this->assertNoText(t('%machinename is not a valid DART tag.', array('%machinename' => $tag->machinename)), 'The deleted tag is not attempting to display as a block.');
     $this->drupalGet('admin/structure/dart_tags/list');
-    $this->assertNoText($tag->name, 'The deleted tag does not appear in teh list of tags.');
+    $this->assertNoText($tag->name, 'The deleted tag does not appear in the list of tags.');
   }
 }
+
+class dartKeyValTest extends dartBaseTest {
+  /**
+   * Implements getInfo().
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('DART Tag Key|Values Tests'),
+      'description' => t('Tests that key|value pairs are added to DART tags properly.'),
+      'group' => t('DART'),
+    );
+  }
+
+  // Test gloabl key vals
+  // Test tag specific key vals
+  // Test "special" key vals
+  // Test tokens in key vals
+}
+
+class dartNoScriptTest extends dartBaseTest {
+  /**
+   * Implements getInfo().
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('DART Tag noscript Tests'),
+      'description' => t('Tests that DART tags display noscript tags properly.'),
+      'group' => t('DART'),
+    );
+  }
+
+  // Test noscript tags display properly
+}
+
+class dartAdCategoriesTest extends dartBaseTest {
+  /**
+   * Implements getInfo().
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('DART Ad Categories Tests'),
+      'description' => t('Tests that DART Ad Categories work properly.'),
+      'group' => t('DART'),
+    );
+  }
+
+  // Test that terms are added to tags properly
+  // Test that Ad Categories are used instead of terms when appropriate
+}
+
+
+
+
