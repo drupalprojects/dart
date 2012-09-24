@@ -294,6 +294,11 @@ class dartNoScriptTest extends dartBaseTest {
   }
 
   // Test noscript tags display properly
+  function testNoScript() {
+    variable_set('dart_noscript', TRUE);
+    $tag = $this->createTag();
+    $this->assertRaw('<noscript><a href="http://ad.doubleclick.net/jump/', '<noscript> tags are displayed properly.');
+  }
 }
 
 class dartAdCategoriesTest extends dartBaseTest {
@@ -312,6 +317,6 @@ class dartAdCategoriesTest extends dartBaseTest {
   // Test that Ad Categories are used instead of terms when appropriate
 }
 
-
+// TEST OVERRIDES
 
 
