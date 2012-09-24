@@ -290,7 +290,7 @@ function _dart_machinename($name) {
   $i = 0;
 
   while (empty($machinename)) {
-    $candidate = strtolower(ereg_replace("[^A-Za-z0-9]", "", $name));
+    $candidate = drupal_strtolower(ereg_replace("[^A-Za-z0-9]", "", $name));
     $candidate = $i ? $candidate . $i : $candidate;
     $taken = db_query("SELECT machinename FROM {dart_tags} WHERE machinename = :machinename", array(':machinename' => $candidate))->fetchField();
     if (!$taken) {
