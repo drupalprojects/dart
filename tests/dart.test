@@ -47,9 +47,9 @@ class dartBaseTest extends DrupalWebTestCase {
     );
 
     for ($i = 0; $i < count($key_vals); $i++) {
-      $basic_tag['dart_key_vals[' . $i . '][key]'] = $key_vals[$i]['key'];
-      $basic_tag['dart_key_vals[' . $i . '][val]'] = $key_vals[$i]['val'];
-      $basic_tag['dart_key_vals[' . $i . '][eval]'] = $key_vals[$i]['eval'];
+      $edit['key_vals[' . $i . '][key]'] = $key_vals[$i]['key'];
+      $edit['key_vals[' . $i . '][val]'] = $key_vals[$i]['val'];
+      $edit['key_vals[' . $i . '][eval]'] = $key_vals[$i]['eval'];
     }
 
     $this->drupalPost('/admin/structure/dart_tags/settings', $edit, t('Save configuration'));
@@ -225,10 +225,60 @@ class dartKeyValTest extends dartBaseTest {
     );
   }
 
-  // Test gloabl key vals
-  // Test tag specific key vals
-  // Test "special" key vals
-  // Test tokens in key vals
+  // Test gloabl key vals.
+  function testGlobalKeyValPairs() {
+    $tag = $this->createTag();
+    $global_key_vals = variable_get('dart_key_vals', array());
+    foreach ($global_key_vals as $keyval) {
+      $this->assertRaw($keyval['key'], "Global key vals: the key <em>" . $keyval['key'] . "</em> was found");
+      $this->assertRaw($keyval['val'], "Global key vals: the val <em>" . $keyval['val'] . "</em> was found");
+    }
+  }
+
+  // Test "special" key vals.
+  function testSpecialKeyValuePairs() {
+    $this->assertRaw('var tile = ' . variable_get('dart_special_tile_init', 0) . ';', 'The tile value was correctly initiated.');
+    $this->assertRaw('var ord = 1000000000 + Math.floor(Math.random() * 900000000);', 'The ord value was correctly initiated.');
+
+    // Test "special" key vals are not included when they are turned off.
+    $edit = array(
+      'dart_special_key_vals[tile]' => FALSE,
+      'dart_special_key_vals[ord]' => FALSE,
+    );
+    $this->drupalPost('/admin/structure/dart_tags/settings', $edit, t('Save configuration'));
+    $this->assertNoRaw('var tile', 'The tile value was correctly ommitted.');
+    $this->assertNoRaw('var ord', 'The ord value was correctly ommitted.');
+  }
+
+  // Test tokens in key vals.
+  // We must use generic tokens here because the context gets confused when
+  // simpletest is running. For example, it isnt sure which user should be used
+  // for token replacement.
+  function testTokenKeyVals() {
+    $tag = $this->createTag();
+
+    $count = 2;
+    $tokens = array(
+      '[current-date:custom:Ymd]',
+      '[site:name]',
+    );
+    $key_vals = $this->dartGenerateKeyVals($count);
+
+    for ($i = 0; $i < count($key_vals); $i++) {
+      $edit['key_vals[' . $i . '][key]'] = $key_vals[$i]['key'];
+      $edit['key_vals[' . $i . '][val]'] = $tokens[$i];
+      $edit['key_vals[' . $i . '][eval]'] = FALSE;
+    }
+    $this->drupalPost('/admin/structure/dart_tags/settings', $edit, t('Save configuration'));
+
+    foreach ($tokens as $token) {
+      $value = token_replace($token, _dart_get_token_context(), array(
+        'clear' => TRUE,
+        'sanitize' => TRUE,
+      ));
+      $this->assertRaw('"val":"' . $value . '"', 'The key value pair containing the ' . $token . ' (' . $value . ') token were properly rendered.');
+    }
+  }
 }
 
 class dartNoScriptTest extends dartBaseTest {
