@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Integrates DART Ad Tags into your site.
+ */
+
+/**
  * The doublclick URL.
  */
 define('DART_URL', ($GLOBALS['is_https'] ? 'https://ad.doubleclick.net' : 'http://ad.doubleclick.net'));

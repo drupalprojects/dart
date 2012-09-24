@@ -63,7 +63,7 @@ class dart_tag_ui extends ctools_export_ui {
         $this->sorts[$name] = $item->{$this->plugin['export']['admin_title']};
         break;
       case 'name':
-	$this->sorts[$name] = $item->name;
+        $this->sorts[$name] = $item->name;
         break;
       case 'storage':
         $this->sorts[$name] = $item->type . $name;

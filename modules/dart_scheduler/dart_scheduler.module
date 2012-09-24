@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * @file
+ * Schedule DART tags to be enabled or disabled via cron.
+ */
+
+
+/**
  * The maximum number of key|value pair fields to show on forms by defaut.
  */
 define('DART_MAX_EVENTS', 10);

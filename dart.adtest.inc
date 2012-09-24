@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * @file
+ * Creates a test page for DART ad tag.
+ */
+
+
+/**
  * Menu callback; Displays all DART tags on a single page for testing purposes.
  */
 function dart_test_page() {
