@@ -80,51 +80,73 @@ function dart_admin_settings($form, &$form_state) {
     '#description' => t('Display @tag tags along with the standard javascript DART tags.', array('@tag' => '<noscript>')),
   );
 
-  // Global display options.
-  $form['taxnomy_options'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Taxonomy Options'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-    '#group' => 'settings',
-    '#weight' => '-8',
-  );
-  $form['taxnomy_options']['dart_include_taxonomy_terms'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Where possible include taxonomy terms in DART tags as key|val pairs'),
-    '#default_value' => variable_get('dart_include_taxonomy_terms', 0),
-  );
-  $form['taxnomy_options']['dart_enable_ad_categories'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Enable DFP Ad Categories'),
-    '#default_value' => variable_get('dart_enable_ad_categories', 0),
-    '#description' => t('Example: if you have an "animals" vocabulary and you want to target the same ads to "dogs", "cats" and "hamsters" you can edit each of those terms and set the DFP Ad Category to "pets". Whenever the taxonomy terms are included as targeting values, anything tagged "cats" will target "pets" instead.'),
-  );
-  if (!module_exists('taxonomy')) {
-    $form['taxnomy_options']['dart_enable_ad_categories']['disabled'] = TRUE;
-    $form['taxnomy_options']['dart_enable_ad_categories']['#default_value'] = 0;
-    $form['taxnomy_options']['dart_enable_ad_categories']['#description'] .= t('This requires the taxonomy module which is currently disabled.');
-  }
-  $bundles = field_info_bundles('taxonomy_term');
-  $options = array();
-  foreach ($bundles as $key => $value) {
-    if ($key != 'dart_ad_categories') {
-      $options[$key] = $value['label'];
-    }
-  }
-  $form['taxnomy_options']['dart_enable_ad_categories_bundles'] = array(
-    '#type' => 'checkboxes',
-    '#options' => $options,
-    '#prefix' => '<div style="margin-left: 20px">',
-    '#suffix' => '</div>',
-    '#default_value' => variable_get('dart_enable_ad_categories_bundles', array()),
-    '#description' => t('Select the vocabularies on which DART Ad Categories should be enabled.'),
-    '#states' => array(
-      'visible' => array(
-        'input[name="dart_enable_ad_categories"]' => array('checked' => TRUE),
+  // Taxonomy options.
+  if (module_exists('taxonomy')) {
+    $form['taxonomy_options'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Taxonomy Options'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+      '#group' => 'settings',
+      '#weight' => '-8',
+    );
+    $form['taxonomy_options']['dart_include_taxonomy_terms'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Where possible include taxonomy terms in DART tags as key|val pairs'),
+      '#default_value' => variable_get('dart_include_taxonomy_terms', 0),
+    );
+    $form['taxonomy_options']['dart_term_key'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Taxonomy term key'),
+      '#default_value' => variable_get('dart_term_key', 'term'),
+      '#description' => t('Specify what key should be used with each term value in the tag. For example "term" will result in term=termvalue;</br>Leave this field empty to use the vocabulary name of the given tag. Spaces will be removed automatically.'),
+      '#states' => array(
+        'visible' => array(
+          'input[name="dart_include_taxonomy_terms"]' => array('checked' => TRUE),
+        ),
       ),
-    ),
-  );
+    );
+    $form['taxonomy_options']['dart_term_formatter'] = array(
+      '#type' => 'select',
+      '#options' => _dart_term_formatters(),
+      '#title' => t('Taxonomy term formatter'),
+      '#default_value' => variable_get('dart_term_formatter', '_dart_term_formatter_tid'),
+      '#description' => t('How should the taxonomy terms be formatted when included in a DART tag.'),
+      '#states' => array(
+        'visible' => array(
+          'input[name="dart_include_taxonomy_terms"]' => array('checked' => TRUE),
+        ),
+      ),
+    );
+    $form['taxonomy_options']['dart_enable_ad_categories'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable DFP Ad Categories'),
+      '#prefix' => '<hr />',
+      '#default_value' => variable_get('dart_enable_ad_categories', 0),
+      '#description' => t('Example: if you have an "animals" vocabulary and you want to target the same ads to "dogs", "cats" and "hamsters" you can edit each of those terms and set the DFP Ad Category to "pets". Whenever the taxonomy terms are included as targeting values, anything tagged "cats" will target "pets" instead.'),
+    );
+
+    $bundles = field_info_bundles('taxonomy_term');
+    $options = array();
+    foreach ($bundles as $key => $value) {
+      if ($key != 'dart_ad_categories') {
+        $options[$key] = $value['label'];
+      }
+    }
+    $form['taxonomy_options']['dart_enable_ad_categories_bundles'] = array(
+      '#type' => 'checkboxes',
+      '#options' => $options,
+      '#prefix' => '<div style="margin-left: 20px">',
+      '#suffix' => '</div>',
+      '#default_value' => variable_get('dart_enable_ad_categories_bundles', array()),
+      '#description' => t('Select the vocabularies on which DART Ad Categories should be enabled.'),
+      '#states' => array(
+        'visible' => array(
+          'input[name="dart_enable_ad_categories"]' => array('checked' => TRUE),
+        ),
+      ),
+    );
+  }
 
   // Gloabal key/val pairs
   $form['global_key_vals'] = array(

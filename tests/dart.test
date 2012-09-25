@@ -10,7 +10,7 @@ class dartBaseTest extends DrupalWebTestCase {
    */
   function setUp() {
     // Enable a couple modules.
-    parent::setUp('ctools', 'dart', 'libraries', 'contextual');
+    parent::setUp('ctools', 'dart', 'libraries', 'contextual', 'taxonomy');
     menu_rebuild();
 
     // Create an admin user with all the permissions needed to run tests.
@@ -35,6 +35,8 @@ class dartBaseTest extends DrupalWebTestCase {
       'dart_load_last' => 0,
       'dart_noscript' => 0,
       'dart_include_taxonomy_terms' => TRUE,
+      'dart_term_key' => 'term',
+      'dart_term_formatter' => '_dart_term_formatter_full',
       'dart_enable_ad_categories' => 0,
       'dart_special_key_vals[tile]' => 'tile',
       'dart_special_key_vals[ord]' => 'ord',
@@ -278,6 +280,45 @@ class dartKeyValTest extends dartBaseTest {
       $this->assertRaw('"val":"' . $value . '"', 'The key value pair containing the ' . $token . ' (' . $value . ') token were properly rendered.');
     }
   }
+
+  function testTaxonomyTermKeyVals() {
+    // Create a node with terms. Test that those terms show up in the dart tag.
+    $tag = $this->createTag();
+    $terms = array(
+      $this->randomName(12), // tid 1
+      $this->randomName(12), // tid 2
+      $this->randomName(12), // tid 3
+    );
+    $edit = array(
+      'title' => $this->randomName(12),
+      'field_tags[und]' => implode(',', $terms),
+    );
+    $this->drupalPost('node/add/article', $edit, t('Save'));
+    for ($i = 0; $i < count($terms); $i++) {
+      $term = $terms[$i];
+      $this->assertRaw($terms[$i], 'The term ' . $terms[$i] . ' was properly added to the DART tag');
+    }
+
+    // Check each term formatter.
+    $formatters = _dart_term_formatters() ;
+    foreach ($formatters as $formatter => $formatter_name) {
+      $edit = array(
+        'dart_term_formatter' => $formatter,
+        'dart_include_taxonomy_terms' => TRUE,
+        'dart_term_key' => 'term',
+      );
+      $this->drupalPost('/admin/structure/dart_tags/settings', $edit, t('Save configuration'));
+      $this->drupalGet('node/1');
+
+      for ($i = 0; $i < count($terms); $i++) {
+        $term_obj = taxonomy_term_load($i + 1);
+        $formatted_term = $formatter($term_obj);
+        $this->assertRaw('term=' . $formatted_term, 'The `' . $formatter_name . '` formatter was used properly when adding terms to the DART tag');
+      }
+
+    }
+  }
+
 }
 
 class dartNoScriptTest extends dartBaseTest {
@@ -362,7 +403,7 @@ class dartAdCategoriesTest extends dartBaseTest {
     $this->enableAdCategories();
 
     // Create a new DFP Ad Category term.
-    $dart_category = $this->randomName(8); // tid == 1
+    $dart_category = drupal_strtolower($this->randomName(8)); // tid == 1
     $edit = array(
       'name' => $dart_category,
     );
@@ -398,14 +439,14 @@ class dartAdCategoriesTest extends dartBaseTest {
     // Check that when we are on the term page for one of DFP Ad Categories that
     // it is correctly included.
     $this->drupalGet('taxonomy/term/1');
-    $this->assertRaw($dart_category, 'DART Ad Categories appear on its own term page correctly.');
+    $this->assertRaw(':"' . $dart_category . '"', 'DART Ad Categories appear on its own term page correctly.');
 
     // Check that when we are on a term page for a term with a coresponding
     // DFP Ad Categories the DFP Ad Category is included.
     $this->drupalGet('taxonomy/term/3');
-    $this->assertRaw($dart_category, 'DART Ad Categories appear on term pages for terms that have a DART Ad Category correctly.');
-
+    $this->assertRaw(':"' . $dart_category . '"', 'DART Ad Categories appear on term pages for terms that have a DART Ad Category correctly.');
   }
+
 }
 
 class dartOverridesTest extends dartBaseTest {
