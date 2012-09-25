@@ -650,5 +650,4 @@ function template_preprocess_dart_tag(&$variables) {
   $variables['static_tag'] = l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE));
   $variables['noscript_tag'] = $variables['show_noscript_tag'] ? '<noscript>' . $variables['static_tag'] . '</noscript>' : '';
   $variables['tag'] = $tag;
-debug($variables);
 }
