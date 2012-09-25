@@ -18,8 +18,6 @@ function dart_test_page() {
 
   foreach ($tags as $tag) {
     $tag->mode = 'test';
-    $tag->site = isset($_GET['site']) ? $_GET['site'] : $tag->site;
-    $tag->zone = isset($_GET['zone']) ? $_GET['zone'] : $tag->zone;
 
     $content['ads'][$tag->machinename] = array(
       '#type'   => 'markup',
@@ -55,12 +53,16 @@ function dart_test_page_form($form, &$form_state, $edit = array()) {
   $form['site'] = array(
     '#type' => 'textfield',
     '#title' => t('Site'),
-    '#default_value' => isset($_GET['site']) ? $_GET['site'] : '',
+    '#default_value' => isset($_GET['site']) ? check_plain($_GET['site']) : '',
   );
   $form['zone'] = array(
     '#type' => 'textfield',
     '#title' => t('Zone'),
-    '#default_value' => isset($_GET['zone']) ? $_GET['zone'] : '',
+    '#default_value' => isset($_GET['zone']) ? check_plain($_GET['zone']) : '',
+  );
+  $form['adtest'] = array(
+    '#type' => 'hidden',
+    '#default_value' => 'true',
   );
   $form['submit'] = array(
     '#type' => 'submit',
@@ -76,8 +78,8 @@ function dart_test_page_form($form, &$form_state, $edit = array()) {
 function dart_tag_adtest(&$tag) {
   // If there is an "adtest" query string, show test ad tags instead.
   if (isset($_GET['adtest']) && $_GET['adtest'] == 'true') {
-    $tag->prefix = $_GET['prefix'] ? $_GET['prefix'] : variable_get('dart_test_prefix', '');
-    $tag->site = $_GET['site'] ? $_GET['site'] : variable_get('dart_test_site', '');
-    $tag->zone = $_GET['zone'] ? $_GET['zone'] : variable_get('dart_test_zone', '');
+    $tag->prefix = isset($_GET['prefix']) ? check_plain($_GET['prefix']) : variable_get('dart_test_prefix', '');
+    $tag->site = isset($_GET['site']) ? check_plain($_GET['site']) : variable_get('dart_test_site', '');
+    $tag->zone = isset($_GET['zone']) ? check_plain($_GET['zone']) : variable_get('dart_test_zone', '');
   }
 }

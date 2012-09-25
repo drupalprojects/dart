@@ -232,6 +232,14 @@ function dart_entity_view($entity, $type, $view_mode, $langcode) {
 }
 
 /**
+ * Implements hook_dart_tag_alter();
+ */
+function dart_dart_tag_alter(&$tag) {
+  module_load_include('inc', 'dart', 'dart.adtest');
+  dart_tag_adtest($tag);
+}
+
+/**
  * Wrapper function for outputting a themed dart tag.
  */
 function dart_tag($machinename) {
@@ -294,8 +302,6 @@ function dart_tag_load($machinename = '') {
  * Modify just-loaded DART tags to prepare it for use.
  */
 function dart_tag_prepare(&$tags) {
-  module_load_include('inc', 'dart', 'dart.adtest');
-
   // Unserialize the settings array.
   foreach ($tags as &$tag) {
     if (is_string($tag->settings)) {
@@ -359,9 +365,6 @@ function dart_tag_prepare(&$tags) {
 
     // Build data for the noscript tag.
     $tag->noscript = dart_tag_prepare_noscript($tag);
-
-    // Check if tags should be displayed using test values for prefix.site/zone().
-    dart_tag_adtest($tag);
   }
 }
 
@@ -411,7 +414,6 @@ function dart_tag_prepare_noscript($tag) {
     'href' => str_ireplace('/ad/', '/jump/', $src),
   );
 }
-
 
 /**
  * Change the current active/inactive status for the given tag.
@@ -648,4 +650,5 @@ function template_preprocess_dart_tag(&$variables) {
   $variables['static_tag'] = l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE));
   $variables['noscript_tag'] = $variables['show_noscript_tag'] ? '<noscript>' . $variables['static_tag'] . '</noscript>' : '';
   $variables['tag'] = $tag;
+debug($variables);
 }

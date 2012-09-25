@@ -32,9 +32,9 @@ class dartBaseTest extends DrupalWebTestCase {
       'dart_global_site' => $this->randomName(8),
       'dart_global_zone' => $this->randomName(8),
       'dart_global_slug' => $this->randomName(8),
-      'dart_load_last' => FALSE,
-      'dart_noscript' => FALSE,
-      'dart_include_taxonomy_terms' => 1,
+      'dart_load_last' => 0,
+      'dart_noscript' => 0,
+      'dart_include_taxonomy_terms' => TRUE,
       'dart_enable_ad_categories' => 0,
       'dart_special_key_vals[tile]' => 'tile',
       'dart_special_key_vals[ord]' => 'ord',
@@ -69,9 +69,9 @@ class dartBaseTest extends DrupalWebTestCase {
       'name' => $this->randomName(8),
       'pos' => $this->randomName(8),
       'sz' => implode(',', $this->dartGenerateSize(2)),
-      'site' => $this->randomName(8),
-      'zone' => $this->randomName(8),
-      'slug' => $this->randomName(8),
+      'site' => '',
+      'zone' => '',
+      'slug' => '',
       'block' => 1,
       'scriptless' => FALSE,
       'method' => 'adj',
@@ -266,14 +266,14 @@ class dartKeyValTest extends dartBaseTest {
     for ($i = 0; $i < count($key_vals); $i++) {
       $edit['key_vals[' . $i . '][key]'] = $key_vals[$i]['key'];
       $edit['key_vals[' . $i . '][val]'] = $tokens[$i];
-      $edit['key_vals[' . $i . '][eval]'] = FALSE;
+      $edit['key_vals[' . $i . '][eval]'] = 0;
     }
     $this->drupalPost('/admin/structure/dart_tags/settings', $edit, t('Save configuration'));
 
     foreach ($tokens as $token) {
       $value = token_replace($token, _dart_get_token_context(), array(
-        'clear' => TRUE,
-        'sanitize' => TRUE,
+        'clear' => 1,
+        'sanitize' => 1,
       ));
       $this->assertRaw('"val":"' . $value . '"', 'The key value pair containing the ' . $token . ' (' . $value . ') token were properly rendered.');
     }
@@ -294,9 +294,13 @@ class dartNoScriptTest extends dartBaseTest {
 
   // Test noscript tags display properly
   function testNoScript() {
-    variable_set('dart_noscript', TRUE);
+    $edit = array(
+      'dart_load_last' => FALSE,
+      'dart_noscript' => TRUE,
+    );
+    $this->drupalPost('/admin/structure/dart_tags/settings', $edit, t('Save configuration'));
     $tag = $this->createTag();
-    $this->assertRaw('<noscript><a href="http://ad.doubleclick.net/jump/', '<noscript> tags are displayed properly.');
+    $this->assertRaw('<noscript><a href="http://ad.doubleclick.net/jump/', 'noscript tags are displayed properly.');
   }
 }
 
@@ -314,7 +318,7 @@ class dartAdCategoriesTest extends dartBaseTest {
 
   function enableAdCategories() {
     $edit = array(
-      'dart_enable_ad_categories' => 1,
+      'dart_enable_ad_categories' => TRUE,
       'dart_enable_ad_categories_bundles[tags]' => 'tags',
     );
     $this->drupalPost('/admin/structure/dart_tags/settings', $edit, t('Save configuration'));
@@ -417,6 +421,63 @@ class dartOverridesTest extends dartBaseTest {
   }
 
   // Test that tags with override values use them.
+  function testOverrides() {
+    $edit = array(
+      'site' => $this->randomName(8),
+      'zone' => $this->randomName(8),
+      'slug' => $this->randomName(8),
+    );
+    $tag = $this->createTag($edit);
+    $this->assertRaw($edit['site'], 'The site override work properly.');
+    $this->assertRaw($edit['zone'], 'The zone override work properly.');
+    $this->assertText($edit['slug'], 'The slug override works properly.');
+  }
 }
+
+class dartAdTestsTest extends dartBaseTest {
+  /**
+   * Implements getInfo().
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('DART Ad Test Tests'),
+      'description' => t('Tests that DART test page works properly.'),
+      'group' => t('DART'),
+    );
+  }
+
+  // Test that the test page works
+  function testTestPage() {
+    $tag = $this->createTag();
+    $this->drupalGet('admin/structure/dart_tags/test_page');
+    $this->assertTag($tag);
+
+    $edit = array(
+      'adtest' => 'true',
+      'site' => $this->randomName(8),
+      'zone' => $this->randomName(8),
+    );
+    $this->drupalGet('admin/structure/dart_tags/test_page', array('query' => $edit));
+    $this->assertRaw('"site":"' . $edit['site'] . '","zone":"' . $edit['zone'] . '"');
+  }
+
+  // Test that the ?adtest query string works
+  function testAdTestQueryString() {
+    $tag = $this->createTag();
+    $overrides = array(
+      'adtest' => 'true',
+      'site' => $this->randomName(8),
+      'zone' => $this->randomName(8),
+    );
+
+    $this->drupalGet('<front>', array('query' => $overrides));
+    $this->assertRaw('"site":"' . $overrides['site'] . '","zone":"' . $overrides['zone'] . '"');
+  }
+}
+
+
+
+
+
 
 
