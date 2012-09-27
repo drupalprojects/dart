@@ -275,7 +275,7 @@ function theme_dart_key_vals_form($variables) {
   $form = &$variables['form'];
   $form['tokens'] = array(
     '#theme' => 'token_tree',
-    '#token_types' => array('node', 'menu', 'term', 'user'),
+    '#token_types' => array('dart_tag', 'node', 'menu', 'term', 'user'),
     '#global_types' => TRUE,
     '#click_insert' => TRUE,
   );

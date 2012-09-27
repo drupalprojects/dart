@@ -273,7 +273,7 @@ class dartKeyValTest extends dartBaseTest {
     $this->drupalPost('/admin/structure/dart_tags/settings', $edit, t('Save configuration'));
 
     foreach ($tokens as $token) {
-      $value = token_replace($token, _dart_get_token_context(), array(
+      $value = token_replace($token, _dart_get_token_context($tag), array(
         'clear' => 1,
         'sanitize' => 1,
       ));

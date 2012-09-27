@@ -115,6 +115,67 @@ function dart_libraries_info() {
 }
 
 /**
+ * Implements of hook_token_info().
+ */
+function dart_token_info() {
+  $type = array(
+    'name' => t('DART Ad Tags'),
+    'description' => t('Tokens related to a given DART ad tag.'),
+    'needs-data' => 'tag',
+  );
+
+  $tag['ad_categories'] = array(
+    'name' => t("DART Ad Categories"),
+    'description' => t("The DART Ad Categories or uncategorized taxonomy terms attached to the entities currently being displayed to the user."),
+  );
+  $tag['url_parts'] = array(
+    'name' => t("URL Parts (n)"),
+    'description' => t("Given the current URL of http://site.com/path/to/page, [dart_tag:url_parts:2] will be replaced with 'path/to'."),
+  );
+
+  return array(
+    'types' => array('dart_tag' => $type),
+    'tokens' => array('dart_tag' => $tag),
+  );
+}
+
+/**
+ * Implements of hook_token().
+ */
+function dart_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+
+  if ($type == 'dart_tag') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'ad_categories':
+          $term_names = &drupal_static('dart_entity_targeting_terms', array());
+
+          // If a term has been explicitly defined because we are on a term page
+          // then add the term to the list.
+          // @todo: If http://drupal.org/node/1067120 ever lands, this logic can
+          // be moved to dart_entity_view() where it belongs.
+          if (isset($data['term'])) {
+            $term_names[] = _dart_get_term_value($data['term']);
+          }
+
+          $replacements[$original] = implode(',', $term_names);
+          break;
+      }
+    }
+
+    if ($created_tokens = token_find_with_prefix($tokens, 'url_parts')) {
+      foreach ($created_tokens as $name => $original) {
+        $url_parts = explode('/', $_GET['q']);
+        $replacements[$original] = implode('/', array_slice($url_parts, 0, $name));
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+/**
  * Implements hook_block_info().
  */
 function dart_block_info() {
@@ -351,7 +412,7 @@ function dart_tag_prepare(&$tags) {
     $variables = array('prefix', 'site', 'zone', 'slug');
     foreach ($variables as $var) {
       $tag->{$var} = empty($tag->settings['overrides'][$var]) ? variable_get('dart_global_' . $var, '') : $tag->settings['overrides'][$var];
-      $tag->{$var} = token_replace($tag->{$var}, _dart_get_token_context(), array(
+      $tag->{$var} = token_replace($tag->{$var}, _dart_get_token_context($tag), array(
         'clear' => TRUE,
         'sanitize' => TRUE,
       ));
@@ -489,7 +550,7 @@ function _dart_block_tags() {
 function _dart_add_key_val(&$tag, $key, $val = NULL, $eval = FALSE) {
   if (!empty($val)) {
     $tag->key_vals[$key][] = array(
-      'val' => token_replace($val, _dart_get_token_context(), array(
+      'val' => token_replace($val, _dart_get_token_context($tag), array(
         'clear' => TRUE,
         'sanitize' => TRUE,
       )),
@@ -639,9 +700,12 @@ function _dart_get_term_key_vals() {
  * Return an array of contexts to be used by token_replace().
  * @return array
  */
-function _dart_get_token_context() {
+function _dart_get_token_context($tag = '') {
   $context = &drupal_static(__FUNCTION__);
   if (empty($context)) {
+    if (!empty($tag)) {
+      $context['dart_tag'] = $tag;
+    }
     if (arg(0) == 'node' && is_numeric(arg(1))) {
       $context['node'] = node_load(arg(1));
     }

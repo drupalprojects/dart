@@ -310,7 +310,7 @@ function dart_prefix_site_zone_form($required, $default_values = array()) {
   );
   $form['tokens'] = array(
     '#theme' => 'token_tree',
-    '#token_types' => array('node', 'menu', 'term', 'user'),
+    '#token_types' => array('dart_tag', 'node', 'menu', 'term', 'user'),
     '#global_types' => TRUE,
     '#click_insert' => TRUE,
   );
