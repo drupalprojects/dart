@@ -45,9 +45,15 @@ Drupal.DART.tag = function(tag) {
  * Format a key|val pair into a dart tag key|val pair.
  */
 Drupal.DART.keyVal = function(key, val, useEval) {
-  kvp  = key + "=";
-  kvp += useEval ? eval(val) : val;
-  kvp += key == "ord" ? "?" : ";";
+  if (key != "<none>") {
+    kvp  = key + "=";
+    kvp += useEval ? eval(val) : val;
+    kvp += key == "ord" ? "?" : ";";
+  }
+  else {
+    kvp = useEval ? eval(val) : val;
+  }
+
   return(kvp);
 };
 
