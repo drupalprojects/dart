@@ -3,4 +3,6 @@ description = Allows search terms to be included in DART tags.
 core = 7.x
 dependencies[] = dart
 dependencies[] = search
+dependencies[] = ctools
+
 package = Advertising

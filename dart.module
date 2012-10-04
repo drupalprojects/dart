@@ -757,7 +757,8 @@ function _dart_term_formatter_tid($term) {
  * @return string
  */
 function _dart_term_formatter_truncated($term, $char_count = 6) {
-  return drupal_substr(drupal_strtolower(preg_replace("/[^A-Za-z0-9]/", "", $term->name )), 0, $char_count);
+  ctools_include('cleanstring');
+  return ctools_cleanstring($term->name, array('lower case' => TRUE, 'separator' => variable_get('dart_key_vals_separator', '-'), 'max length' => $char_count));
 }
 
 /**
@@ -769,7 +770,8 @@ function _dart_term_formatter_truncated($term, $char_count = 6) {
  * @return string
  */
 function _dart_term_formatter_full($term) {
-  return drupal_strtolower(preg_replace("/[^A-Za-z0-9_\-]/", "", str_replace(' ', '_', $term->name) ));
+  ctools_include('cleanstring');
+  return ctools_cleanstring($term->name, array('lower case' => TRUE, 'separator' => variable_get('dart_key_vals_separator', '-')));
 }
 
 /**
