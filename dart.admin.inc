@@ -276,7 +276,7 @@ function dart_admin_settings_submit($form, &$form_state) {
 function dart_prefix_site_zone_form($required, $default_values = array()) {
   $form = array(
     '#theme' => 'dart_prefix_site_zone_form',
-    '#description' => t('Enter the values that DART tags should use for prefix, site & zone. Example: groups.drupal.org might use gdo.group/general; drupal.org might use drupal.default (notice there is no zone); '),
+    '#description' => t('Enter the values that DART tags should use for prefix, site & zone. Example: groups.drupal.org might use gdo.group/general; drupal.org might use drupal.default (notice there is no zone);'),
   );
   $form['prefix'] = array(
     '#type' => 'textfield',
@@ -313,6 +313,8 @@ function dart_prefix_site_zone_form($required, $default_values = array()) {
     '#token_types' => array('dart_tag', 'node', 'menu', 'term', 'user'),
     '#global_types' => TRUE,
     '#click_insert' => TRUE,
+    '#dialog' => TRUE,
+    '#weight' => 100,
   );
 
   return $form;
@@ -341,13 +343,14 @@ function theme_dart_prefix_site_zone_form($variables) {
     '!prefix' => drupal_render($form['prefix']),
     '!site' => drupal_render($form['site']),
     '!zone' => drupal_render($form['zone']),
+    '!tokens' => drupal_render($form['tokens']),
   );
 
   $form['dart_prefix_site_zone'] = array(
     '#prefix' => '<div class="form-item"><label>prefix . site / zone</label>',
-    '#markup' => '<div class="container-inline">' . t('!prefix . !site / !zone', $replacements) . '</div>',
+    '#markup' => '<div class="container-inline">' . t('!prefix . !site / !zone !tokens', $replacements) . '</div>',
     "#suffix" => '<div class="description">' . $form['#description'] . theme('item_list', array('items' => $descriptions)) . '</div></div>',
   );
 
-  return drupal_render($form['dart_prefix_site_zone']) . drupal_render($form['tokens']);
+  return drupal_render($form['dart_prefix_site_zone']);
 }

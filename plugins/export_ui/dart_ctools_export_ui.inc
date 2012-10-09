@@ -278,6 +278,7 @@ function theme_dart_key_vals_form($variables) {
     '#token_types' => array('dart_tag', 'node', 'menu', 'term', 'user'),
     '#global_types' => TRUE,
     '#click_insert' => TRUE,
+    '#dialog' => TRUE,
   );
 
   $rows = array();
