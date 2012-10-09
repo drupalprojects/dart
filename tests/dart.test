@@ -59,7 +59,7 @@ class dartBaseTest extends DrupalWebTestCase {
   }
 
   /**
-   * Create a simple $edit array to be used on the DFP tag form to create a new
+   * Create a simple $edit array to be used on the DART tag form to create a new
    * DART tag object.
    */
   function dartTagEditValues() {
@@ -117,7 +117,7 @@ class dartBaseTest extends DrupalWebTestCase {
   }
 
   /**
-   * Creates a basic dfp ad tag.
+   * Creates a basic dart ad tag.
    */
   function createTag($edit = array()) {
     // Create a new tag.
@@ -402,7 +402,7 @@ class dartAdCategoriesTest extends dartBaseTest {
   function testDisplayAdCategories() {
     $this->enableAdCategories();
 
-    // Create a new DFP Ad Category term.
+    // Create a new DART Ad Category term.
     $dart_category = drupal_strtolower($this->randomName(8)); // tid == 1
     $edit = array(
       'name' => $dart_category,
@@ -418,31 +418,31 @@ class dartAdCategoriesTest extends dartBaseTest {
     );
     $this->drupalPost('node/add/article', $edit, t('Save'));
 
-    // Edit one the new tags and tag it with a DFP Ad Category.
+    // Edit one the new tags and tag it with a DART Ad Category.
     $edit = array(
       'field_dart_ad_categories[und]' => 1,
     );
     $this->drupalPost('taxonomy/term/3/edit', $edit, t('Save'));
 
-    // Create a DFP ad slot that targets the [dfp_tag:ad_categories] token.
+    // Create a DART ad slot that targets the [dart_tag:ad_categories] token.
     $edit = $this->dartTagEditValues();
 
     // Create a tag that uses the dart tag token as a key value.
-    $edit['key_vals[0][val]'] = '[dfp_tag:ad_categories]';
+    $edit['key_vals[0][val]'] = '[dart_tag:ad_categories]';
     $tag = $this->createTag($edit);
 
-    // Check that when we are on the node page, that the DFP Ad Category is used
+    // Check that when we are on the node page, that the DART Ad Category is used
     // and that the control tag is also displayed.
     $this->drupalGet('node/1');
     $this->assertRaw($dart_category, 'DART Ad Categories work correctly.');
 
-    // Check that when we are on the term page for one of DFP Ad Categories that
+    // Check that when we are on the term page for one of DART Ad Categories that
     // it is correctly included.
     $this->drupalGet('taxonomy/term/1');
     $this->assertRaw(':"' . $dart_category . '"', 'DART Ad Categories appear on its own term page correctly.');
 
     // Check that when we are on a term page for a term with a coresponding
-    // DFP Ad Categories the DFP Ad Category is included.
+    // DART Ad Categories the DART Ad Category is included.
     $this->drupalGet('taxonomy/term/3');
     $this->assertRaw(':"' . $dart_category . '"', 'DART Ad Categories appear on term pages for terms that have a DART Ad Category correctly.');
   }

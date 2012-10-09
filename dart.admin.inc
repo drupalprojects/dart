@@ -120,10 +120,10 @@ function dart_admin_settings($form, &$form_state) {
     );
     $form['taxonomy_options']['dart_enable_ad_categories'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Enable DFP Ad Categories'),
+      '#title' => t('Enable DART Ad Categories'),
       '#prefix' => '<hr />',
       '#default_value' => variable_get('dart_enable_ad_categories', 0),
-      '#description' => t('Example: if you have an "animals" vocabulary and you want to target the same ads to "dogs", "cats" and "hamsters" you can edit each of those terms and set the DFP Ad Category to "pets". Whenever the taxonomy terms are included as targeting values, anything tagged "cats" will target "pets" instead.'),
+      '#description' => t('Example: if you have an "animals" vocabulary and you want to target the same ads to "dogs", "cats" and "hamsters" you can edit each of those terms and set the DART Ad Category to "pets". Whenever the taxonomy terms are included as targeting values, anything tagged "cats" will target "pets" instead.'),
     );
 
     $bundles = field_info_bundles('taxonomy_term');
@@ -247,8 +247,8 @@ function dart_admin_settings_validate($form, &$form_state) {
  * Form submit function.
  */
 function dart_admin_settings_submit($form, &$form_state) {
-  // Attach (or delete) an instance of the dfp_ad_categories term_reference
-  // field for each vocabulary that should (or should not) have DFP Ad
+  // Attach (or delete) an instance of the dart_ad_categories term_reference
+  // field for each vocabulary that should (or should not) have DART Ad
   // Categories enabled.
   foreach ($form_state['values']['dart_enable_ad_categories_bundles'] as $bundle => $enable) {
     $existing_instance = field_read_instance('taxonomy_term', 'field_dart_ad_categories', $bundle);

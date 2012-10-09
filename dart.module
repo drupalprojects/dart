@@ -150,16 +150,20 @@ function dart_tokens($type, $tokens, array $data = array(), array $options = arr
       switch ($name) {
         case 'ad_categories':
           $term_names = &drupal_static('dart_entity_targeting_terms', array());
+          $terms = array();
+          foreach ($term_names as $term_object) {
+            $terms[] = _dart_get_term_value($term_object);
+          }
 
           // If a term has been explicitly defined because we are on a term page
           // then add the term to the list.
           // @todo: If http://drupal.org/node/1067120 ever lands, this logic can
           // be moved to dart_entity_view() where it belongs.
           if (isset($data['term'])) {
-            $term_names[] = _dart_get_term_value($data['term']);
+            $terms[] = _dart_get_term_value($data['term']);
           }
 
-          $replacements[$original] = implode(',', $term_names);
+          $replacements[$original] = implode(',', $terms);
           break;
       }
     }

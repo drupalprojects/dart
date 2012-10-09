@@ -258,7 +258,7 @@ function _dart_key_val_form_validate($form, &$form_state) {
 }
 
 /**
- * Check if the given machinename is unique in the dfp_tags table.
+ * Check if the given machinename is unique in the dart_tags table.
  */
 function dart_tag_name_exists($machinename) {
   $select = db_select('dart_tags', 'dt');
