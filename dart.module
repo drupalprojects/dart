@@ -128,10 +128,6 @@ function dart_token_info() {
     'name' => t("DART Ad Categories"),
     'description' => t("The DART Ad Categories or uncategorized taxonomy terms attached to the entities currently being displayed to the user."),
   );
-  $tag['url_parts'] = array(
-    'name' => t("URL Parts (n)"),
-    'description' => t('**Deprecated. See <a href="http://drupal.org/node/1812380" target="_blank">this issue</a> for alternitives.'),
-  );
 
   return array(
     'types' => array('dart_tag' => $type),
@@ -165,13 +161,6 @@ function dart_tokens($type, $tokens, array $data = array(), array $options = arr
 
           $replacements[$original] = implode(',', $terms);
           break;
-      }
-    }
-
-    if ($created_tokens = token_find_with_prefix($tokens, 'url_parts')) {
-      foreach ($created_tokens as $name => $original) {
-        $url_parts = explode('/', $_GET['q']);
-        $replacements[$original] = implode('/', array_slice($url_parts, 0, $name));
       }
     }
   }
