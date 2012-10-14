@@ -46,14 +46,13 @@ class dartBaseTest extends DrupalWebTestCase {
       'dart_test_site' => $this->randomName(8),
       'dart_test_zone' => $this->randomName(8),
     );
-
+    $this->drupalPost('admin/structure/dart_tags/settings', $edit, t('Save configuration'));
     for ($i = 0; $i < count($key_vals); $i++) {
       $edit['key_vals[' . $i . '][key]'] = $key_vals[$i]['key'];
       $edit['key_vals[' . $i . '][val]'] = $key_vals[$i]['val'];
       $edit['key_vals[' . $i . '][eval]'] = $key_vals[$i]['eval'];
+      $this->drupalPost('admin/structure/dart_tags/settings', $edit, t('Save configuration'));
     }
-
-    $this->drupalPost('/admin/structure/dart_tags/settings', $edit, t('Save configuration'));
 
     return $edit;
   }
@@ -64,7 +63,7 @@ class dartBaseTest extends DrupalWebTestCase {
    */
   function dartTagEditValues() {
     $machinename = drupal_strtolower($this->randomName(8));
-    $key_vals = $this->dartGenerateKeyVals(3);
+    $key_vals = $this->dartGenerateKeyVals(1);
 
     $basic_tag = array(
       'machinename' => $machinename,
@@ -77,13 +76,10 @@ class dartBaseTest extends DrupalWebTestCase {
       'block' => 1,
       'scriptless' => FALSE,
       'method' => 'adj',
+      'key_vals[0][key]' => $key_vals[0]['key'],
+      'key_vals[0][val]' => $key_vals[0]['val'],
+      'key_vals[0][eval]' => $key_vals[0]['eval'],
     );
-
-    for ($i = 0; $i < count($key_vals); $i++) {
-      $basic_tag['key_vals[' . $i . '][key]'] = $key_vals[$i]['key'];
-      $basic_tag['key_vals[' . $i . '][val]'] = $key_vals[$i]['val'];
-      $basic_tag['key_vals[' . $i . '][eval]'] = $key_vals[$i]['eval'];
-    }
 
     return $basic_tag;
   }

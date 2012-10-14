@@ -11,6 +11,9 @@
  * @ingroup forms
  */
 function dart_admin_settings($form, &$form_state) {
+  ctools_include('plugins');
+  ctools_plugin_load_class('ctools', 'export_ui', 'dart_ctools_export_ui', 'handler');
+
   $form = array(
     '#submit' => array('dart_admin_settings_submit'),
     '#attached' => array(
@@ -172,21 +175,21 @@ function dart_admin_settings($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Initial value of tile'),
     '#default_value' => variable_get('dart_special_tile_init', '0'),
-    '#size' => 1,
+    '#size' => '1',
     '#weight' => '-5',
+    '#states' => array(
+      'visible' => array(
+        'input[name="dart_special_key_vals[tile]"]' => array('checked' => TRUE),
+      ),
+    ),
   );
 
   // Container for the key_value forms.
-  ctools_include('plugins');
-  ctools_plugin_load_class('ctools', 'export_ui', 'dart_ctools_export_ui', 'handler');
-  $key_vals = variable_get('dart_key_vals', array());
-  $key_val_count = max(DART_MAX_KEY_VALS, count($key_vals) + 5);
   $form['global_key_vals']['dart_kvs'] = array(
-    '#theme' => 'dart_key_vals_form',
+    '#tree' => FALSE,
   );
-  for ($i = 0; $i < $key_val_count; $i++) {
-    $form['global_key_vals']['dart_kvs'][$i] = _dart_key_val_form($i, isset($key_vals[$i]) ? $key_vals[$i] : NULL);
-  }
+  $existing_key_vals =  _dart_key_vals_get_existing($form_state, variable_get('dart_key_vals', array()));
+  _dart_key_vals_form($form['global_key_vals']['dart_kvs'], $existing_key_vals);
 
   // Javascript.
   $form['javascript'] = array(
@@ -235,6 +238,9 @@ function dart_admin_settings($form, &$form_state) {
  * Form validation function.
  */
 function dart_admin_settings_validate($form, &$form_state) {
+  ctools_include('plugins');
+  ctools_plugin_load_class('ctools', 'export_ui', 'dart_ctools_export_ui', 'handler');
+
   // Validate "key_vals" before its name is changed.
   _dart_key_val_form_validate($form, $form_state);
 
