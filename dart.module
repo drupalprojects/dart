@@ -130,7 +130,7 @@ function dart_token_info() {
   );
   $tag['url_parts'] = array(
     'name' => t("URL Parts (n)"),
-    'description' => t("Given the current URL of http://site.com/path/to/page, [dart_tag:url_parts:2] will be replaced with 'path/to'."),
+    'description' => t('**Deprecated. See <a href="http://drupal.org/node/1812380" target="_blank">this issue</a> for alternitives.'),
   );
 
   return array(
