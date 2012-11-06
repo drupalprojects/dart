@@ -4,8 +4,5 @@ core = 7.x
 dependencies[] = dart
 package = Advertising
 
-project = "dart"
-datestamp = "1304899617"
-
 files[] = dart_taxonomy.install
 files[] = dart_taxonomy.module
