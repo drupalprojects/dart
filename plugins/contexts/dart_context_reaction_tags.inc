@@ -49,7 +49,7 @@ class dart_context_reaction_tags extends context_reaction {
     // machinename should be displayed or not.
     foreach ($this->get_contexts() as $context_name => $context) {
       if (isset($context->reactions['dart_tags']) && in_array($tag->machinename, $context->reactions['dart_tags'], TRUE)) {
-        $tag->disabled = FALSE;
+        $tag->disabled = TRUE;
         break;
       }
     }
