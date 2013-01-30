@@ -121,7 +121,7 @@ function dart_token_info() {
   $type = array(
     'name' => t('DART Ad Tags'),
     'description' => t('Tokens related to a given DART ad tag.'),
-    'needs-data' => 'tag',
+    'needs-data' => 'dart_tag',
   );
 
   $tag['ad_categories'] = array(
