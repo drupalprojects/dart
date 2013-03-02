@@ -290,7 +290,6 @@ function dart_prefix_site_zone_form($required, $default_values = array()) {
     '#default_value' => isset($default_values['prefix']) ? $default_values['prefix'] : '',
     '#required' => $required,
     '#size' => 10,
-    '#maxlength' => 32,
     '#attributes' => array('style' => 'width:auto'),
     '#description' => t('Typically this is a short version of your organization\'s name (provided by Doubleclick).'),
   );
@@ -300,7 +299,6 @@ function dart_prefix_site_zone_form($required, $default_values = array()) {
     '#default_value' => isset($default_values['site']) ? $default_values['site'] : '',
     '#required' => $required,
     '#size' => 20,
-    '#maxlength' => 32,
     '#attributes' => array('style' => 'width:auto'),
     '#description' => t('Typically this is the primary section of your site.'),
   );
@@ -310,7 +308,6 @@ function dart_prefix_site_zone_form($required, $default_values = array()) {
     '#default_value' => isset($default_values['zone']) ? $default_values['zone'] : '',
     '#required' => $required,
     '#size' => 20,
-    '#maxlength' => 32,
     '#attributes' => array('style' => 'width:auto'),
     '#description' => t('Typically this is hte subsection of your site.'),
   );
