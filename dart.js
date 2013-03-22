@@ -21,6 +21,10 @@ Drupal.DART.tag = function(tag) {
   var tagname = tag.settings.options.method == 'adj' ? 'script' : 'iframe';
   var options = tag.settings.options.method == 'adj' ? 'type="text/javascript"' : 'frameborder="0" scrolling="no" width="' + tag.sz.split("x")[0] + '" height="' + tag.sz.split("x")[1] + '"';
 
+  // Allow other modules to include js that can manipulate the tag object.
+  var processed_tag = ($ !== undefined) ? $(document).triggerHandler('dart_tag_process', [tag]) : undefined;
+  tag = processed_tag !== undefined ? processed_tag : tag;
+
   ad = '<' + tagname + ' ' + options + ' src="';
   ad += dart_url + "/";
   ad += tag.network_id !== '' ? tag.network_id + "/" : "";
@@ -28,7 +32,7 @@ Drupal.DART.tag = function(tag) {
   ad += tag.prefix + '.' + tag.site + "/" + tag.zone + ";";
   ad += this.keyVals(tag.key_vals);
 
-  // Allow other modules to include js that can manipulate each key|val.
+  // Allow other modules to include js that can manipulate the concatenated tag string.
   rendered_ad = ($ !== undefined) ? $(document).triggerHandler('dart_tag_render', [ad]) : undefined;
   ad = rendered_ad !== undefined ? rendered_ad : ad; ad += '"></' + tagname + '>';
 
