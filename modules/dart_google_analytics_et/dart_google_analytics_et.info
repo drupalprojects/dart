@@ -1,0 +1,7 @@
+name = Google Analytics Event Tracking for DART Tags
+description = "Adds Google Analytics event tracking to DART Tags"
+core = 7.x
+package = Statistics
+dependencies[] = dart
+dependencies[] = googleanalytics
+dependencies[] = google_analytics_et
