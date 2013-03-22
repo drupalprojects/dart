@@ -258,7 +258,17 @@ function dart_update_7201() {
  * Remove the dart_global_network_id variable.
  */
 function dart_update_7202() {
-  variable_del('dart_global_network_id');
+  // Most people will not have run this update by now and we dont want the
+  // variable deleted.
+}
+
+/**
+ * Set the dart_use_network_id variable.
+ */
+function dart_update_7203() {
+  if (variable_get('dart_global_network_id', FALSE)) {
+    variable_set('dart_use_network_id', 1);
+  }
 }
 
 /**

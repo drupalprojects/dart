@@ -48,17 +48,37 @@ function dart_admin_settings($form, &$form_state) {
   $form['tag_settings']['prefix_site_zone_settings']['zone']['#description'] = t('The value to use when no "zone" is specified on a given page.');
 
   $form['tag_settings']['dart_load_last'] = array(
-    '#type'           => 'checkbox',
-    '#title'          => t('Load ads last'),
-    '#default_value'  => variable_get('dart_load_last', '0'),
-    '#description'    => t('Wait until the entire page has loaded before loading ads. This will allow your pages to load faster but may cause empty spaces to appear on your pages before the ads load. <strong>You must use this option if you are loading ad tags asyncronously.</strong>'),
+    '#type' => 'checkbox',
+    '#title' => t('Load ads last'),
+    '#default_value' => variable_get('dart_load_last', '0'),
+    '#description' => t('Wait until the entire page has loaded before loading ads. This will allow your pages to load faster but may cause empty spaces to appear on your pages before the ads load. <strong>You must use this option if you are loading ad tags asyncronously.</strong>'),
   );
-
   if (!module_exists('libraries') || (module_exists('libraries') && !libraries_detect('writecapture'))) {
     $form['settings']['tag_settings']['dart_load_last']['#disabled'] = TRUE;
     $form['settings']['tag_settings']['dart_load_last']['#default_value'] = 0;
     $form['settings']['tag_settings']['dart_load_last']['#prefix'] = '<p><strong>' . t('This option requires <a href="https://github.com/iamnoah/writeCapture">WriteCapture jQuery plugin</a> to be included using the <a href="http://drupal.org/project/libraries">Libraries module (&gt;= 7.x-2.0)</a>. Please download <a href="https://github.com/iamnoah/writeCapture">WriteCapture jQuery plugin</a> and copy <code>plugin/writeCapture.js</code> file to <code>/sites/all/libraries/writecapture/jquery.writeCapture.js</code>') . '</strong></p>';
   }
+
+  $form['tag_settings']['dart_use_network_id'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use a Network ID'),
+    '#default_value' => variable_get('dart_use_network_id', ''),
+    '#required' => FALSE,
+    '#description' => t('Only check this if you have been told by Google that you need to include an network id in your tags.'),
+  );
+  $form['tag_settings']['dart_global_network_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Network ID'),
+    '#default_value' => variable_get('dart_global_network_id', ''),
+    '#required' => FALSE,
+    '#size' => 10,
+    '#description' => t('When your site begins the process of migrating to the new GPT style tags, Google requires that you include a Network ID in order for your existing tags to continue working. If you have already completed your migration than you should consider using the <a href="http://drupal.org/project/dfp">DFP module</a> instead.'),
+    '#states' => array(
+      'visible' => array(
+        'input[name="dart_use_network_id"]' => array('checked' => TRUE),
+      ),
+    ),
+  );
 
   // Global display options.
   $form['display_options'] = array(
