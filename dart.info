@@ -15,4 +15,4 @@ files[] = contexts/dart_context_reaction_tags.inc
 files[] = export_ui/dart_ctools_export_ui.inc
 files[] = export_ui/dart_tag_ui.class.php
 files[] = tests/dart.test
-
+files[] = views/views_plugin_row_dart_node_view.inc

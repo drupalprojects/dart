@@ -91,11 +91,21 @@ Drupal.DART.keyVals = function(vals) {
 Drupal.behaviors.DART = {
   attach: function(context) {
     if (typeof(Drupal.DART.settings.loadLastTags) == 'object') {
+      var ord = Math.floor((Math.random() * 10000000000) + 1);
       $('.dart-tag:visible').not('.dart-processed').each(function() {
+        var _this = $(this);
         var regex = /dart-name-(\w+)$/;
-        var result = regex.exec($(this).attr('class'));
-        var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[result[1]]);
-        $(this).writeCapture().append(scriptTag).addClass('dart-processed');
+        var result = regex.exec(_this.attr('class'));
+        if (result != null) {
+          var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[result[1]]);
+          var scriptTag = scriptTag.replace(/;ord=\d+/, ';ord='+ord);
+          if (typeof(postscribe) == 'function') {
+            postscribe(_this, scriptTag, function () { _this.addClass('.dart-processed'); });
+          }
+          else if (typeof(_this.writeCapture) == 'function') {
+            _this.writeCapture().append(scriptTag).addClass('dart-processed');
+          }
+        }
       });
     }
   }

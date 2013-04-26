@@ -57,6 +57,11 @@ function dart_theme() {
       'variables' => array('tag' => NULL),
       'template' => 'theme/dart_tag',
     ),
+    'dart_tag_ajax' => array(
+      'variables' => array('tag' => NULL, 'name' => NULL),
+      'template' => 'theme/dart_tag_ajax',
+    ),
+
   );
 }
 
@@ -93,6 +98,7 @@ function dart_menu() {
  * Implements hook_libraries_info().
  */
 function dart_libraries_info() {
+
   $libraries['writecapture'] = array(
     'title' => 'Write Capture jQuery Plugin',
     'vendor_url' => 'https://github.com',
@@ -110,12 +116,29 @@ function dart_libraries_info() {
       ),
     ),
   );
+  $libraries['postscribe'] = array(
+    'title' => 'Krux Postscribe jQuery Plugin',
+    'vendor_url' => 'https://github.com',
+    'download_url' => 'https://github.com/krux/postscribe/blob/master/dist/postscribe.min.js',
+    'files' => array(
+      'js' => array(
+        'postscribe.min.js' => array(
+          'every_page' => TRUE,
+          'group' => JS_LIBRARY,
+          'preprocess' => 0,
+          'scope' => 'header',
+          'type' => 'file',
+          'weight' => -998,
+        ),
+      ),
+    ),
+  );
 
   return $libraries;
 }
 
 /**
- * Implements of hook_token_info().
+ * Implements hook_token_info().
  */
 function dart_token_info() {
   $type = array(
@@ -136,7 +159,7 @@ function dart_token_info() {
 }
 
 /**
- * Implements of hook_token().
+ * Implements hook_token().
  */
 function dart_tokens($type, $tokens, array $data = array(), array $options = array()) {
   $replacements = array();
@@ -284,12 +307,166 @@ function dart_entity_view($entity, $type, $view_mode, $langcode) {
 }
 
 /**
- * Implements hook_dart_tag_alter();
+ * Implements hook_dart_tag_alter().
  */
 function dart_dart_tag_alter(&$tag) {
   module_load_include('inc', 'dart', 'dart.adtest');
   dart_tag_adtest($tag);
 }
+
+/**
+ * Implements hook_views_api().
+ */
+function dart_views_api() {
+  return array(
+    'api' => '2',
+  );
+}
+
+/**
+ * Implements hook_views_view().
+ */
+function dart_views_pre_view(&$view, &$display_id, &$args) {
+
+  $view_uses_ajax = $view->display[ $view->current_display ]->handler->default_display->options['use_ajax'];
+  // Don't trust the following value!!!
+  #$view_uses_pager = $view->display[ $view->current_display ]->handler->default_display->options['use_pager'];
+  $pager_type = $view->display[ $view->current_display ]->handler->default_display->options['pager']['type'];
+  $view_uses_pager = $pager_type != 'none' && $pager_type != 'some';
+
+  // Add JS files for ajax ad functionality if the current view uses an ajax
+  // pager.
+  if (!variable_get('dart_load_last', '0') && $view_uses_pager && $view_uses_ajax) {
+    $ajax_jquery_plugin = NULL;
+    if ($postscribe_path = libraries_get_path('postscribe')) {
+      drupal_add_js($postscribe_path . '/postscribe.min.js');
+      $ajax_jquery_plugin = 'postscribe';
+    }
+    else if ($writecapture_path = libraries_get_path('writecapture')) {
+      drupal_add_js($writecapture_path . '/jquery.writeCapture.js');
+      $ajax_jquery_plugin = 'writecapture';
+    }
+    $js_settings = array(
+      'ajax_jquery_plugin' => $ajax_jquery_plugin,
+    );
+    drupal_add_js(array('DART' => $js_settings),
+        array('type' => 'setting'));
+    $module_path = drupal_get_path('module', 'dart');
+    drupal_add_js($module_path . '/js/dart_tag_ajax.js', array('group' => JS_THEME));
+  }
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function dart_views_post_build(&$view) {
+
+  // Only do this if this view is using the dart row style plugin.
+  if (get_class($view->style_plugin->row_plugin) != 'views_plugin_row_dart_node_view') {
+    return;
+  }
+
+  // Decrease the query limit (i.e. the items per page) by the number of ads that
+  // will appear on this page.  Also save the ad data, as an array keyed by ad
+  // position, for later use.
+  $view->ads_by_position = array();
+  $view->previous_dart_ad_count = 0;
+  $view->total_dart_ads = 0;
+
+  $ad_position_type = $view->style_plugin->row_plugin->options['ad_position_type'];
+
+  $result_row_position_min = $view->query->offset;
+  $result_row_position_max = $view->query->offset + $view->query->limit;
+  $previous_ad_count = 0;
+
+  if ($ad_position_type == 'fixed') {
+    foreach ($view->style_plugin->row_plugin->options['ad_position'] as $key => $ad_setting) {
+      if ($ad_setting['position'] && $ad_setting['source']) {
+        if ($ad_setting['position'] > $result_row_position_min && $ad_setting['position'] <= $result_row_position_max) {
+          $view->ads_by_position[ $ad_setting['position'] ] = $ad_setting['source'];
+        }
+        else if ($ad_setting['position'] <= $result_row_position_min) {
+          $view->previous_dart_ad_count++;
+        }
+        $view->total_dart_ads++;
+      }
+      else {
+        unset($view->style_plugin->row_plugin->options['ad_position'][ $key ]);
+      }
+    }
+  }
+  else if ($ad_position_type == 'interval') {
+    $ad_position_interval = $view->style_plugin->row_plugin->options['ad_position_interval'];
+    $ad_position_interval_source = $view->style_plugin->row_plugin->options['ad_position_interval_source'];
+    for ($i = ($result_row_position_min + 1); $i < ($result_row_position_max + 1); ++$i) {
+      if (!($i % $ad_position_interval)) {
+        $view->ads_by_position[ $i ] = $ad_position_interval_source;
+      }
+    }
+    $view->previous_dart_ad_count = floor($view->query->offset / $ad_position_interval);
+  }
+
+  $view->query->offset -= $view->previous_dart_ad_count;
+  $view->query->original_limit = $view->query->limit;
+  $view->query->limit = $view->query->limit - count($view->ads_by_position);
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function dart_views_pre_render(&$view) {
+
+  // Only do this if this view is using the dart row style plugin.
+  if (get_class($view->style_plugin->row_plugin) != 'views_plugin_row_dart_node_view') {
+    return;
+  }
+
+  // Replace the view result array with an altered one with ads inserted.  The
+  // render() method in views_plugin_row_dart_node_view will output either a node
+  // or an ad accordingly.
+  $altered_view_result = array();
+  $current_position = $view->query->offset + $view->previous_dart_ad_count;
+  $result_count_with_ads = $current_position + $view->query->original_limit;
+  $position_offset = 1;
+
+  while ($current_position + $position_offset <= $result_count_with_ads) {
+    while (isset($view->ads_by_position[ ($current_position + $position_offset) ])) {
+      $altered_view_result[] = (object)array(
+        'is_dart_ad' => TRUE,
+        'position' => $current_position + $position_offset,
+        'source' => $view->ads_by_position[ ($current_position + $position_offset) ],
+      );
+      $position_offset++;
+    }
+    if (isset($view->result[$current_position - $view->query->offset - $view->previous_dart_ad_count])) {
+      $altered_view_result[] = $view->result[$current_position - $view->query->offset - $view->previous_dart_ad_count];
+    }
+    $current_position++;
+  }
+
+  $view->result = $altered_view_result;
+
+  // Alter the pager globals to reflect our view result with ads inserted.
+  global $pager_total, $pager_page_array;
+
+  // Calculate total number of ads for the entire result set to re-calculate
+  // page count.
+  $ad_position_type = $view->style_plugin->row_plugin->options['ad_position_type'];
+  if ($ad_position_type == 'fixed') {
+    $total_dart_ads = count($view->style_plugin->row_plugin->options['ad_position']);
+  }
+  else if ($ad_position_type == 'interval') {
+    $total_dart_ads = floor($view->total_rows / $view->style_plugin->row_plugin->options['ad_position_interval']);
+  }
+
+  $pager_id = $view->query->pager->options['id'];
+  $total_rows_with_ads = $view->total_rows + $total_dart_ads;
+  $pager_total[ $pager_id ] = ceil($total_rows_with_ads / $view->query->original_limit);
+  $pager_values = isset($_GET['page']) ? explode(',', $_GET['page']) : array();
+  $pager_page_array[ $pager_id ] = isset($pager_values[ $pager_id ]) ?
+      $pager_values[ $pager_id ] : $pager_page_array[ $pager_id ];
+}
+
 
 /**
  * Wrapper function for outputting a themed dart tag.
@@ -478,6 +655,8 @@ function dart_tag_set_status($tag, $status) {
  * Implentation of template_preprocess_page().
  */
 function dart_preprocess_page(&$variables) {
+  $module_path = drupal_get_path('module', 'dart');
+
   // Inject any user-defined javascript.
   $inline_js = variable_get('dart_js', '') . "\n";
 
@@ -489,16 +668,24 @@ function dart_preprocess_page(&$variables) {
 
   // Add settings for loading ads last.
   if (variable_get('dart_load_last', '0')) {
-    if ($path = libraries_get_path('writecapture')) {
-      drupal_add_js($path . '/jquery.writeCapture.js');
+    $ajax_jquery_plugin = NULL;
+    if ($postscribe_path = libraries_get_path('postscribe')) {
+      drupal_add_js($postscribe_path . '/postscribe.min.js');
+      $ajax_jquery_plugin = 'postscribe';
     }
+    else if ($writecapture_path = libraries_get_path('writecapture')) {
+      drupal_add_js($writecapture_path . '/jquery.writeCapture.js');
+      $ajax_jquery_plugin = 'writecapture';
+    }
+    drupal_add_js(array('DART' => array('ajax_jquery_plugin' => $ajax_jquery_plugin)),
+        array('type' => 'setting'));
     $inline_js .= 'Drupal.DART.settings.writeTags = false;' . "\n";
     $inline_js .= 'Drupal.DART.settings.loadLastTags = {};' . "\n";
   }
 
   // Include the inline js & dart.js file. Dart.js must be included first
   // because the inline_js can reference variables defined in dart.js.
-  drupal_add_js(drupal_get_path('module', 'dart') . '/dart.js', array('force header' => TRUE));
+  drupal_add_js($module_path . '/js/dart.js', array('force header' => TRUE));
   drupal_add_js(trim($inline_js, "\n"), array('type' => 'inline', 'scope' => 'header'));
 
   // Regenerate scripts variable to incorporate newly added scripts.
@@ -768,6 +955,26 @@ function _dart_term_formatter_full($term) {
 }
 
 /**
+ * Return the themed output for displaying an ad.
+ */
+function _dart_ads_tag($delta) {
+  $current_path = trim(request_uri(), '/');
+
+  // Ads within ajax.
+  if (!variable_get('dart_load_last', '0') &&
+      ($current_path == 'views/ajax' || preg_match('|admin/structure/views/.*/preview|', $current_path))) {
+    $machinename = str_replace('dart-tag-', '', $delta);
+    $tags = dart_tag_load($machinename);
+    return theme('dart_tag_ajax', array('tag' => $tags, 'name' => $delta));
+  }
+  // Normal dart ad.
+  else {
+    $dart_tag_block = module_invoke('dart', 'block_view', $delta);
+    return $dart_tag_block['content'];
+  }
+}
+
+/**
  * Template preprocess function for dart tags.
  */
 function template_preprocess_dart_tag(&$variables) {
@@ -789,4 +996,19 @@ function template_preprocess_dart_tag(&$variables) {
   $variables['static_tag'] = l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE));
   $variables['noscript_tag'] = $variables['show_noscript_tag'] ? '<noscript>' . $variables['static_tag'] . '</noscript>' : '';
   $variables['tag'] = $tag;
+}
+
+/**
+ * Template preprocess function for ads.
+ */
+function template_process_dart_tag_ajax(&$variables) {
+
+  $tag = $variables['tag'];
+
+  $variables['attributes'] = array('class' => 'dart-tag');
+  $variables['json_tag'] = drupal_json_encode($tag);
+  $variables['show_script_tag'] = !$tag->settings['options']['scriptless'];
+  $noscript_tag_image = l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE));
+  $variables['static_tag'] = l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE));
+  $variables['noscript_tag'] = variable_get('dart_noscript', 1) ? '<noscript>' . $noscript_tag_image . '</noscript>' : '';
 }

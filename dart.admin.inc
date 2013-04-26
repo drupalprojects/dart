@@ -18,7 +18,7 @@ function dart_admin_settings($form, &$form_state) {
     '#submit' => array('dart_admin_settings_submit'),
     '#attached' => array(
       'js' => array(
-        drupal_get_path('module', 'dart') . '/dart.admin.js',
+        drupal_get_path('module', 'dart') . '/js/dart.admin.js',
       ),
     ),
   );
