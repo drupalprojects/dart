@@ -45,6 +45,7 @@ class dartBaseTest extends DrupalWebTestCase {
       'dart_test_prefix' => $this->randomName(8),
       'dart_test_site' => $this->randomName(8),
       'dart_test_zone' => $this->randomName(8),
+      'dart_enable_bg_ads' => 0,
     );
     $this->drupalPost('admin/structure/dart_tags/settings', $edit, t('Save configuration'));
     for ($i = 0; $i < count($key_vals); $i++) {
@@ -512,9 +513,31 @@ class dartAdTestsTest extends dartBaseTest {
   }
 }
 
+class dartBgAdTest extends dartBaseTest {
+  /**
+   * Implements getInfo().
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('DART Background Ad Tests'),
+      'description' => t('Tests that DART-served background ads are handled properly.'),
+      'group' => t('DART'),
+    );
+  }
 
+  function testBgAdProperties() {
+    $vars = array(
+      'dart_bg_var_bgimg' => $this->randomName(12),
+      'dart_bg_var_bgcolor' => $this->randomName(12),
+      'dart_bg_var_bgrepeat' => $this->randomName(12),
+      'dart_bg_var_clickurl' => $this->randomName(12),
+      'dart_bg_var_selector' => 'body',
+    );
+    $edit = $vars + array(
+      'dart_enable_bg_ads' => 1,
 
-
-
-
-
+    );
+    $this->drupalPost('admin/structure/dart_tags/settings', $edit, t('Save configuration'));
+    $this->drupalGet('<front>');
+  }
+}

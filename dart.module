@@ -15,6 +15,7 @@ define('DART_URL', ($GLOBALS['is_https'] ? 'https://ad.doubleclick.net' : 'http:
  */
 define('DART_MAX_KEY_VALS', 10);
 
+
 /**
  * Implements hook_help().
  */
@@ -50,6 +51,10 @@ function dart_theme() {
       'file' => 'plugins/export_ui/dart_ctools_export_ui.inc',
     ),
     'dart_prefix_site_zone_form' => array(
+      'render element' => 'form',
+      'file' => 'dart.admin.inc',
+    ),
+    'dart_bg_variables_form' => array(
       'render element' => 'form',
       'file' => 'dart.admin.inc',
     ),
@@ -95,23 +100,55 @@ function dart_menu() {
 }
 
 /**
+ * Implements hook_page_build().
+ */
+function dart_page_build(&$page) {
+  // If DART bg ads is enabled, then include the necessary javascript objects to
+  // make it work.
+  if (variable_get('dart_enable_bg_ads', FALSE)) {
+    $vars = array(
+      'bgImg' => variable_get('dart_bg_var_bgimg', ''),
+      'bgColor' => variable_get('dart_bg_var_bgcolor', ''),
+      'bgRepeat' => variable_get('dart_bg_var_bgrepeat', ''),
+      'clickThru' => variable_get('dart_bg_var_clickurl', ''),
+      'selector' => variable_get('dart_bg_var_selector', ''),
+    );
+    drupal_add_js(array('DART' => array('bgAdVars' => $vars)), 'setting');
+    drupal_add_css(drupal_get_path('module', 'dart') . '/dart.css');
+  }
+  else {
+    drupal_add_js(array('DART' => array('bgAdVars' => array())), 'setting');
+  }
+}
+
+/**
  * Implements hook_libraries_info().
  */
 function dart_libraries_info() {
 
-  $libraries['writecapture'] = array(
+  $libraries['writeCapture'] = array(
     'title' => 'Write Capture jQuery Plugin',
     'vendor_url' => 'https://github.com',
-    'download_url' => 'https://github.com/downloads/iamnoah/writeCapture/jquery.writeCapture-1.0.5-min.js',
+    'download_url' => 'https://github.com/iamnoah/writeCapture',
+    'version arguments' => array(
+      'file' => 'writeCapture.js',
+      'pattern' => '@v([0-9|\.]+)@',
+      'lines' => 5,
+      'cols' => 100,
+    ),
     'files' => array(
       'js' => array(
-        'jquery.writeCapture.js' => array(
+        'writeCapture.js' => array(
           'every_page' => TRUE,
           'group' => JS_LIBRARY,
           'preprocess' => 0,
           'scope' => 'header',
-          'type' => 'file',
-          'weight' => -999,
+        ),
+        'plugin/jquery.writeCapture.js' => array(
+          'every_page' => TRUE,
+          'group' => JS_LIBRARY,
+          'preprocess' => 0,
+          'scope' => 'header',
         ),
       ),
     ),
@@ -119,12 +156,18 @@ function dart_libraries_info() {
   $libraries['postscribe'] = array(
     'title' => 'Krux Postscribe jQuery Plugin',
     'vendor_url' => 'https://github.com',
-    'download_url' => 'https://github.com/krux/postscribe/blob/master/dist/postscribe.min.js',
+    'download_url' => 'https://github.com/krux/postscribe/',
+    'version arguments' => array(
+      'file' => 'dist/postscribe.min.js',
+      'pattern' => '@v([0-9|\.]+)@',
+      'lines' => 1,
+      'cols' => 100,
+    ),
+    'path' => 'dist',
     'files' => array(
       'js' => array(
         'postscribe.min.js' => array(
-          'every_page' => TRUE,
-          'group' => JS_LIBRARY,
+          'postscribe.min.js',
           'preprocess' => 0,
           'scope' => 'header',
           'type' => 'file',
@@ -339,11 +382,10 @@ function dart_views_pre_view(&$view, &$display_id, &$args) {
   if (!variable_get('dart_load_last', '0') && $view_uses_pager && $view_uses_ajax) {
     $ajax_jquery_plugin = NULL;
     if ($postscribe_path = libraries_get_path('postscribe')) {
-      drupal_add_js($postscribe_path . '/postscribe.min.js');
       $ajax_jquery_plugin = 'postscribe';
     }
     else if ($writecapture_path = libraries_get_path('writecapture')) {
-      drupal_add_js($writecapture_path . '/jquery.writeCapture.js');
+
       $ajax_jquery_plugin = 'writecapture';
     }
     $js_settings = array(
@@ -670,11 +712,11 @@ function dart_preprocess_page(&$variables) {
   if (variable_get('dart_load_last', '0')) {
     $ajax_jquery_plugin = NULL;
     if ($postscribe_path = libraries_get_path('postscribe')) {
-      drupal_add_js($postscribe_path . '/postscribe.min.js');
+      libraries_load('postscribe');
       $ajax_jquery_plugin = 'postscribe';
     }
-    else if ($writecapture_path = libraries_get_path('writecapture')) {
-      drupal_add_js($writecapture_path . '/jquery.writeCapture.js');
+    else if ($writecapture_path = libraries_get_path('writeCapture')) {
+      libraries_load('writeCapture');
       $ajax_jquery_plugin = 'writecapture';
     }
     drupal_add_js(array('DART' => array('ajax_jquery_plugin' => $ajax_jquery_plugin)),
@@ -1012,3 +1054,4 @@ function template_process_dart_tag_ajax(&$variables) {
   $variables['static_tag'] = l(theme('image', array('path' => $tag->noscript['src'])), $tag->noscript['href'], array('html' => TRUE));
   $variables['noscript_tag'] = variable_get('dart_noscript', 1) ? '<noscript>' . $noscript_tag_image . '</noscript>' : '';
 }
+

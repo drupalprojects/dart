@@ -53,11 +53,19 @@ function dart_admin_settings($form, &$form_state) {
     '#default_value' => variable_get('dart_load_last', '0'),
     '#description' => t('Wait until the entire page has loaded before loading ads. This will allow your pages to load faster but may cause empty spaces to appear on your pages before the ads load. <strong>You must use this option if you are loading ad tags asyncronously.</strong>'),
   );
-  if (!module_exists('libraries') || (module_exists('libraries') && !libraries_detect('writecapture'))) {
-    $form['settings']['tag_settings']['dart_load_last']['#disabled'] = TRUE;
-    $form['settings']['tag_settings']['dart_load_last']['#default_value'] = 0;
-    $form['settings']['tag_settings']['dart_load_last']['#prefix'] = '<p><strong>' . t('This option requires <a href="https://github.com/iamnoah/writeCapture">WriteCapture jQuery plugin</a> to be included using the <a href="http://drupal.org/project/libraries">Libraries module (&gt;= 7.x-2.0)</a>. Please download <a href="https://github.com/iamnoah/writeCapture">WriteCapture jQuery plugin</a> and copy <code>plugin/writeCapture.js</code> file to <code>/sites/all/libraries/writecapture/jquery.writeCapture.js</code>') . '</strong></p>';
+
+  if (!libraries_detect('writeCapture') && !libraries_detect('postscribe')) {
+    $form['tag_settings']['dart_load_last']['#disabled'] = TRUE;
+    $form['tag_settings']['dart_load_last']['#default_value'] = 0;
+    $form['tag_settings']['dart_load_last']['#prefix'] = '<p><strong>' .
+      t('This option requires !writecapture or !postscribe to be included using the !libraries module (&gt;= 7.x-2.0). Please see README.txt for this module',
+        array(
+          '!postscribe' => l('postscribe', 'https://github.com/krux/postscribe'),
+          '!writecapture' => l('writeCapture','https://github.com/iamnoah/writeCapture'),
+          '!libraries' => l('Libraries', 'http://drupal.org/project/libraries'))) .
+      '</strong></p>';
   }
+
 
   $form['tag_settings']['dart_use_network_id'] = array(
     '#type' => 'checkbox',
@@ -103,6 +111,55 @@ function dart_admin_settings($form, &$form_state) {
     '#description' => t('Display @tag tags along with the standard javascript DART tags.', array('@tag' => '<noscript>')),
   );
 
+  // Background ad options.
+  $form['bg_options'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Background Ad Options'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#group' => 'settings',
+    '#weight' => '-8',
+  );
+  $form['bg_options']['dart_enable_bg_ads'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable background ads'),
+    '#default_value' => variable_get('dart_enable_bg_ads', 0),
+    '#description' => t('Many sites change the background image of their entire page to an advertisement by allowing DART to serve the background image.'),
+  );
+  $form['bg_options']['dart_bg_variables'] = array(
+     '#type' => 'markup',
+     '#tree' => FALSE,
+     '#prefix' => '<div id="dart-bg-varaiables-wrapper">',
+     '#suffix' => '</div>',
+     '#theme' => 'dart_bg_variables_form',
+  );
+  $form['bg_options']['dart_bg_variables']['dart_bg_var_bgimg'] = array(
+    '#type' => 'textfield',
+     '#title' => t('Background image'),
+     '#default_value' => variable_get('dart_bg_var_bgimg', ''),
+  );
+  $form['bg_options']['dart_bg_variables']['dart_bg_var_bgcolor'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Background color'),
+    '#default_value' => variable_get('dart_bg_var_bgcolor', ''),
+  );
+  $form['bg_options']['dart_bg_variables']['dart_bg_var_bgrepeat'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Background repeat'),
+    '#default_value' => variable_get('dart_bg_var_bgrepeat', ''),
+  );
+  $form['bg_options']['dart_bg_variables']['dart_bg_var_clickurl'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Click thru'),
+    '#default_value' => variable_get('dart_bg_var_clickurl', ''),
+  );
+  $form['bg_options']['dart_bg_var_selector'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CSS selector'),
+    '#default_value' => variable_get('dart_bg_var_selector', 'body'),
+    '#description' => t('Enter the CSS selector to which this background image should be targeted.'),
+  );
+
   // Taxonomy options.
   if (module_exists('taxonomy')) {
     $form['taxonomy_options'] = array(
@@ -111,7 +168,7 @@ function dart_admin_settings($form, &$form_state) {
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
       '#group' => 'settings',
-      '#weight' => '-8',
+      '#weight' => '-7',
     );
     $form['taxonomy_options']['dart_include_taxonomy_terms'] = array(
       '#type' => 'checkbox',
@@ -376,4 +433,30 @@ function theme_dart_prefix_site_zone_form($variables) {
   );
 
   return drupal_render($form['dart_prefix_site_zone']);
+}
+
+/**
+ * Theme the prefix.site/zone form.
+ */
+function theme_dart_bg_variables_form($variables) {
+  $form = &$variables['form'];
+  $rows = array();
+  $headers = array(
+    t('Attribute'),
+    t('Variable name'),
+  );
+
+  $caption = t('Use this table to specify the variables that DART will serve when there is a background ad running.');
+
+  foreach (element_children($form) as $key) {
+    $title = $form[$key]['#title'];
+    unset($form[$key]['#title']);
+    $rendered_field = drupal_render($form[$key]);
+
+    $rows[] = array(
+      'data' => array($title, $rendered_field),
+   );
+  }
+
+  return theme('table', array('header' => $headers, 'rows' => $rows, 'caption' => $caption));
 }

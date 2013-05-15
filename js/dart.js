@@ -85,30 +85,83 @@ Drupal.DART.keyVals = function(vals) {
   return ad;
 };
 
+
 /**
  * If there are tags in the loadLastTags, then load them where they belong.
  */
-Drupal.behaviors.DART = {
-  attach: function(context) {
+Drupal.DART.display_ads = function () {
+  ord = Math.round(Math.random()*1000000000000);
     if (typeof(Drupal.DART.settings.loadLastTags) == 'object') {
-      var ord = Math.floor((Math.random() * 10000000000) + 1);
-      $('.dart-tag:visible').not('.dart-processed').each(function() {
-        var _this = $(this);
-        var regex = /dart-name-(\w+)$/;
-        var result = regex.exec(_this.attr('class'));
-        if (result != null) {
-          var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[result[1]]);
-          var scriptTag = scriptTag.replace(/;ord=\d+/, ';ord='+ord);
-          if (typeof(postscribe) == 'function') {
-            postscribe(_this, scriptTag, function () { _this.addClass('.dart-processed'); });
-          }
-          else if (typeof(_this.writeCapture) == 'function') {
-            _this.writeCapture().append(scriptTag).addClass('dart-processed');
-          }
+    $('.dart-tag.dart-processed').each(function () {
+      $(this).removeClass('dart-processed');
+      $(this).html('');
+    });
+    var init = false;
+    for (var tag in Drupal.DART.settings.loadLastTags) {
+      // variables for background ads may be defined in late loaded scripts. Load bg ad if needed.
+      if (Drupal.DART.settings.loadLastTags.hasOwnProperty(tag) && tag != null) {
+        var name = tag;
+        var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[name]);
+        if (typeof(postscribe) == 'function') {
+          postscribe($('.dart-name-' + name), scriptTag, function () {
+            Drupal.DART.loadBgAd(Drupal.settings.DART.bgAdVars);
+            $('.dart-name-' + name).addClass('dart-processed');
+          });
         }
+        else if (typeof(_this.writeCapture) == 'function') {
+          $('.dart-name-' + name).writeCapture().append(scriptTag, function () {
+              Drupal.DART.loadBgAd(Drupal.settings.DART.bgAdVars);
+          }).addClass('dart-processed');
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Load the background ad as served by DART.
+ */
+Drupal.DART.loadBgAd = function(bgAdVars) {
+  //ensure ads are loaded only once on the page
+  if (!Drupal.DART.settings.bgAdLoaded && typeof bgAdVars != 'undefined') {
+    var bgAdCSS = {};
+    if (window[bgAdVars.bgImg] != undefined) {
+      bgAdCSS['background-image'] = 'url(' + window[bgAdVars.bgImg] + ')';
+    }
+    if (window[bgAdVars.bgColor] != undefined) {
+      bgAdCSS['background-color'] = window[bgAdVars.bgColor];
+    }
+    if (window[bgAdVars.bgRepeat] != undefined) {
+      bgAdCSS['background-repeat'] = window[bgAdVars.bgRepeat];
+    }
+    $(bgAdVars.selector).css(bgAdCSS);
+
+    if (window[bgAdVars.clickThru] != undefined) {
+      $(bgAdVars.selector).addClass('background-ad');
+      $(bgAdVars.selector).click(function (e) {
+      if(e.target != this) return;
+        window.open(window[bgAdVars.clickThru]);
       });
+    }
+
+    //don't try to load again
+    if (window[bgAdVars.bgImg] != undefined) {
+      Drupal.DART.settings.bgAdLoaded = true;
     }
   }
 };
 
+
+
+/**
+ * Display Ads.
+ */
+Drupal.behaviors.DART = {
+  attach: function(context) {
+    Drupal.DART.display_ads();
+    Drupal.DART.loadBgAd(Drupal.settings.DART.bgAdVars);
+  }
+};
+
 })(jQuery);
+
