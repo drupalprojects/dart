@@ -435,7 +435,7 @@ function dart_views_pre_view(&$view, &$display_id, &$args) {
 function dart_views_post_build(&$view) {
 
   // Only do this if this view is using the dart row style plugin.
-  if (get_class($view->style_plugin->row_plugin) != 'views_plugin_row_dart_node_view') {
+  if (!($view->style_plugin->row_plugin instanceof views_plugin_row_dart_node_view)) {
     return;
   }
 
@@ -490,7 +490,7 @@ function dart_views_post_build(&$view) {
 function dart_views_pre_render(&$view) {
 
   // Only do this if this view is using the dart row style plugin.
-  if (get_class($view->style_plugin->row_plugin) != 'views_plugin_row_dart_node_view') {
+  if (!($view->style_plugin->row_plugin instanceof views_plugin_row_dart_node_view)) {
     return;
   }
 
