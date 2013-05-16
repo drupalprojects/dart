@@ -240,10 +240,30 @@ function dart_tokens($type, $tokens, array $data = array(), array $options = arr
 function dart_block_info() {
   $tags = _dart_block_tags();
   $blocks = array();
+  $hashes = array();
+
   foreach ($tags as $tag) {
-    $blocks['dart-tag-' . $tag->machinename]['info'] = t('DART tag: !tagname', array('!tagname' => $tag->name));
-    $blocks['dart-tag-' . $tag->machinename]['cache'] = DRUPAL_CACHE_PER_PAGE;
+    // The block table chokes when the delta is more than 32 characters. To
+    // solve this we create a hash of the machine name when needed.
+    if (drupal_strlen('dart-tag-' . $tag->machinename) >= 32) {
+      $delta = md5('dart-tag-' . $tag->machinename);
+      $hashes[$delta] = 'dart-tag-' . $tag->machinename;
+    }
+    else {
+      $delta = 'dart-tag-' . $tag->machinename;
+    }
+
+
+    $blocks[$delta]['info'] = t('DART tag: !tagname', array('!tagname' => $tag->name));
+    $blocks[$delta]['cache'] = DRUPAL_CACHE_PER_PAGE;
   }
+
+  // Only save hashes if they have changed.
+  $old_hashes = variable_get('dart_block_hashes', array());
+  if ($hashes != $old_hashes) {
+    variable_set('dart_block_hashes', $hashes);
+  }
+
   return $blocks;
 }
 
@@ -251,6 +271,17 @@ function dart_block_info() {
  * Implements hook_block_view().
  */
 function dart_block_view($delta) {
+  $block = array();
+
+  // If this is 32, this should be an md5 hash.
+  if (drupal_strlen($delta) == 32) {
+    $hashes = variable_get('dart_block_hashes', array());
+
+    if (!empty($hashes[$delta])) {
+      $delta = $hashes[$delta];
+    }
+  }
+
   $machinename = str_replace('dart-tag-', '', $delta);
   $block['content'] = dart_tag($machinename);
   return $block;
