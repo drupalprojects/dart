@@ -401,8 +401,12 @@ function dart_views_api() {
  * Implements hook_views_view().
  */
 function dart_views_pre_view(&$view, &$display_id, &$args) {
-
-  $view_uses_ajax = $view->display[ $view->current_display ]->handler->default_display->options['use_ajax'];
+  if ($view->display[ $view->current_display ]->handler->default_display) {
+    $view_uses_ajax = $view->display[ $view->current_display ]->handler->default_display->options['use_ajax'];
+  }
+  else {
+    $view_uses_ajax = FALSE;
+  }
   // Don't trust the following value!!!
   #$view_uses_pager = $view->display[ $view->current_display ]->handler->default_display->options['use_pager'];
   $pager_type = $view->display[ $view->current_display ]->handler->default_display->options['pager']['type'];
