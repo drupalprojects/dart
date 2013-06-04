@@ -403,14 +403,16 @@ function dart_views_api() {
 function dart_views_pre_view(&$view, &$display_id, &$args) {
   if ($view->display[ $view->current_display ]->handler->default_display) {
     $view_uses_ajax = $view->display[ $view->current_display ]->handler->default_display->options['use_ajax'];
+
+    // Don't trust the following value!!!
+    #$view_uses_pager = $view->display[ $view->current_display ]->handler->default_display->options['use_pager'];
+    $pager_type = $view->display[ $view->current_display ]->handler->default_display->options['pager']['type'];
+    $view_uses_pager = $pager_type != 'none' && $pager_type != 'some';
   }
   else {
     $view_uses_ajax = FALSE;
+    $view_uses_pager = FALSE;
   }
-  // Don't trust the following value!!!
-  #$view_uses_pager = $view->display[ $view->current_display ]->handler->default_display->options['use_pager'];
-  $pager_type = $view->display[ $view->current_display ]->handler->default_display->options['pager']['type'];
-  $view_uses_pager = $pager_type != 'none' && $pager_type != 'some';
 
   // Add JS files for ajax ad functionality if the current view uses an ajax
   // pager.
