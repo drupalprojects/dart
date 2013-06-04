@@ -100,19 +100,21 @@ Drupal.DART.display_ads = function () {
     for (var tag in Drupal.DART.settings.loadLastTags) {
       // variables for background ads may be defined in late loaded scripts. Load bg ad if needed.
       if (Drupal.DART.settings.loadLastTags.hasOwnProperty(tag) && tag != null) {
-        var name = tag;
-        var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[name]);
-        if (typeof(postscribe) == 'function') {
-          postscribe($('.dart-name-' + name), scriptTag, function () {
-            Drupal.DART.loadBgAd(Drupal.settings.DART.bgAdVars);
-            $('.dart-name-' + name).addClass('dart-processed');
-          });
-        }
-        else if (typeof(_this.writeCapture) == 'function') {
-          $('.dart-name-' + name).writeCapture().append(scriptTag, function () {
+        (function(tag) {
+          var name = tag;
+          var scriptTag = Drupal.DART.tag(Drupal.DART.settings.loadLastTags[name]);
+          if (typeof(postscribe) == 'function') {
+            postscribe($('.dart-name-' + name), scriptTag, function () {
               Drupal.DART.loadBgAd(Drupal.settings.DART.bgAdVars);
-          }).addClass('dart-processed');
-        }
+              $('.dart-name-' + name).addClass('dart-processed');
+            });
+          }
+          else if (typeof(_this.writeCapture) == 'function') {
+            $('.dart-name-' + name).writeCapture().append(scriptTag, function () {
+                Drupal.DART.loadBgAd(Drupal.settings.DART.bgAdVars);
+            }).addClass('dart-processed');
+          }
+        }(tag));
       }
     }
   }
