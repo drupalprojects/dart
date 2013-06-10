@@ -1,6 +1,16 @@
 
 (function ($) {
 
+  /**
+   * Create a DART object to handle tagging functionality
+   */
+  Drupal.DART = Drupal.DART || {};
+
+  /**
+   * Overridable settings.
+   */
+  Drupal.DART.settings = Drupal.DART.settings || {};
+
   $(document)
     .bind('dart_tag_render', function(event, tag) {
       return tag.replace(/;ord=/, ';' + 'ord=');

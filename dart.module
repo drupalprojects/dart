@@ -167,11 +167,24 @@ function dart_libraries_info() {
     'files' => array(
       'js' => array(
         'postscribe.min.js' => array(
-          'postscribe.min.js',
           'preprocess' => 0,
           'scope' => 'header',
           'type' => 'file',
           'weight' => -998,
+        ),
+      ),
+    ),
+    'variants' => array(
+      'source' => array(
+        'files' => array(
+          'js' => array(
+            'postscribe.js' => array(
+              'preprocess' => 0,
+              'scope' => 'header',
+              'type' => 'file',
+              'weight' => -998,
+            ),
+          ),
         ),
       ),
     ),
@@ -418,11 +431,10 @@ function dart_views_pre_view(&$view, &$display_id, &$args) {
   // pager.
   if (!variable_get('dart_load_last', '0') && $view_uses_pager && $view_uses_ajax) {
     $ajax_jquery_plugin = NULL;
-    if ($postscribe_path = libraries_get_path('postscribe')) {
+    if ($library = libraries_load('postscribe') && !empty($library['loaded'])) {
       $ajax_jquery_plugin = 'postscribe';
     }
-    else if ($writecapture_path = libraries_get_path('writecapture')) {
-
+    else if ($library = libraries_load('writecapture') && !empty($library['loaded'])) {
       $ajax_jquery_plugin = 'writecapture';
     }
     $js_settings = array(
@@ -430,8 +442,9 @@ function dart_views_pre_view(&$view, &$display_id, &$args) {
     );
     drupal_add_js(array('DART' => $js_settings),
         array('type' => 'setting'));
-    $module_path = drupal_get_path('module', 'dart');
-    drupal_add_js($module_path . '/js/dart_tag_ajax.js', array('group' => JS_THEME));
+    // Ensure dart.js and inline JS are added.
+    _dart_add_js();
+    drupal_add_js(drupal_get_path('module', 'dart') . '/js/dart_tag_ajax.js', array('group' => JS_THEME));
   }
 }
 
@@ -731,9 +744,17 @@ function dart_tag_set_status($tag, $status) {
 }
 
 /**
- * Implentation of template_preprocess_page().
+ * Helper to add inline and file DART JS.
  */
-function dart_preprocess_page(&$variables) {
+function _dart_add_js() {
+
+  $js_added = &drupal_static(__FUNCTION__, FALSE);
+
+  if ($js_added) {
+    return NULL;
+  }
+
+  $js_added = TRUE;
   $module_path = drupal_get_path('module', 'dart');
 
   // Inject any user-defined javascript.
@@ -748,12 +769,10 @@ function dart_preprocess_page(&$variables) {
   // Add settings for loading ads last.
   if (variable_get('dart_load_last', '0')) {
     $ajax_jquery_plugin = NULL;
-    if ($postscribe_path = libraries_get_path('postscribe')) {
-      libraries_load('postscribe');
+    if ($library = libraries_load('postscribe') && !empty($library['loaded'])) {
       $ajax_jquery_plugin = 'postscribe';
     }
-    else if ($writecapture_path = libraries_get_path('writeCapture')) {
-      libraries_load('writeCapture');
+    else if ($library = libraries_load('writecapture') && !empty($library['loaded'])) {
       $ajax_jquery_plugin = 'writecapture';
     }
     drupal_add_js(array('DART' => array('ajax_jquery_plugin' => $ajax_jquery_plugin)),
@@ -765,7 +784,15 @@ function dart_preprocess_page(&$variables) {
   // Include the inline js & dart.js file. Dart.js must be included first
   // because the inline_js can reference variables defined in dart.js.
   drupal_add_js($module_path . '/js/dart.js', array('force header' => TRUE));
-  drupal_add_js(trim($inline_js, "\n"), array('type' => 'inline', 'scope' => 'header'));
+  drupal_add_js(trim($inline_js, "\n"), array('type' => 'inline', 'scope' => 'header', 'force header' => TRUE));
+}
+
+/**
+ * Implentation of template_preprocess_page().
+ */
+function dart_preprocess_page(&$variables) {
+
+  _dart_add_js();
 
   // Regenerate scripts variable to incorporate newly added scripts.
   $variables['scripts'] = drupal_get_js();
