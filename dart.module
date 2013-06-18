@@ -126,7 +126,7 @@ function dart_page_build(&$page) {
  */
 function dart_libraries_info() {
 
-  $libraries['writeCapture'] = array(
+  $libraries['writecapture'] = array(
     'title' => 'Write Capture jQuery Plugin',
     'vendor_url' => 'https://github.com',
     'download_url' => 'https://github.com/iamnoah/writeCapture',
