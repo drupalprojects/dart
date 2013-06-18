@@ -414,7 +414,7 @@ function dart_views_api() {
  * Implements hook_views_view().
  */
 function dart_views_pre_view(&$view, &$display_id, &$args) {
-  if ($view->display[ $view->current_display ]->handler->default_display) {
+  if (isset($view->display[ $view->current_display ]->handler->default_display)) {
     $view_uses_ajax = $view->display[ $view->current_display ]->handler->default_display->options['use_ajax'];
 
     // Don't trust the following value!!!
