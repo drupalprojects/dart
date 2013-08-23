@@ -80,6 +80,6 @@ function dart_tag_adtest(&$tag) {
   if (isset($_GET['adtest']) && $_GET['adtest'] == 'true') {
     $tag->prefix = isset($_GET['prefix']) ? check_plain($_GET['prefix']) : variable_get('dart_test_prefix', '');
     $tag->site = isset($_GET['site']) ? check_plain($_GET['site']) : variable_get('dart_test_site', '');
-    $tag->zone = isset($_GET['zone']) ? check_plain($_GET['zone']) : variable_get('dart_test_zone', '');
+    $tag->zone = isset($_GET['zone']) ? check_plain($_GET['zone']) : token_replace(variable_get('dart_test_zone', ''));
   }
 }
