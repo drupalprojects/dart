@@ -835,11 +835,20 @@ function _dart_block_tags() {
  */
 function _dart_add_key_val(&$tag, $key, $val = NULL, $eval = FALSE) {
   if (!empty($val)) {
+    $vals =& drupal_static(__FUNCTION__, array());
+    $val_hash = md5($val);
+    if (!isset($vals[$tag->machinename][$key][$val_hash])) {
+      $vals[$tag->machinename][$key][$val_hash] = token_replace(
+        $val,
+        _dart_get_token_context($tag),
+        array(
+          'clear' => TRUE,
+          'sanitize' => TRUE,
+        )
+      );
+    }
     $tag->key_vals[$key][] = array(
-      'val' => token_replace($val, _dart_get_token_context($tag), array(
-        'clear' => TRUE,
-        'sanitize' => TRUE,
-      )),
+      'val' => $vals[$tag->machinename][$key][$val_hash],
       'eval' => $eval,
     );
   }
