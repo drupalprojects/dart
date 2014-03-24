@@ -208,6 +208,11 @@ function dart_token_info() {
     'description' => t("The DART Ad Categories or uncategorized taxonomy terms attached to the entities currently being displayed to the user."),
   );
 
+  $tag['adtest'] = array(
+    'name' => t("DART Adtest"),
+    'description' => t("Returns on or off if adtest is enabled through URL params."),
+  );
+
   return array(
     'types' => array('dart_tag' => $type),
     'tokens' => array('dart_tag' => $tag),
@@ -239,6 +244,12 @@ function dart_tokens($type, $tokens, array $data = array(), array $options = arr
           }
 
           $replacements[$original] = implode(',', $terms);
+          break;
+
+        case 'adtest':
+          $adtest = isset($_GET['adtest']) && $_GET['adtest'] == 'true' ? 'on' : 'off';
+
+          $replacements[$original] = $adtest;
           break;
       }
     }
