@@ -20,6 +20,40 @@ function dart_uninstall() {
   db_delete('block')
     ->condition('module', 'dart')
     ->execute();
+
+  // Remove any variables created by DART.
+  $dart_variables = array(
+    'dart_bg_var_bgcolor',
+    'dart_bg_var_bgimg',
+    'dart_bg_var_bgrepeat',
+    'dart_bg_var_clickurl',
+    'dart_bg_var_selector',
+    'dart_enable_ad_categories',
+    'dart_enable_ad_categories_bundles',
+    'dart_enable_bg_ads',
+    'dart_global_network_id',
+    'dart_global_prefix',
+    'dart_global_site',
+    'dart_global_slug',
+    'dart_global_zone',
+    'dart_include_taxonomy_terms',
+    'dart_js',
+    'dart_key_vals',
+    'dart_load_last',
+    'dart_noscript',
+    'dart_special_key_vals',
+    'dart_special_tile_init',
+    'dart_term_formatter',
+    'dart_term_key',
+    'dart_test_prefix',
+    'dart_test_site',
+    'dart_test_zone',
+    'dart_use_network_id',
+  );
+
+  foreach ($dart_variables as $dart_variable) {
+    variable_del($dart_variable);
+  }
 }
 
 /**
